@@ -4,7 +4,7 @@ from valuation import EntradasValuation, calcular_valuation
 from empresas import EMPRESAS
 from historico import salvar_analise, carregar_historico, CAMINHO_HISTORICO
 from style import aplicar_estilo
-from comparativo import gerar_comparativo
+from comparativo import gerar_comparativo, encontrar_empresa_mais_atrativa
 
 
 st.set_page_config(
@@ -350,6 +350,38 @@ try:
         st.caption(
             "Esta tabela compara todas as empresas cadastradas usando as premissas salvas no arquivo empresas.py."
         )
+
+        melhor_empresa = encontrar_empresa_mais_atrativa(
+            EMPRESAS,
+            formatar_moeda,
+            formatar_percentual,
+        )
+
+        st.markdown("#### Empresa mais atrativa pelo modelo")
+
+        col_best_1, col_best_2, col_best_3, col_best_4 = st.columns(4)
+
+        with col_best_1:
+            st.metric("Empresa", melhor_empresa["ticker"])
+
+        with col_best_2:
+            st.metric("Preço atual", melhor_empresa["preco_atual"])
+
+        with col_best_3:
+            st.metric("Preço-teto", melhor_empresa["preco_teto"])
+
+        with col_best_4:
+            st.metric("Status", melhor_empresa["status"])
+
+        st.info(
+            f"""
+            **{melhor_empresa["empresa"]}** é a empresa mais atrativa pelo critério de maior margem até o preço-teto.  
+            Margem até preço-teto: **{melhor_empresa["margem_ate_preco_teto"]}**.  
+            Potencial até preço justo: **{melhor_empresa["potencial_ate_preco_justo"]}**.
+            """
+        )
+
+        st.divider()
 
         tabela_comparativo = gerar_comparativo(
             EMPRESAS,

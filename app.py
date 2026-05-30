@@ -35,17 +35,42 @@ def preparar_tabela(tabela: list[dict]) -> list[dict]:
     ]
 
 
-st.title("📊 Máquina de Preço-Teto")
+st.markdown(
+    """
+    # 📊 Máquina de Preço-Teto
 
-st.caption(
-    "Ferramenta educacional para estimar preço-teto de ações com base em lucro, "
-    "fluxo de caixa livre, múltiplos justos e margem de segurança."
+    ### Valuation conservador para investidores que querem comprar ações com método, margem de segurança e clareza.
+
+    A Máquina de Preço-Teto organiza premissas fundamentais de uma empresa e estima uma faixa racional de preço com base em:
+
+    **lucro líquido sustentável**, **fluxo de caixa livre**, **múltiplos justos**, **pesos entre EPS e FCF** e **margem de segurança**.
+
+    O objetivo não é prever o futuro com precisão absoluta.  
+    O objetivo é evitar decisões emocionais, organizar premissas e comparar empresas de forma mais disciplinada.
+    """
 )
+
+col_home_1, col_home_2, col_home_3, col_home_4 = st.columns(4)
+
+with col_home_1:
+    st.metric("Empresas", len(EMPRESAS))
+
+with col_home_2:
+    st.metric("Modelo", "EPS + FCF")
+
+with col_home_3:
+    st.metric("Decisão", "3 status")
+
+with col_home_4:
+    st.metric("Margem", "Ajustável")
 
 st.warning(
     "Aviso importante: esta ferramenta é apenas educacional. "
-    "Não representa recomendação de compra, venda ou manutenção de investimentos."
+    "Não representa recomendação de compra, venda ou manutenção de investimentos. "
+    "Os resultados dependem diretamente das premissas inseridas."
 )
+
+st.divider()
 
 
 with st.sidebar:

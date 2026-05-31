@@ -8,6 +8,7 @@ from empresas import EMPRESAS
 from historico import salvar_analise, carregar_historico, CAMINHO_HISTORICO
 from style import aplicar_estilo
 from educacional import renderizar_aba_educacional
+from simulador import renderizar_simulador_cenarios
 from comparativo import (
     gerar_comparativo,
     encontrar_empresa_mais_atrativa,
@@ -69,7 +70,7 @@ def renderizar_hero() -> None:
     )
 
     st.caption(
-        "Modelo EPS + FCF • Radar de oportunidade • Ranking de empresas reais • Exportação em CSV"
+        "Modelo EPS + FCF • Radar de oportunidade • Simulador de cenários • Ranking de empresas reais • Exportação em CSV"
     )
 
     col_home_1, col_home_2, col_home_3, col_home_4 = st.columns(4)
@@ -422,9 +423,10 @@ try:
 
     st.divider()
 
-    aba_resultado, aba_comparativo, aba_tese, aba_premissas, aba_historico, aba_educacional = st.tabs(
+    aba_resultado, aba_simulador, aba_comparativo, aba_tese, aba_premissas, aba_historico, aba_educacional = st.tabs(
         [
             "Resultado",
+            "Simulador",
             "Comparativo",
             "Tese da empresa",
             "Premissas usadas",
@@ -531,6 +533,15 @@ try:
         ]
 
         st.table(preparar_tabela(tabela_resultado))
+
+    with aba_simulador:
+        renderizar_simulador_cenarios(
+            entradas_base=entradas,
+            simbolo_moeda=simbolo_moeda,
+            formatar_moeda=formatar_moeda,
+            formatar_percentual=formatar_percentual,
+            preparar_tabela=preparar_tabela,
+        )
 
     with aba_comparativo:
         st.markdown("### Central inteligente de comparação")

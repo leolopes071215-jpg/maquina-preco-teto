@@ -1,3 +1,6 @@
+import csv
+from io import StringIO
+
 import streamlit as st
 
 from valuation import EntradasValuation, calcular_valuation
@@ -33,6 +36,20 @@ def preparar_tabela(tabela: list[dict]) -> list[dict]:
         {chave: str(valor) for chave, valor in linha.items()}
         for linha in tabela
     ]
+
+
+def converter_tabela_para_csv(tabela: list[dict]) -> str:
+    if len(tabela) == 0:
+        return ""
+
+    saida = StringIO()
+    campos = tabela[0].keys()
+
+    escritor = csv.DictWriter(saida, fieldnames=campos)
+    escritor.writeheader()
+    escritor.writerows(tabela)
+
+    return saida.getvalue()
 
 
 st.markdown(
@@ -424,10 +441,21 @@ try:
         if len(tabela_filtrada) == 0:
             st.warning("Nenhuma empresa encontrada com os filtros selecionados.")
         else:
+            tabela_preparada = preparar_tabela(tabela_filtrada)
+
             st.dataframe(
-                preparar_tabela(tabela_filtrada),
+                tabela_preparada,
                 use_container_width=True,
                 hide_index=True,
+            )
+
+            csv_comparativo = converter_tabela_para_csv(tabela_preparada)
+
+            st.download_button(
+                label="Baixar comparativo em CSV",
+                data=csv_comparativo,
+                file_name="comparativo_preco_teto.csv",
+                mime="text/csv",
             )
 
     with aba_tese:

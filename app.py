@@ -7,6 +7,7 @@ from valuation import EntradasValuation, calcular_valuation
 from empresas import EMPRESAS
 from historico import salvar_analise, carregar_historico, CAMINHO_HISTORICO
 from style import aplicar_estilo
+from educacional import renderizar_aba_educacional
 from comparativo import (
     gerar_comparativo,
     encontrar_empresa_mais_atrativa,
@@ -56,57 +57,63 @@ def converter_tabela_para_csv(tabela: list[dict]) -> str:
     return saida.getvalue()
 
 
+def renderizar_hero() -> None:
+    st.markdown("# 📊 Máquina de Preço-Teto")
+
+    st.markdown(
+        """
+        ### Valuation disciplinado com lucro, fluxo de caixa livre e margem de segurança.
+
+        Plataforma educacional para organizar premissas, comparar empresas e estimar uma zona racional de preço.
+        """
+    )
+
+    st.caption(
+        "Modelo EPS + FCF • Radar de oportunidade • Ranking de empresas reais • Exportação em CSV"
+    )
+
+    col_home_1, col_home_2, col_home_3, col_home_4 = st.columns(4)
+
+    with col_home_1:
+        st.metric("Empresas", len(EMPRESAS))
+
+    with col_home_2:
+        st.metric("Motor", "EPS + FCF")
+
+    with col_home_3:
+        st.metric("Leitura", "3 status")
+
+    with col_home_4:
+        st.metric("Uso", "Educacional")
+
+    st.warning(
+        "Uso educacional. Não representa recomendação de compra, venda ou manutenção de investimentos. "
+        "Os resultados dependem diretamente das premissas inseridas."
+    )
+
+    st.divider()
+
+
 def renderizar_barra_valuation(
     rotulo: str,
     valor: float,
     valor_maximo: float,
     simbolo: str,
-    cor: str,
 ) -> None:
     if valor_maximo <= 0:
-        largura = 0
+        proporcao = 0.0
     else:
-        largura = min(max((valor / valor_maximo) * 100, 4), 100)
+        proporcao = min(max(valor / valor_maximo, 0), 1)
 
-    valor_formatado = formatar_moeda(valor, simbolo)
+    col_label, col_valor = st.columns([3, 1])
 
-    st.markdown(
-        f"""
-        <div style="margin-bottom: 18px;">
-            <div style="
-                display: flex;
-                justify-content: space-between;
-                align-items: center;
-                margin-bottom: 6px;
-                color: #cbd5e1;
-                font-size: 0.92rem;
-                font-weight: 650;
-            ">
-                <span>{rotulo}</span>
-                <span style="color: #f8fafc; font-weight: 800;">{valor_formatado}</span>
-            </div>
+    with col_label:
+        st.caption(rotulo)
 
-            <div style="
-                width: 100%;
-                height: 18px;
-                background: rgba(15, 23, 42, 0.92);
-                border: 1px solid rgba(148, 163, 184, 0.18);
-                border-radius: 999px;
-                overflow: hidden;
-                box-shadow: inset 0 1px 8px rgba(0, 0, 0, 0.35);
-            ">
-                <div style="
-                    width: {largura}%;
-                    height: 100%;
-                    background: linear-gradient(90deg, {cor}, rgba(255, 255, 255, 0.72));
-                    border-radius: 999px;
-                    box-shadow: 0 0 18px {cor};
-                "></div>
-            </div>
-        </div>
-        """,
-        unsafe_allow_html=True,
-    )
+    with col_valor:
+        st.markdown(f"**{formatar_moeda(valor, simbolo)}**")
+
+    st.progress(proporcao)
 
 
 def renderizar_mapa_valuation(
@@ -117,89 +124,147 @@ def renderizar_mapa_valuation(
 ) -> None:
     valor_maximo = max(preco_atual, preco_teto, preco_justo, 1)
 
-    st.markdown("### Mapa visual do valuation")
+    with st.container(border=True):
+        st.markdown("### Mapa visual do valuation")
+
+        st.caption(
+            "Leitura visual entre preço atual, preço-teto conservador e preço justo estimado."
+        )
+
+        renderizar_barra_valuation(
+            "Preço atual",
+            preco_atual,
+            valor_maximo,
+            simbolo,
+        )
+
+        renderizar_barra_valuation(
+            "Preço-teto com margem de segurança",
+            preco_teto,
+            valor_maximo,
+            simbolo,
+        )
+
+        renderizar_barra_valuation(
+            "Preço justo estimado",
+            preco_justo,
+            valor_maximo,
+            simbolo,
+        )
+
+        if preco_atual <= preco_teto:
+            st.success(
+                "Leitura: o preço atual está abaixo ou igual ao preço-teto. "
+                "Pelas premissas atuais, está dentro da zona conservadora do modelo."
+            )
+        elif preco_atual <= preco_justo:
+            st.warning(
+                "Leitura: o preço atual está acima do preço-teto, mas ainda abaixo ou próximo do preço justo. "
+                "Não está barato o suficiente para uma entrada conservadora."
+            )
+        else:
+            st.error(
+                "Leitura: o preço atual está acima do preço justo estimado. "
+                "Pelas premissas atuais, o modelo indica paciência."
+            )
+
+
+def renderizar_painel_decisao(
+    preco_atual: float,
+    resultado: dict,
+    simbolo_moeda: str,
+) -> None:
+    with st.container(border=True):
+        col1, col2, col3 = st.columns([1, 1, 1])
+
+        with col1:
+            st.metric(
+                label="Preço atual",
+                value=formatar_moeda(preco_atual, simbolo_moeda),
+            )
+
+        with col2:
+            st.metric(
+                label="Preço-teto",
+                value=formatar_moeda(resultado["preco_teto"], simbolo_moeda),
+                delta=formatar_percentual(resultado["margem_ate_preco_teto"]),
+            )
+
+        with col3:
+            status = resultado["status"]
+
+            if status == "COMPRA":
+                st.success("Status educacional: COMPRA")
+            elif status == "NEUTRO":
+                st.warning("Status educacional: NEUTRO")
+            else:
+                st.error("Status educacional: AGUARDE")
+
+        st.markdown("#### Leitura automática")
+        st.info(resultado["explicacao_status"])
+
+
+def renderizar_radar_oportunidade(melhor_empresa: dict) -> None:
+    with st.container(border=True):
+        st.markdown("#### Radar de oportunidade pelo modelo")
+
+        st.caption(
+            "Identifica a empresa real mais bem posicionada pelo score de proximidade ao preço-teto. "
+            "Não representa recomendação de compra."
+        )
+
+        col_1, col_2, col_3, col_4 = st.columns(4)
+
+        with col_1:
+            st.metric("Empresa", melhor_empresa["ticker"])
+
+        with col_2:
+            st.metric("Score", melhor_empresa["score_formatado"])
+
+        with col_3:
+            st.metric("Status", melhor_empresa["status"])
+
+        with col_4:
+            st.metric("Margem até teto", melhor_empresa["margem_ate_preco_teto"])
+
+        st.info(
+            f"""
+            **{melhor_empresa["empresa"]}** é a empresa real melhor posicionada pelo modelo neste momento.  
+            Preço atual: **{melhor_empresa["preco_atual"]}**.  
+            Preço-teto: **{melhor_empresa["preco_teto"]}**.  
+            Preço justo estimado: **{melhor_empresa["preco_justo"]}**.
+
+            **Leitura executiva:** {melhor_empresa["leitura"]}
+            """
+        )
+
+
+def renderizar_ranking_visual(ranking_empresas_reais: list[dict]) -> None:
+    st.markdown("#### Ranking visual das empresas reais")
 
     st.caption(
-        "Comparação visual entre preço atual, preço-teto conservador e preço justo estimado."
+        "Ordenado pelo score de atratividade. O score mede proximidade ao preço-teto e leitura do status, não qualidade absoluta da empresa."
     )
 
-    renderizar_barra_valuation(
-        "Preço atual",
-        preco_atual,
-        valor_maximo,
-        simbolo,
-        "#60a5fa",
-    )
+    if len(ranking_empresas_reais) == 0:
+        st.warning("Nenhuma empresa real cadastrada para gerar ranking.")
+        return
 
-    renderizar_barra_valuation(
-        "Preço-teto",
-        preco_teto,
-        valor_maximo,
-        simbolo,
-        "#10b981",
-    )
+    top_empresas = ranking_empresas_reais[:3]
+    colunas = st.columns(len(top_empresas))
 
-    renderizar_barra_valuation(
-        "Preço justo",
-        preco_justo,
-        valor_maximo,
-        simbolo,
-        "#d4af37",
-    )
-
-    if preco_atual <= preco_teto:
-        st.success(
-            "Leitura visual: o preço atual está abaixo ou igual ao preço-teto. "
-            "Pelas premissas atuais, a ação está dentro da zona conservadora de entrada."
-        )
-    elif preco_atual <= preco_justo:
-        st.warning(
-            "Leitura visual: o preço atual está acima do preço-teto, mas ainda abaixo ou próximo do preço justo. "
-            "A ação não está barata o suficiente para uma entrada conservadora."
-        )
-    else:
-        st.error(
-            "Leitura visual: o preço atual está acima do preço justo estimado. "
-            "Pelas premissas atuais, o modelo indica paciência."
-        )
+    for coluna, empresa in zip(colunas, top_empresas):
+        with coluna:
+            with st.container(border=True):
+                st.markdown(f"### #{empresa['Ranking']} — {empresa['Ticker']}")
+                st.metric("Score", empresa["Score"])
+                st.caption(empresa["Empresa"])
+                st.markdown(f"**Status:** {empresa['Status']}")
+                st.markdown(f"**Margem até teto:** {empresa['Margem até preço-teto']}")
+                st.markdown(f"**Potencial até justo:** {empresa['Potencial até preço justo']}")
 
 
-st.markdown(
-    """
-    # 📊 Máquina de Preço-Teto
-
-    ### Valuation conservador para investidores que querem comprar ações com método, margem de segurança e clareza.
-
-    A Máquina de Preço-Teto organiza premissas fundamentais de uma empresa e estima uma faixa racional de preço com base em:
-
-    **lucro líquido sustentável**, **fluxo de caixa livre**, **múltiplos justos**, **pesos entre EPS e FCF** e **margem de segurança**.
-
-    O objetivo não é prever o futuro com precisão absoluta.  
-    O objetivo é evitar decisões emocionais, organizar premissas e comparar empresas de forma mais disciplinada.
-    """
-)
-
-col_home_1, col_home_2, col_home_3, col_home_4 = st.columns(4)
-
-with col_home_1:
-    st.metric("Empresas", len(EMPRESAS))
-
-with col_home_2:
-    st.metric("Modelo", "EPS + FCF")
-
-with col_home_3:
-    st.metric("Decisão", "3 status")
-
-with col_home_4:
-    st.metric("Margem", "Ajustável")
-
-st.warning(
-    "Aviso importante: esta ferramenta é apenas educacional. "
-    "Não representa recomendação de compra, venda ou manutenção de investimentos. "
-    "Os resultados dependem diretamente das premissas inseridas."
-)
-
-st.divider()
+renderizar_hero()
 
 
 with st.sidebar:
@@ -213,7 +278,9 @@ with st.sidebar:
     dados = EMPRESAS[modelo_escolhido]
     simbolo_moeda = dados.get("simbolo_moeda", "R$")
 
-    st.caption("Os dados iniciais são didáticos e podem ser editados manualmente.")
+    st.caption("Os dados iniciais são editáveis e podem ser ajustados manualmente.")
+
+    st.markdown("#### Empresa")
 
     empresa = st.text_input(
         "Nome da empresa",
@@ -228,6 +295,8 @@ with st.sidebar:
     )
 
     st.divider()
+
+    st.markdown("#### Dados financeiros")
 
     lucro_liquido_sustentavel = st.number_input(
         "Lucro líquido sustentável",
@@ -265,6 +334,8 @@ with st.sidebar:
     )
 
     st.divider()
+
+    st.markdown("#### Premissas de valuation")
 
     multiplo_justo_eps = st.number_input(
         "Múltiplo justo de EPS",
@@ -311,7 +382,6 @@ with st.sidebar:
 
 st.subheader(f"Análise de valuation: {empresa} ({ticker.upper()})")
 
-
 try:
     entradas = EntradasValuation(
         empresa=empresa,
@@ -329,40 +399,18 @@ try:
 
     resultado = calcular_valuation(entradas)
 
-    col1, col2, col3 = st.columns(3)
-
-    with col1:
-        st.metric(
-            label="Preço atual",
-            value=formatar_moeda(preco_atual, simbolo_moeda),
-        )
-
-    with col2:
-        st.metric(
-            label="Preço-teto",
-            value=formatar_moeda(resultado["preco_teto"], simbolo_moeda),
-            delta=formatar_percentual(resultado["margem_ate_preco_teto"]),
-        )
-
-    with col3:
-        status = resultado["status"]
-
-        if status == "COMPRA":
-            st.success("Status: COMPRA")
-        elif status == "NEUTRO":
-            st.warning("Status: NEUTRO")
-        else:
-            st.error("Status: AGUARDE")
-
-    st.markdown("### Leitura automática do status")
-    st.info(resultado["explicacao_status"])
+    renderizar_painel_decisao(
+        preco_atual=preco_atual,
+        resultado=resultado,
+        simbolo_moeda=simbolo_moeda,
+    )
 
     st.divider()
 
     col_salvar, col_info = st.columns([1, 3])
 
     with col_salvar:
-        if st.button("Salvar análise no histórico"):
+        if st.button("Salvar análise"):
             salvar_analise(entradas, resultado)
             st.success("Análise salva com sucesso.")
 
@@ -485,10 +533,10 @@ try:
         st.table(preparar_tabela(tabela_resultado))
 
     with aba_comparativo:
-        st.markdown("### Comparativo das empresas cadastradas")
+        st.markdown("### Central inteligente de comparação")
 
         st.caption(
-            "Esta tabela compara todas as empresas cadastradas usando as premissas salvas no arquivo empresas.py."
+            "Compare empresas pelo mesmo critério de valuation e identifique quais estão mais próximas de uma zona racional de entrada."
         )
 
         melhor_empresa = encontrar_empresa_mais_atrativa(
@@ -497,31 +545,9 @@ try:
             formatar_percentual,
         )
 
-        st.markdown("#### Empresa mais atrativa pelo modelo")
+        renderizar_radar_oportunidade(melhor_empresa)
 
-        col_best_1, col_best_2, col_best_3, col_best_4 = st.columns(4)
-
-        with col_best_1:
-            st.metric("Empresa", melhor_empresa["ticker"])
-
-        with col_best_2:
-            st.metric("Preço atual", melhor_empresa["preco_atual"])
-
-        with col_best_3:
-            st.metric("Preço-teto", melhor_empresa["preco_teto"])
-
-        with col_best_4:
-            st.metric("Status", melhor_empresa["status"])
-
-        st.info(
-            f"""
-            **{melhor_empresa["empresa"]}** é a empresa mais atrativa pelo critério de maior margem até o preço-teto entre as empresas reais cadastradas.  
-            Margem até preço-teto: **{melhor_empresa["margem_ate_preco_teto"]}**.  
-            Potencial até preço justo: **{melhor_empresa["potencial_ate_preco_justo"]}**.
-            """
-        )
-
-        st.markdown("#### Ranking das empresas reais")
+        st.divider()
 
         ranking_empresas_reais = gerar_ranking_empresas_reais(
             EMPRESAS,
@@ -529,14 +555,13 @@ try:
             formatar_percentual,
         )
 
+        renderizar_ranking_visual(ranking_empresas_reais)
+
+        st.markdown("#### Ranking técnico")
+
         if len(ranking_empresas_reais) == 0:
             st.warning("Nenhuma empresa real cadastrada para gerar ranking.")
         else:
-            st.caption(
-                "Ranking ordenado pela maior margem até o preço-teto. "
-                "A primeira posição não significa recomendação de compra; apenas indica a empresa menos distante do preço-teto dentro das premissas atuais."
-            )
-
             st.dataframe(
                 preparar_tabela(ranking_empresas_reais),
                 use_container_width=True,
@@ -551,7 +576,7 @@ try:
             formatar_percentual,
         )
 
-        st.markdown("#### Filtros")
+        st.markdown("#### Filtros avançados")
 
         col_filtro_1, col_filtro_2 = st.columns(2)
 
@@ -559,6 +584,7 @@ try:
             filtro_tipo = st.selectbox(
                 "Filtrar por tipo",
                 ["Todos", "Real", "Didática"],
+                index=1,
             )
 
         with col_filtro_2:
@@ -581,7 +607,7 @@ try:
                 if linha["Status"] == filtro_status
             ]
 
-        st.markdown("#### Tabela comparativa")
+        st.markdown("#### Base completa de comparação")
 
         if len(tabela_filtrada) == 0:
             st.warning("Nenhuma empresa encontrada com os filtros selecionados.")
@@ -702,64 +728,7 @@ try:
                 )
 
     with aba_educacional:
-        st.markdown(
-            """
-            ### Como a Máquina de Preço-Teto calcula o valor?
-
-            O modelo usa duas bases principais:
-
-            **1. Lucro por ação normalizado**
-
-            EPS = lucro líquido sustentável / quantidade de ações
-
-            Depois:
-
-            Preço justo por EPS = EPS × múltiplo justo de EPS
-
-            ---
-
-            **2. Fluxo de caixa livre por ação**
-
-            FCF por ação = fluxo de caixa livre / quantidade de ações
-
-            Depois:
-
-            Preço justo por FCF = FCF por ação × múltiplo justo de FCF
-
-            ---
-
-            **3. Preço justo combinado**
-
-            O preço justo combinado é uma média ponderada entre o preço justo calculado pelo lucro
-            e o preço justo calculado pelo fluxo de caixa livre.
-
-            ---
-
-            **4. Preço-teto**
-
-            O preço-teto aplica uma margem de segurança sobre o preço justo combinado.
-
-            Exemplo:
-
-            Se o preço justo é R$ 100,00 e a margem de segurança é 25%,
-            o preço-teto será R$ 75,00.
-
-            ---
-
-            ### Como interpretar o status?
-
-            **COMPRA:** o preço atual está abaixo ou igual ao preço-teto.
-
-            **NEUTRO:** o preço atual está acima do preço-teto, mas ainda abaixo do preço justo estimado.
-
-            **AGUARDE:** o preço atual está acima do preço justo estimado.
-
-            ---
-
-            Esta ferramenta é educacional. Ela não substitui uma análise completa da empresa,
-            do setor, da gestão, dos riscos, da estrutura de capital e da qualidade dos lucros.
-            """
-        )
+        renderizar_aba_educacional()
 
 except ValueError as erro:
     st.error(str(erro))

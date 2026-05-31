@@ -16,6 +16,49 @@ from comparativo import (
 )
 
 
+OPCAO_ANALISE_MANUAL = "Análise Manual"
+
+
+DADOS_ANALISE_MANUAL = {
+    "empresa": "Empresa Manual",
+    "ticker": "MANUAL",
+    "perfil_empresa": "Empresa inserida manualmente pelo usuário.",
+    "moeda": "Valores inseridos manualmente. Use sempre a mesma unidade para lucro, FCF e quantidade de ações.",
+    "simbolo_moeda": "R$",
+    "data_referencia": "Dados inseridos manualmente pelo usuário",
+    "fonte_premissas": (
+        "Análise manual. Os dados não foram puxados automaticamente. "
+        "O usuário deve conferir lucro líquido sustentável, FCF, quantidade de ações, preço atual e múltiplos usados."
+    ),
+
+    "lucro_liquido_sustentavel": 1_000.0,
+    "fluxo_caixa_livre": 800.0,
+    "quantidade_acoes": 100.0,
+    "preco_atual": 10.0,
+
+    "multiplo_justo_eps": 15.0,
+    "multiplo_justo_fcf": 14.0,
+    "peso_eps": 50,
+    "peso_fcf": 50,
+    "margem_seguranca": 25,
+
+    "tese": (
+        "Descreva aqui a tese da empresa: o que ela faz, como ganha dinheiro, "
+        "quais são suas vantagens competitivas e por que ela poderia gerar valor no longo prazo."
+    ),
+
+    "riscos": (
+        "Descreva aqui os principais riscos: concorrência, endividamento, queda de margens, "
+        "regulação, ciclicidade, dependência de poucos clientes ou risco de pagar caro demais."
+    ),
+
+    "fundamentos": (
+        "Descreva aqui os fundamentos observados: crescimento de receita, margens, lucro, "
+        "geração de caixa, retorno sobre capital, endividamento e qualidade da gestão."
+    ),
+}
+
+
 st.set_page_config(
     page_title="Máquina de Preço-Teto",
     page_icon="📊",
@@ -70,7 +113,7 @@ def renderizar_hero() -> None:
     )
 
     st.caption(
-        "Modelo EPS + FCF • Radar de oportunidade • Simulador de cenários • Ranking de empresas reais • Exportação em CSV"
+        "Modelo EPS + FCF • Radar de oportunidade • Simulador de cenários • Análise manual • Ranking de empresas reais"
     )
 
     col_home_1, col_home_2, col_home_3, col_home_4 = st.columns(4)
@@ -85,7 +128,7 @@ def renderizar_hero() -> None:
         st.metric("Leitura", "3 status")
 
     with col_home_4:
-        st.metric("Uso", "Educacional")
+        st.metric("Modo", "Manual + Base")
 
     st.warning(
         "Uso educacional. Não representa recomendação de compra, venda ou manutenção de investimentos. "
@@ -271,13 +314,34 @@ renderizar_hero()
 with st.sidebar:
     st.header("Premissas do valuation")
 
+    opcoes_modelo = [OPCAO_ANALISE_MANUAL] + list(EMPRESAS.keys())
+
     modelo_escolhido = st.selectbox(
         "Escolha uma empresa/modelo",
-        list(EMPRESAS.keys()),
+        opcoes_modelo,
     )
 
-    dados = EMPRESAS[modelo_escolhido]
-    simbolo_moeda = dados.get("simbolo_moeda", "R$")
+    modo_manual = modelo_escolhido == OPCAO_ANALISE_MANUAL
+
+    if modo_manual:
+        dados = DADOS_ANALISE_MANUAL.copy()
+
+        simbolo_moeda = st.selectbox(
+            "Moeda da análise",
+            ["R$", "US$"],
+            index=0,
+            help="Escolha apenas o símbolo visual. Os números devem ser inseridos de forma consistente.",
+        )
+
+        dados["simbolo_moeda"] = simbolo_moeda
+
+        st.info(
+            "Modo manual ativado. Insira os números usando a mesma unidade. "
+            "Exemplo: se lucro e FCF estão em milhões, quantidade de ações também deve estar em milhões."
+        )
+    else:
+        dados = EMPRESAS[modelo_escolhido]
+        simbolo_moeda = dados.get("simbolo_moeda", "R$")
 
     st.caption("Os dados iniciais são editáveis e podem ser ajustados manualmente.")
 
@@ -303,7 +367,7 @@ with st.sidebar:
         "Lucro líquido sustentável",
         min_value=-1_000_000_000_000.0,
         value=float(dados["lucro_liquido_sustentavel"]),
-        step=100_000_000.0,
+        step=100.0 if modo_manual else 100_000_000.0,
         help="Use um lucro normalizado, evitando anos extraordinários.",
         key=f"lucro_{modelo_escolhido}",
     )
@@ -312,7 +376,7 @@ with st.sidebar:
         "Fluxo de caixa livre",
         min_value=-1_000_000_000_000.0,
         value=float(dados["fluxo_caixa_livre"]),
-        step=100_000_000.0,
+        step=100.0 if modo_manual else 100_000_000.0,
         help="Fluxo de caixa operacional menos investimentos necessários.",
         key=f"fcf_{modelo_escolhido}",
     )
@@ -321,8 +385,8 @@ with st.sidebar:
         "Quantidade de ações",
         min_value=1.0,
         value=float(dados["quantidade_acoes"]),
-        step=10_000_000.0,
-        help="Quantidade total de ações da empresa.",
+        step=10.0 if modo_manual else 10_000_000.0,
+        help="Quantidade total de ações da empresa. Use a mesma escala dos outros dados.",
         key=f"acoes_{modelo_escolhido}",
     )
 
@@ -677,6 +741,12 @@ try:
             **Fonte das premissas:** {dados.get("fonte_premissas", "Não informado")}
             """
         )
+
+        if modo_manual:
+            st.warning(
+                "Esta é uma análise manual. O app não verificou automaticamente os dados inseridos. "
+                "A qualidade do resultado depende totalmente da qualidade das premissas."
+            )
 
         tabela_premissas = [
             {

@@ -9,6 +9,7 @@ from historico import salvar_analise, carregar_historico, CAMINHO_HISTORICO
 from style import aplicar_estilo
 from educacional import renderizar_aba_educacional
 from simulador import renderizar_simulador_cenarios
+from relatorio import gerar_relatorio_markdown, gerar_nome_arquivo_relatorio
 from comparativo import (
     gerar_comparativo,
     encontrar_empresa_mais_atrativa,
@@ -30,28 +31,23 @@ DADOS_ANALISE_MANUAL = {
         "Análise manual. Os dados não foram puxados automaticamente. "
         "O usuário deve conferir lucro líquido sustentável, FCF, quantidade de ações, preço atual e múltiplos usados."
     ),
-
     "lucro_liquido_sustentavel": 1_000.0,
     "fluxo_caixa_livre": 800.0,
     "quantidade_acoes": 100.0,
     "preco_atual": 10.0,
-
     "multiplo_justo_eps": 15.0,
     "multiplo_justo_fcf": 14.0,
     "peso_eps": 50,
     "peso_fcf": 50,
     "margem_seguranca": 25,
-
     "tese": (
         "Descreva aqui a tese da empresa: o que ela faz, como ganha dinheiro, "
         "quais são suas vantagens competitivas e por que ela poderia gerar valor no longo prazo."
     ),
-
     "riscos": (
         "Descreva aqui os principais riscos: concorrência, endividamento, queda de margens, "
         "regulação, ciclicidade, dependência de poucos clientes ou risco de pagar caro demais."
     ),
-
     "fundamentos": (
         "Descreva aqui os fundamentos observados: crescimento de receita, margens, lucro, "
         "geração de caixa, retorno sobre capital, endividamento e qualidade da gestão."
@@ -113,7 +109,7 @@ def renderizar_hero() -> None:
     )
 
     st.caption(
-        "Modelo EPS + FCF • Radar de oportunidade • Simulador de cenários • Análise manual • Ranking de empresas reais"
+        "Modelo EPS + FCF • Radar de oportunidade • Simulador de cenários • Análise manual • Relatório executivo"
     )
 
     col_home_1, col_home_2, col_home_3, col_home_4 = st.columns(4)
@@ -597,6 +593,36 @@ try:
         ]
 
         st.table(preparar_tabela(tabela_resultado))
+
+        st.divider()
+
+        st.markdown("### Relatório executivo")
+
+        relatorio_markdown = gerar_relatorio_markdown(
+            entradas=entradas,
+            resultado=resultado,
+            dados_empresa=dados,
+            simbolo_moeda=simbolo_moeda,
+            formatar_moeda=formatar_moeda,
+            formatar_percentual=formatar_percentual,
+            formatar_numero=formatar_numero,
+        )
+
+        nome_arquivo_relatorio = gerar_nome_arquivo_relatorio(
+            empresa=entradas.empresa,
+            ticker=entradas.ticker,
+        )
+
+        st.caption(
+            "Baixe um relatório em Markdown com resumo executivo, premissas, indicadores, tese, riscos e aviso educacional."
+        )
+
+        st.download_button(
+            label="Baixar relatório executivo (.md)",
+            data=relatorio_markdown,
+            file_name=nome_arquivo_relatorio,
+            mime="text/markdown",
+        )
 
     with aba_simulador:
         renderizar_simulador_cenarios(

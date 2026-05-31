@@ -11,6 +11,7 @@ from educacional import renderizar_aba_educacional
 from simulador import renderizar_simulador_cenarios
 from relatorio import gerar_relatorio_markdown, gerar_nome_arquivo_relatorio
 from conviccao import renderizar_aba_conviccao
+from decisao import render_resumo_decisao
 from comparativo import (
     gerar_comparativo,
     encontrar_empresa_mais_atrativa,
@@ -110,7 +111,7 @@ def renderizar_hero() -> None:
     )
 
     st.caption(
-        "Modelo EPS + FCF • Radar de oportunidade • Simulador de cenários • Convicção da tese • Relatório executivo"
+        "Modelo EPS + FCF • Radar de oportunidade • Simulador de cenários • Convicção da tese • Resumo da decisão • Relatório executivo"
     )
 
     col_home_1, col_home_2, col_home_3, col_home_4 = st.columns(4)
@@ -461,6 +462,35 @@ try:
 
     resultado = calcular_valuation(entradas)
 
+    st.session_state["resultado_valuation"] = {
+        "empresa": empresa,
+        "ticker": ticker.upper(),
+        "status_valuation": resultado["status"],
+        "status": resultado["status"],
+        "preco_atual": preco_atual,
+        "preco_teto": resultado["preco_teto"],
+        "preco_justo": resultado["preco_justo_combinado"],
+        "preco_justo_combinado": resultado["preco_justo_combinado"],
+        "margem_seguranca": margem_seguranca,
+        "margem_ate_preco_teto": resultado["margem_ate_preco_teto"],
+        "potencial_ate_preco_justo": resultado["potencial_ate_preco_justo"],
+        "simbolo_moeda": simbolo_moeda,
+    }
+
+    st.session_state["entradas_valuation"] = {
+        "empresa": empresa,
+        "ticker": ticker.upper(),
+        "lucro_liquido_sustentavel": lucro_liquido_sustentavel,
+        "fluxo_caixa_livre": fluxo_caixa_livre,
+        "quantidade_acoes": quantidade_acoes,
+        "multiplo_justo_eps": multiplo_justo_eps,
+        "multiplo_justo_fcf": multiplo_justo_fcf,
+        "peso_eps": peso_eps,
+        "peso_fcf": peso_fcf,
+        "margem_seguranca": margem_seguranca,
+        "preco_atual": preco_atual,
+    }
+
     renderizar_painel_decisao(
         preco_atual=preco_atual,
         resultado=resultado,
@@ -484,11 +514,22 @@ try:
 
     st.divider()
 
-    aba_resultado, aba_simulador, aba_conviccao, aba_comparativo, aba_tese, aba_premissas, aba_historico, aba_educacional = st.tabs(
+    (
+        aba_resultado,
+        aba_simulador,
+        aba_conviccao,
+        aba_decisao,
+        aba_comparativo,
+        aba_tese,
+        aba_premissas,
+        aba_historico,
+        aba_educacional,
+    ) = st.tabs(
         [
             "Resultado",
             "Simulador",
             "Convicção da Tese",
+            "Resumo da Decisão",
             "Comparativo",
             "Tese da empresa",
             "Premissas usadas",
@@ -641,6 +682,11 @@ try:
             ticker=ticker,
             resultado=resultado,
             preparar_tabela=preparar_tabela,
+        )
+
+    with aba_decisao:
+        render_resumo_decisao(
+            resultado_valuation=st.session_state["resultado_valuation"]
         )
 
     with aba_comparativo:

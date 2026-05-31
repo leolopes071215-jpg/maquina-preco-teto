@@ -56,6 +56,114 @@ def converter_tabela_para_csv(tabela: list[dict]) -> str:
     return saida.getvalue()
 
 
+def renderizar_barra_valuation(
+    rotulo: str,
+    valor: float,
+    valor_maximo: float,
+    simbolo: str,
+    cor: str,
+) -> None:
+    if valor_maximo <= 0:
+        largura = 0
+    else:
+        largura = min(max((valor / valor_maximo) * 100, 4), 100)
+
+    valor_formatado = formatar_moeda(valor, simbolo)
+
+    st.markdown(
+        f"""
+        <div style="margin-bottom: 18px;">
+            <div style="
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                margin-bottom: 6px;
+                color: #cbd5e1;
+                font-size: 0.92rem;
+                font-weight: 650;
+            ">
+                <span>{rotulo}</span>
+                <span style="color: #f8fafc; font-weight: 800;">{valor_formatado}</span>
+            </div>
+
+            <div style="
+                width: 100%;
+                height: 18px;
+                background: rgba(15, 23, 42, 0.92);
+                border: 1px solid rgba(148, 163, 184, 0.18);
+                border-radius: 999px;
+                overflow: hidden;
+                box-shadow: inset 0 1px 8px rgba(0, 0, 0, 0.35);
+            ">
+                <div style="
+                    width: {largura}%;
+                    height: 100%;
+                    background: linear-gradient(90deg, {cor}, rgba(255, 255, 255, 0.72));
+                    border-radius: 999px;
+                    box-shadow: 0 0 18px {cor};
+                "></div>
+            </div>
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
+
+
+def renderizar_mapa_valuation(
+    preco_atual: float,
+    preco_teto: float,
+    preco_justo: float,
+    simbolo: str,
+) -> None:
+    valor_maximo = max(preco_atual, preco_teto, preco_justo, 1)
+
+    st.markdown("### Mapa visual do valuation")
+
+    st.caption(
+        "Comparação visual entre preço atual, preço-teto conservador e preço justo estimado."
+    )
+
+    renderizar_barra_valuation(
+        "Preço atual",
+        preco_atual,
+        valor_maximo,
+        simbolo,
+        "#60a5fa",
+    )
+
+    renderizar_barra_valuation(
+        "Preço-teto",
+        preco_teto,
+        valor_maximo,
+        simbolo,
+        "#10b981",
+    )
+
+    renderizar_barra_valuation(
+        "Preço justo",
+        preco_justo,
+        valor_maximo,
+        simbolo,
+        "#d4af37",
+    )
+
+    if preco_atual <= preco_teto:
+        st.success(
+            "Leitura visual: o preço atual está abaixo ou igual ao preço-teto. "
+            "Pelas premissas atuais, a ação está dentro da zona conservadora de entrada."
+        )
+    elif preco_atual <= preco_justo:
+        st.warning(
+            "Leitura visual: o preço atual está acima do preço-teto, mas ainda abaixo ou próximo do preço justo. "
+            "A ação não está barata o suficiente para uma entrada conservadora."
+        )
+    else:
+        st.error(
+            "Leitura visual: o preço atual está acima do preço justo estimado. "
+            "Pelas premissas atuais, o modelo indica paciência."
+        )
+
+
 st.markdown(
     """
     # 📊 Máquina de Preço-Teto
@@ -325,6 +433,17 @@ try:
                 formatar_moeda(resultado["preco_teto"], simbolo_moeda),
                 formatar_percentual(resultado["margem_ate_preco_teto"]),
             )
+
+        st.divider()
+
+        renderizar_mapa_valuation(
+            preco_atual=preco_atual,
+            preco_teto=resultado["preco_teto"],
+            preco_justo=resultado["preco_justo_combinado"],
+            simbolo=simbolo_moeda,
+        )
+
+        st.divider()
 
         st.markdown("### Tabela-resumo")
 

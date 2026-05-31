@@ -17,6 +17,10 @@ def criar_entradas_empresa(dados_empresa: dict) -> EntradasValuation:
     )
 
 
+def empresa_eh_didatica(dados_empresa: dict) -> bool:
+    return dados_empresa.get("data_referencia") == "Dados didáticos"
+
+
 def gerar_comparativo(empresas: dict, formatar_moeda, formatar_percentual) -> list[dict]:
     comparativo = []
 
@@ -26,10 +30,13 @@ def gerar_comparativo(empresas: dict, formatar_moeda, formatar_percentual) -> li
         entradas_empresa = criar_entradas_empresa(dados_empresa)
         resultado_empresa = calcular_valuation(entradas_empresa)
 
+        tipo = "Didática" if empresa_eh_didatica(dados_empresa) else "Real"
+
         comparativo.append(
             {
                 "Empresa": dados_empresa["empresa"],
                 "Ticker": dados_empresa["ticker"],
+                "Tipo": tipo,
                 "Preço atual": formatar_moeda(dados_empresa["preco_atual"], simbolo),
                 "Preço justo": formatar_moeda(resultado_empresa["preco_justo_combinado"], simbolo),
                 "Preço-teto": formatar_moeda(resultado_empresa["preco_teto"], simbolo),
@@ -48,6 +55,9 @@ def encontrar_empresa_mais_atrativa(empresas: dict, formatar_moeda, formatar_per
     melhor_dados = None
 
     for nome_modelo, dados_empresa in empresas.items():
+        if empresa_eh_didatica(dados_empresa):
+            continue
+
         entradas_empresa = criar_entradas_empresa(dados_empresa)
         resultado_empresa = calcular_valuation(entradas_empresa)
 
@@ -61,6 +71,19 @@ def encontrar_empresa_mais_atrativa(empresas: dict, formatar_moeda, formatar_per
             melhor_empresa = nome_modelo
             melhor_resultado = resultado_empresa
             melhor_dados = dados_empresa
+
+    if melhor_dados is None:
+        return {
+            "modelo": "Nenhuma empresa real cadastrada",
+            "empresa": "Nenhuma empresa real cadastrada",
+            "ticker": "-",
+            "preco_atual": "-",
+            "preco_teto": "-",
+            "preco_justo": "-",
+            "margem_ate_preco_teto": "-",
+            "potencial_ate_preco_justo": "-",
+            "status": "-",
+        }
 
     simbolo = melhor_dados.get("simbolo_moeda", "R$")
 

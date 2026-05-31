@@ -5,17 +5,12 @@ def aplicar_estilo():
     st.markdown(
         """
         <style>
-        /* =========================
-           DESIGN SYSTEM PREMIUM
-           Máquina de Preço-Teto
-           ========================= */
-
         :root {
             --bg-main: #050816;
-            --bg-panel: rgba(15, 23, 42, 0.82);
-            --bg-panel-soft: rgba(30, 41, 59, 0.58);
+            --bg-panel: rgba(15, 23, 42, 0.86);
+            --bg-panel-soft: rgba(30, 41, 59, 0.62);
             --border-soft: rgba(148, 163, 184, 0.18);
-            --border-strong: rgba(148, 163, 184, 0.30);
+            --border-strong: rgba(148, 163, 184, 0.34);
 
             --text-main: #f8fafc;
             --text-muted: #cbd5e1;
@@ -28,33 +23,25 @@ def aplicar_estilo():
             --red: #ef4444;
             --gold: #d4af37;
 
-            --radius-lg: 22px;
-            --radius-md: 16px;
-            --shadow-card: 0 22px 55px rgba(0, 0, 0, 0.32);
-            --shadow-soft: 0 14px 35px rgba(0, 0, 0, 0.22);
+            --radius-lg: 20px;
+            --radius-md: 14px;
+            --shadow-card: 0 20px 48px rgba(0, 0, 0, 0.28);
+            --shadow-soft: 0 12px 28px rgba(0, 0, 0, 0.20);
         }
-
-        /* =========================
-           Fundo geral
-           ========================= */
 
         .stApp {
             background:
-                radial-gradient(circle at top left, rgba(37, 99, 235, 0.20) 0, transparent 34%),
-                radial-gradient(circle at top right, rgba(16, 185, 129, 0.10) 0, transparent 28%),
+                radial-gradient(circle at top left, rgba(37, 99, 235, 0.18) 0, transparent 32%),
+                radial-gradient(circle at top right, rgba(16, 185, 129, 0.08) 0, transparent 28%),
                 linear-gradient(135deg, #020617 0%, #0f172a 48%, #111827 100%);
             color: var(--text-main);
         }
 
         .block-container {
-            max-width: 1220px;
-            padding-top: 2rem;
+            max-width: 1180px;
+            padding-top: 1.25rem;
             padding-bottom: 4rem;
         }
-
-        /* =========================
-           Tipografia
-           ========================= */
 
         html, body, [class*="css"] {
             font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
@@ -62,21 +49,17 @@ def aplicar_estilo():
 
         h1 {
             color: var(--text-main) !important;
-            font-size: clamp(2.2rem, 5vw, 4.4rem) !important;
+            font-size: clamp(2rem, 4vw, 3.3rem) !important;
             font-weight: 850 !important;
-            letter-spacing: -0.065em !important;
-            line-height: 0.96 !important;
-            margin-bottom: 0.75rem !important;
+            letter-spacing: -0.055em !important;
+            line-height: 1.02 !important;
+            margin-bottom: 0.45rem !important;
         }
 
         h2, h3, h4 {
             color: var(--text-main) !important;
             font-weight: 780 !important;
-            letter-spacing: -0.035em !important;
-        }
-
-        h3 {
-            color: #e5e7eb !important;
+            letter-spacing: -0.03em !important;
         }
 
         p, li, label, span {
@@ -93,29 +76,17 @@ def aplicar_estilo():
             text-decoration: none;
         }
 
-        a:hover {
-            color: #bfdbfe !important;
-            text-decoration: underline;
-        }
-
-        /* =========================
-           Sidebar
-           ========================= */
-
         section[data-testid="stSidebar"] {
             background:
-                radial-gradient(circle at top, rgba(37, 99, 235, 0.16) 0, transparent 32%),
+                radial-gradient(circle at top, rgba(37, 99, 235, 0.14) 0, transparent 30%),
                 linear-gradient(180deg, #020617 0%, #0f172a 60%, #111827 100%);
             border-right: 1px solid var(--border-soft);
-        }
-
-        section[data-testid="stSidebar"] > div {
-            padding-top: 1.25rem;
         }
 
         section[data-testid="stSidebar"] h1,
         section[data-testid="stSidebar"] h2,
         section[data-testid="stSidebar"] h3,
+        section[data-testid="stSidebar"] h4,
         section[data-testid="stSidebar"] label,
         section[data-testid="stSidebar"] p,
         section[data-testid="stSidebar"] span {
@@ -126,18 +97,14 @@ def aplicar_estilo():
             color: var(--text-soft) !important;
         }
 
-        /* =========================
-           Cards de métricas
-           ========================= */
-
         div[data-testid="stMetric"] {
             background:
-                linear-gradient(145deg, rgba(15, 23, 42, 0.94), rgba(30, 41, 59, 0.72));
+                linear-gradient(145deg, rgba(15, 23, 42, 0.96), rgba(30, 41, 59, 0.72));
             border: 1px solid var(--border-soft);
             border-radius: var(--radius-lg);
-            padding: 1.15rem 1.25rem;
+            padding: 1rem 1.1rem;
             box-shadow: var(--shadow-soft);
-            backdrop-filter: blur(16px);
+            backdrop-filter: blur(14px);
             position: relative;
             overflow: hidden;
         }
@@ -147,32 +114,27 @@ def aplicar_estilo():
             position: absolute;
             inset: 0;
             background:
-                linear-gradient(90deg, rgba(96, 165, 250, 0.10), transparent 45%),
-                radial-gradient(circle at top right, rgba(212, 175, 55, 0.11), transparent 35%);
+                linear-gradient(90deg, rgba(96, 165, 250, 0.08), transparent 48%),
+                radial-gradient(circle at top right, rgba(212, 175, 55, 0.09), transparent 35%);
             pointer-events: none;
         }
 
         div[data-testid="stMetricLabel"] {
             color: var(--text-soft) !important;
-            font-size: 0.86rem !important;
+            font-size: 0.78rem !important;
             font-weight: 650 !important;
-            letter-spacing: 0.01em;
         }
 
         div[data-testid="stMetricValue"] {
             color: var(--text-main) !important;
-            font-size: clamp(1.25rem, 2vw, 1.72rem) !important;
+            font-size: clamp(1.10rem, 1.8vw, 1.55rem) !important;
             font-weight: 850 !important;
-            letter-spacing: -0.045em !important;
+            letter-spacing: -0.04em !important;
         }
 
         div[data-testid="stMetricDelta"] {
             font-weight: 760 !important;
         }
-
-        /* =========================
-           Alertas / caixas informativas
-           ========================= */
 
         div[data-testid="stAlert"] {
             background:
@@ -180,7 +142,7 @@ def aplicar_estilo():
             border: 1px solid var(--border-soft) !important;
             border-radius: var(--radius-md) !important;
             color: var(--text-main) !important;
-            box-shadow: 0 14px 34px rgba(0, 0, 0, 0.18);
+            box-shadow: 0 12px 28px rgba(0, 0, 0, 0.16);
         }
 
         div[data-testid="stAlert"] p,
@@ -189,17 +151,13 @@ def aplicar_estilo():
             color: var(--text-muted) !important;
         }
 
-        /* =========================
-           Abas
-           ========================= */
-
         div[data-testid="stTabs"] button[data-baseweb="tab"] {
             background: rgba(15, 23, 42, 0.72);
             border: 1px solid var(--border-soft);
             border-radius: 999px;
             color: var(--text-muted);
-            padding: 0.55rem 1rem;
-            margin-right: 0.35rem;
+            padding: 0.48rem 0.85rem;
+            margin-right: 0.30rem;
             transition: all 0.18s ease-in-out;
         }
 
@@ -221,15 +179,11 @@ def aplicar_estilo():
             font-weight: 750;
         }
 
-        /* =========================
-           Inputs, selects e text areas
-           ========================= */
-
         input, textarea {
             background: rgba(15, 23, 42, 0.92) !important;
             color: var(--text-main) !important;
             border: 1px solid var(--border-soft) !important;
-            border-radius: 14px !important;
+            border-radius: 13px !important;
             box-shadow: none !important;
         }
 
@@ -242,7 +196,7 @@ def aplicar_estilo():
             background: rgba(15, 23, 42, 0.92) !important;
             color: var(--text-main) !important;
             border: 1px solid var(--border-soft) !important;
-            border-radius: 14px !important;
+            border-radius: 13px !important;
         }
 
         div[data-baseweb="popover"] {
@@ -255,29 +209,6 @@ def aplicar_estilo():
             font-weight: 650 !important;
         }
 
-        /* Number input buttons */
-        button[title="Increment"],
-        button[title="Decrement"] {
-            background: rgba(30, 41, 59, 0.8) !important;
-            border-color: var(--border-soft) !important;
-        }
-
-        /* =========================
-           Sliders
-           ========================= */
-
-        div[data-testid="stSlider"] {
-            color: var(--text-main);
-        }
-
-        div[data-testid="stSlider"] label {
-            color: var(--text-muted) !important;
-        }
-
-        /* =========================
-           Botões
-           ========================= */
-
         .stButton > button,
         .stDownloadButton > button {
             border-radius: 999px !important;
@@ -285,7 +216,7 @@ def aplicar_estilo():
             background:
                 linear-gradient(135deg, #2563eb 0%, #1d4ed8 55%, #1e40af 100%) !important;
             color: white !important;
-            padding: 0.68rem 1.10rem !important;
+            padding: 0.62rem 1.05rem !important;
             font-weight: 780 !important;
             letter-spacing: -0.015em;
             box-shadow: 0 14px 32px rgba(37, 99, 235, 0.30);
@@ -298,15 +229,6 @@ def aplicar_estilo():
             box-shadow: 0 18px 42px rgba(37, 99, 235, 0.42);
             border-color: rgba(255, 255, 255, 0.28) !important;
         }
-
-        .stButton > button:active,
-        .stDownloadButton > button:active {
-            transform: translateY(0px);
-        }
-
-        /* =========================
-           Dataframes e tabelas
-           ========================= */
 
         div[data-testid="stDataFrame"] {
             border-radius: var(--radius-lg);
@@ -339,20 +261,30 @@ def aplicar_estilo():
             color: var(--text-main) !important;
         }
 
-        /* =========================
-           Separadores
-           ========================= */
-
         hr {
             border: none;
             border-top: 1px solid rgba(148, 163, 184, 0.16);
-            margin-top: 2rem;
-            margin-bottom: 2rem;
+            margin-top: 1.6rem;
+            margin-bottom: 1.6rem;
         }
 
-        /* =========================
-           Scrollbar
-           ========================= */
+        div[data-testid="stProgress"] > div {
+            background-color: rgba(15, 23, 42, 0.92) !important;
+            border-radius: 999px !important;
+            border: 1px solid rgba(148, 163, 184, 0.16);
+        }
+
+        div[data-testid="stProgress"] div[role="progressbar"] {
+            background: linear-gradient(90deg, #2563eb, #60a5fa) !important;
+            border-radius: 999px !important;
+        }
+
+        pre, code {
+            background: rgba(2, 6, 23, 0.88) !important;
+            color: #e5e7eb !important;
+            border-radius: 12px !important;
+            border: 1px solid rgba(148, 163, 184, 0.16);
+        }
 
         ::-webkit-scrollbar {
             width: 10px;
@@ -373,10 +305,6 @@ def aplicar_estilo():
             background: #475569;
         }
 
-        /* =========================
-           Ajustes mobile
-           ========================= */
-
         @media (max-width: 768px) {
             .block-container {
                 padding-left: 1rem;
@@ -384,11 +312,11 @@ def aplicar_estilo():
             }
 
             h1 {
-                font-size: 2.35rem !important;
+                font-size: 2.15rem !important;
             }
 
             div[data-testid="stMetric"] {
-                padding: 1rem;
+                padding: 0.95rem;
             }
         }
         </style>

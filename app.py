@@ -7,7 +7,11 @@ from valuation import EntradasValuation, calcular_valuation
 from empresas import EMPRESAS
 from historico import salvar_analise, carregar_historico, CAMINHO_HISTORICO
 from style import aplicar_estilo
-from comparativo import gerar_comparativo, encontrar_empresa_mais_atrativa
+from comparativo import (
+    gerar_comparativo,
+    encontrar_empresa_mais_atrativa,
+    gerar_ranking_empresas_reais,
+)
 
 
 st.set_page_config(
@@ -397,6 +401,28 @@ try:
             Potencial até preço justo: **{melhor_empresa["potencial_ate_preco_justo"]}**.
             """
         )
+
+        st.markdown("#### Ranking das empresas reais")
+
+        ranking_empresas_reais = gerar_ranking_empresas_reais(
+            EMPRESAS,
+            formatar_moeda,
+            formatar_percentual,
+        )
+
+        if len(ranking_empresas_reais) == 0:
+            st.warning("Nenhuma empresa real cadastrada para gerar ranking.")
+        else:
+            st.caption(
+                "Ranking ordenado pela maior margem até o preço-teto. "
+                "A primeira posição não significa recomendação de compra; apenas indica a empresa menos distante do preço-teto dentro das premissas atuais."
+            )
+
+            st.dataframe(
+                preparar_tabela(ranking_empresas_reais),
+                use_container_width=True,
+                hide_index=True,
+            )
 
         st.divider()
 

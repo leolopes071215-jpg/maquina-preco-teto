@@ -98,3 +98,42 @@ def encontrar_empresa_mais_atrativa(empresas: dict, formatar_moeda, formatar_per
         "potencial_ate_preco_justo": formatar_percentual(melhor_resultado["potencial_ate_preco_justo"]),
         "status": melhor_resultado["status"],
     }
+
+
+def gerar_ranking_empresas_reais(empresas: dict, formatar_moeda, formatar_percentual) -> list[dict]:
+    ranking = []
+
+    for nome_modelo, dados_empresa in empresas.items():
+        if empresa_eh_didatica(dados_empresa):
+            continue
+
+        simbolo = dados_empresa.get("simbolo_moeda", "R$")
+
+        entradas_empresa = criar_entradas_empresa(dados_empresa)
+        resultado_empresa = calcular_valuation(entradas_empresa)
+
+        ranking.append(
+            {
+                "Empresa": dados_empresa["empresa"],
+                "Ticker": dados_empresa["ticker"],
+                "Preço atual": formatar_moeda(dados_empresa["preco_atual"], simbolo),
+                "Preço-teto": formatar_moeda(resultado_empresa["preco_teto"], simbolo),
+                "Preço justo": formatar_moeda(resultado_empresa["preco_justo_combinado"], simbolo),
+                "Margem até preço-teto": formatar_percentual(resultado_empresa["margem_ate_preco_teto"]),
+                "Potencial até preço justo": formatar_percentual(resultado_empresa["potencial_ate_preco_justo"]),
+                "Status": resultado_empresa["status"],
+                "_margem_numerica": resultado_empresa["margem_ate_preco_teto"],
+            }
+        )
+
+    ranking_ordenado = sorted(
+        ranking,
+        key=lambda empresa: empresa["_margem_numerica"],
+        reverse=True,
+    )
+
+    for posicao, empresa in enumerate(ranking_ordenado, start=1):
+        empresa["Ranking"] = posicao
+        del empresa["_margem_numerica"]
+
+    return ranking_ordenado

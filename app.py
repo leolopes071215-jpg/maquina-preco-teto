@@ -375,7 +375,7 @@ try:
 
         st.info(
             f"""
-            **{melhor_empresa["empresa"]}** é a empresa mais atrativa pelo critério de maior margem até o preço-teto.  
+            **{melhor_empresa["empresa"]}** é a empresa mais atrativa pelo critério de maior margem até o preço-teto entre as empresas reais cadastradas.  
             Margem até preço-teto: **{melhor_empresa["margem_ate_preco_teto"]}**.  
             Potencial até preço justo: **{melhor_empresa["potencial_ate_preco_justo"]}**.
             """
@@ -389,11 +389,46 @@ try:
             formatar_percentual,
         )
 
-        st.dataframe(
-            preparar_tabela(tabela_comparativo),
-            use_container_width=True,
-            hide_index=True,
-        )
+        st.markdown("#### Filtros")
+
+        col_filtro_1, col_filtro_2 = st.columns(2)
+
+        with col_filtro_1:
+            filtro_tipo = st.selectbox(
+                "Filtrar por tipo",
+                ["Todos", "Real", "Didática"],
+            )
+
+        with col_filtro_2:
+            filtro_status = st.selectbox(
+                "Filtrar por status",
+                ["Todos", "COMPRA", "NEUTRO", "AGUARDE"],
+            )
+
+        tabela_filtrada = tabela_comparativo
+
+        if filtro_tipo != "Todos":
+            tabela_filtrada = [
+                linha for linha in tabela_filtrada
+                if linha["Tipo"] == filtro_tipo
+            ]
+
+        if filtro_status != "Todos":
+            tabela_filtrada = [
+                linha for linha in tabela_filtrada
+                if linha["Status"] == filtro_status
+            ]
+
+        st.markdown("#### Tabela comparativa")
+
+        if len(tabela_filtrada) == 0:
+            st.warning("Nenhuma empresa encontrada com os filtros selecionados.")
+        else:
+            st.dataframe(
+                preparar_tabela(tabela_filtrada),
+                use_container_width=True,
+                hide_index=True,
+            )
 
     with aba_tese:
         st.markdown("### Tese qualitativa da empresa")

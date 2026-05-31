@@ -6,7 +6,7 @@ from typing import Any, Dict, List, Optional
 
 # ============================================================
 # MÁQUINA DE PREÇO-TETO
-# v1.12 — Resumo Executivo da Decisão
+# v1.13 — Resumo Executivo da Decisão + Relatório Premium
 # ------------------------------------------------------------
 # Este módulo transforma os dados do valuation, da convicção
 # da tese e dos cenários em uma leitura educacional consolidada.
@@ -28,6 +28,7 @@ def _safe_float(value: Any, default: Optional[float] = None) -> Optional[float]:
     if isinstance(value, str):
         cleaned = (
             value.replace("R$", "")
+            .replace("US$", "")
             .replace("$", "")
             .replace("%", "")
             .replace(".", "")
@@ -49,17 +50,33 @@ def _clamp(value: float, minimum: float = 0, maximum: float = 100) -> float:
 
 
 def _fmt_money(value: Optional[float]) -> str:
-    """Formata valores monetários de forma simples."""
+    """Formata valores monetários de forma simples para a tela."""
     if value is None:
         return "N/D"
     return f"${value:,.2f}"
 
 
 def _fmt_percent(value: Optional[float]) -> str:
-    """Formata percentual."""
+    """Formata percentual para a tela."""
     if value is None:
         return "N/D"
     return f"{value:.1f}%"
+
+
+def _fmt_money_markdown(value: Optional[float], simbolo_moeda: str = "R$") -> str:
+    """Formata dinheiro para o relatório em Markdown."""
+    if value is None:
+        return "N/D"
+
+    return f"{simbolo_moeda} {value:,.2f}".replace(",", "X").replace(".", ",").replace("X", ".")
+
+
+def _fmt_percent_markdown(value: Optional[float]) -> str:
+    """Formata percentual para o relatório em Markdown."""
+    if value is None:
+        return "N/D"
+
+    return f"{value:.2f}%"
 
 
 def _normalizar_status(status: Any) -> str:
@@ -419,7 +436,11 @@ def _score_preco(preco_atual: Optional[float], preco_teto: Optional[float]) -> f
     return 25
 
 
-def _calcular_metricas_preco(preco_atual: Optional[float], preco_teto: Optional[float], preco_justo: Optional[float]) -> Dict[str, Optional[float]]:
+def _calcular_metricas_preco(
+    preco_atual: Optional[float],
+    preco_teto: Optional[float],
+    preco_justo: Optional[float],
+) -> Dict[str, Optional[float]]:
     """
     Calcula diferenças entre preço atual, preço-teto e preço justo.
     """
@@ -672,6 +693,9 @@ def render_resumo_decisao(
         resultado_cenarios=resultado_cenarios,
     )
 
+    classificacao_decisao = resumo["classificacao_decisao"]
+    acao_educacional = resumo["acao_educacional"]
+
     st.markdown(
         """
         <div class="decisao-hero">
@@ -705,7 +729,7 @@ def render_resumo_decisao(
     with col2:
         _card(
             "Classificação",
-            resumo["classificacao_decisao"],
+            classificacao_decisao,
             "Próxima leitura educacional sugerida.",
         )
 
@@ -752,8 +776,8 @@ def render_resumo_decisao(
         f"""
         <div class="decisao-card">
             <div class="decisao-label">Ação educacional sugerida</div>
-            <div class="decisao-value">{resumo["classificacao_decisao"]}</div>
-            <div class="decisao-note">{resumo["acao_educacional"]}</div>
+            <div class="decisao-value">{classificacao_decisao}</div>
+            <div class="decisao-note">{acao_educacional}</div>
         </div>
         """,
         unsafe_allow_html=True,
@@ -805,3 +829,90 @@ def render_resumo_decisao(
         """,
         unsafe_allow_html=True,
     )
+
+
+def gerar_bloco_markdown_decisao(
+    resumo_decisao: Optional[Dict[str, Any]] = None,
+    simbolo_moeda: str = "R$",
+) -> str:
+    """
+    Gera uma seção em Markdown com o Resumo Executivo da Decisão.
+    Essa função é usada na v1.13 para enriquecer o relatório executivo.
+    """
+    if resumo_decisao is None:
+        resumo_decisao = st.session_state.get("resultado_resumo_decisao")
+
+    if resumo_decisao is None:
+        resumo_decisao = calcular_resumo_decisao()
+
+    alertas = resumo_decisao.get("alertas", [])
+
+    if len(alertas) == 0:
+        alertas_markdown = "- Nenhum alerta qualitativo relevante foi identificado no momento."
+    else:
+        alertas_markdown = "\n".join([f"- {alerta}" for alerta in alertas])
+
+    preco_atual = resumo_decisao.get("preco_atual")
+    preco_teto = resumo_decisao.get("preco_teto")
+    preco_justo = resumo_decisao.get("preco_justo")
+    gap_teto = resumo_decisao.get("gap_teto")
+    potencial_justo = resumo_decisao.get("potencial_justo")
+
+    return f"""
+
+---
+
+# Resumo Executivo da Decisão
+
+> Esta seção consolida valuation, preço, margem de segurança, convicção da tese, cenários e alertas qualitativos.  
+> O objetivo é apoiar estudo e disciplina, não recomendar compra, venda ou manutenção de ativos.
+
+## Síntese final
+
+| Indicador | Resultado |
+|---|---|
+| Empresa | {resumo_decisao.get("empresa", "N/D")} |
+| Score final | {resumo_decisao.get("score_final", "N/D")}/100 |
+| Classificação da decisão | {resumo_decisao.get("classificacao_decisao", "N/D")} |
+| Status do valuation | {resumo_decisao.get("status_valuation", "N/D")} |
+| Score de convicção | {resumo_decisao.get("score_conviccao", "N/D")}/100 |
+| Classificação da tese | {resumo_decisao.get("classificacao_tese", "N/D")} |
+
+## Leitura de preço
+
+| Métrica | Valor |
+|---|---|
+| Preço atual | {_fmt_money_markdown(preco_atual, simbolo_moeda)} |
+| Preço-teto | {_fmt_money_markdown(preco_teto, simbolo_moeda)} |
+| Preço justo estimado | {_fmt_money_markdown(preco_justo, simbolo_moeda)} |
+| Margem até preço-teto | {_fmt_percent_markdown(gap_teto)} |
+| Potencial até preço justo | {_fmt_percent_markdown(potencial_justo)} |
+
+## Leitura dos cenários
+
+| Cenário | Status |
+|---|---|
+| Conservador | {resumo_decisao.get("cenario_conservador", "N/D")} |
+| Base | {resumo_decisao.get("cenario_base", "N/D")} |
+| Otimista | {resumo_decisao.get("cenario_otimista", "N/D")} |
+| Risco de depender de otimismo | {resumo_decisao.get("risco_otimista", "N/D")} |
+
+**Interpretação dos cenários:**  
+{resumo_decisao.get("leitura_cenarios", "N/D")}
+
+## Alertas qualitativos
+
+{alertas_markdown}
+
+## Ação educacional sugerida
+
+**{resumo_decisao.get("classificacao_decisao", "N/D")}**
+
+{resumo_decisao.get("acao_educacional", "N/D")}
+
+## Aviso educacional
+
+Este relatório não representa recomendação de investimento.  
+A Máquina de Preço-Teto é uma ferramenta educacional para organizar premissas, melhorar raciocínio, comparar cenários e desenvolver disciplina de valuation.  
+Toda decisão real deve considerar objetivos pessoais, riscos, diversificação, horizonte de tempo e responsabilidade individual.
+"""

@@ -10,6 +10,7 @@ from style import aplicar_estilo
 from educacional import renderizar_aba_educacional
 from simulador import renderizar_simulador_cenarios
 from relatorio import gerar_relatorio_markdown, gerar_nome_arquivo_relatorio
+from conviccao import renderizar_aba_conviccao
 from comparativo import (
     gerar_comparativo,
     encontrar_empresa_mais_atrativa,
@@ -109,7 +110,7 @@ def renderizar_hero() -> None:
     )
 
     st.caption(
-        "Modelo EPS + FCF • Radar de oportunidade • Simulador de cenários • Análise manual • Relatório executivo"
+        "Modelo EPS + FCF • Radar de oportunidade • Simulador de cenários • Convicção da tese • Relatório executivo"
     )
 
     col_home_1, col_home_2, col_home_3, col_home_4 = st.columns(4)
@@ -483,10 +484,11 @@ try:
 
     st.divider()
 
-    aba_resultado, aba_simulador, aba_comparativo, aba_tese, aba_premissas, aba_historico, aba_educacional = st.tabs(
+    aba_resultado, aba_simulador, aba_conviccao, aba_comparativo, aba_tese, aba_premissas, aba_historico, aba_educacional = st.tabs(
         [
             "Resultado",
             "Simulador",
+            "Convicção da Tese",
             "Comparativo",
             "Tese da empresa",
             "Premissas usadas",
@@ -630,6 +632,14 @@ try:
             simbolo_moeda=simbolo_moeda,
             formatar_moeda=formatar_moeda,
             formatar_percentual=formatar_percentual,
+            preparar_tabela=preparar_tabela,
+        )
+
+    with aba_conviccao:
+        renderizar_aba_conviccao(
+            empresa=empresa,
+            ticker=ticker,
+            resultado=resultado,
             preparar_tabela=preparar_tabela,
         )
 

@@ -21,49 +21,21 @@ from fiis import renderizar_motor_fiis
 from renda_fixa import renderizar_motor_renda_fixa
 from painel_multiativos import renderizar_painel_executivo_multiativos
 from watchlist import renderizar_watchlist_multiativos
+from modos_analise import (
+    obter_opcoes_modelo,
+    obter_dados_modelo,
+    obter_tipo_analise,
+    obter_aviso_modo,
+    obter_titulo_modo,
+    obter_descricao_modo,
+    eh_modo_demonstracao,
+    eh_nova_analise_manual,
+)
 from comparativo import (
     gerar_comparativo,
     encontrar_empresa_mais_atrativa,
     gerar_ranking_empresas_reais,
 )
-
-
-OPCAO_ANALISE_MANUAL = "Análise Manual"
-
-
-DADOS_ANALISE_MANUAL = {
-    "empresa": "Empresa Manual",
-    "ticker": "MANUAL",
-    "perfil_empresa": "Empresa inserida manualmente pelo usuário.",
-    "moeda": "Valores inseridos manualmente. Use sempre a mesma unidade para lucro, FCF e quantidade de ações.",
-    "simbolo_moeda": "R$",
-    "data_referencia": "Dados inseridos manualmente pelo usuário",
-    "fonte_premissas": (
-        "Análise manual. Os dados não foram puxados automaticamente. "
-        "O usuário deve conferir lucro líquido sustentável, FCF, quantidade de ações, preço atual e múltiplos usados."
-    ),
-    "lucro_liquido_sustentavel": 1_000.0,
-    "fluxo_caixa_livre": 800.0,
-    "quantidade_acoes": 100.0,
-    "preco_atual": 10.0,
-    "multiplo_justo_eps": 15.0,
-    "multiplo_justo_fcf": 14.0,
-    "peso_eps": 50,
-    "peso_fcf": 50,
-    "margem_seguranca": 25,
-    "tese": (
-        "Descreva aqui a tese da empresa: o que ela faz, como ganha dinheiro, "
-        "quais são suas vantagens competitivas e por que ela poderia gerar valor no longo prazo."
-    ),
-    "riscos": (
-        "Descreva aqui os principais riscos: concorrência, endividamento, queda de margens, "
-        "regulação, ciclicidade, dependência de poucos clientes ou risco de pagar caro demais."
-    ),
-    "fundamentos": (
-        "Descreva aqui os fundamentos observados: crescimento de receita, margens, lucro, "
-        "geração de caixa, retorno sobre capital, endividamento e qualidade da gestão."
-    ),
-}
 
 
 st.set_page_config(
@@ -320,35 +292,43 @@ renderizar_hero()
 
 
 with st.sidebar:
-    st.header("Premissas do valuation")
+    st.header("Modo e premissas")
 
-    opcoes_modelo = [OPCAO_ANALISE_MANUAL] + list(EMPRESAS.keys())
+    opcoes_modelo = obter_opcoes_modelo(EMPRESAS)
 
     modelo_escolhido = st.selectbox(
-        "Escolha uma empresa/modelo",
+        "Escolha o modo de análise",
         opcoes_modelo,
     )
 
-    modo_manual = modelo_escolhido == OPCAO_ANALISE_MANUAL
+    dados = obter_dados_modelo(modelo_escolhido, EMPRESAS)
 
-    if modo_manual:
-        dados = DADOS_ANALISE_MANUAL.copy()
+    modo_demonstracao = eh_modo_demonstracao(modelo_escolhido)
+    nova_analise_manual = eh_nova_analise_manual(modelo_escolhido)
+    modo_usuario = modo_demonstracao or nova_analise_manual
 
+    tipo_analise = obter_tipo_analise(modelo_escolhido)
+
+    st.markdown(f"#### {obter_titulo_modo(modelo_escolhido)}")
+    st.caption(obter_descricao_modo(modelo_escolhido))
+
+    if modo_demonstracao:
+        st.warning(obter_aviso_modo(modelo_escolhido))
+    elif nova_analise_manual:
+        st.info(obter_aviso_modo(modelo_escolhido))
+    else:
+        st.info(obter_aviso_modo(modelo_escolhido))
+
+    if modo_usuario:
         simbolo_moeda = st.selectbox(
             "Moeda da análise",
             ["R$", "US$"],
-            index=0,
+            index=0 if dados.get("simbolo_moeda", "R$") == "R$" else 1,
             help="Escolha apenas o símbolo visual. Os números devem ser inseridos de forma consistente.",
         )
 
         dados["simbolo_moeda"] = simbolo_moeda
-
-        st.info(
-            "Modo manual ativado. Insira os números usando a mesma unidade. "
-            "Exemplo: se lucro e FCF estão em milhões, quantidade de ações também deve estar em milhões."
-        )
     else:
-        dados = EMPRESAS[modelo_escolhido]
         simbolo_moeda = dados.get("simbolo_moeda", "R$")
 
     st.caption("Os dados iniciais são editáveis e podem ser ajustados manualmente.")
@@ -375,7 +355,7 @@ with st.sidebar:
         "Lucro líquido sustentável",
         min_value=-1_000_000_000_000.0,
         value=float(dados["lucro_liquido_sustentavel"]),
-        step=100.0 if modo_manual else 100_000_000.0,
+        step=100.0 if modo_usuario else 100_000_000.0,
         help="Use um lucro normalizado, evitando anos extraordinários.",
         key=f"lucro_{modelo_escolhido}",
     )
@@ -384,7 +364,7 @@ with st.sidebar:
         "Fluxo de caixa livre",
         min_value=-1_000_000_000_000.0,
         value=float(dados["fluxo_caixa_livre"]),
-        step=100.0 if modo_manual else 100_000_000.0,
+        step=100.0 if modo_usuario else 100_000_000.0,
         help="Fluxo de caixa operacional menos investimentos necessários.",
         key=f"fcf_{modelo_escolhido}",
     )
@@ -393,7 +373,7 @@ with st.sidebar:
         "Quantidade de ações",
         min_value=1.0,
         value=float(dados["quantidade_acoes"]),
-        step=10.0 if modo_manual else 10_000_000.0,
+        step=10.0 if modo_usuario else 10_000_000.0,
         help="Quantidade total de ações da empresa. Use a mesma escala dos outros dados.",
         key=f"acoes_{modelo_escolhido}",
     )
@@ -455,6 +435,19 @@ with st.sidebar:
 
 st.subheader(f"Análise de valuation: {empresa} ({ticker.upper()})")
 
+if modo_demonstracao:
+    st.warning(
+        "Modo Demonstração: os dados desta análise são fictícios. Use apenas para conhecer o funcionamento da plataforma."
+    )
+elif nova_analise_manual:
+    st.info(
+        "Nova Análise Manual: substitua os dados padrão por informações reais antes de interpretar o status educacional."
+    )
+else:
+    st.info(
+        "Empresa da base: revise todas as premissas antes de considerar qualquer conclusão educacional."
+    )
+
 try:
     entradas = EntradasValuation(
         empresa=empresa,
@@ -475,6 +468,8 @@ try:
     st.session_state["resultado_valuation"] = {
         "empresa": empresa,
         "ticker": ticker.upper(),
+        "tipo_analise": tipo_analise,
+        "modelo_escolhido": modelo_escolhido,
         "status_valuation": resultado["status"],
         "status": resultado["status"],
         "preco_atual": preco_atual,
@@ -490,6 +485,8 @@ try:
     st.session_state["entradas_valuation"] = {
         "empresa": empresa,
         "ticker": ticker.upper(),
+        "tipo_analise": tipo_analise,
+        "modelo_escolhido": modelo_escolhido,
         "lucro_liquido_sustentavel": lucro_liquido_sustentavel,
         "fluxo_caixa_livre": fluxo_caixa_livre,
         "quantidade_acoes": quantidade_acoes,
@@ -668,6 +665,10 @@ try:
             {
                 "Indicador": "Status",
                 "Valor": resultado["status"],
+            },
+            {
+                "Indicador": "Tipo de análise",
+                "Valor": tipo_analise,
             },
         ]
 
@@ -902,6 +903,8 @@ try:
 
         st.info(
             f"""
+            **Tipo de análise:** {tipo_analise}  
+            **Modo selecionado:** {modelo_escolhido}  
             **Perfil da empresa:** {dados.get("perfil_empresa", "Não informado")}  
             **Moeda/unidade:** {moeda_unidade}  
             **Data de referência:** {dados.get("data_referencia", "Não informado")}  
@@ -909,7 +912,12 @@ try:
             """
         )
 
-        if modo_manual:
+        if modo_demonstracao:
+            st.warning(
+                "Esta é uma demonstração com dados fictícios. Não use como análise real."
+            )
+
+        if nova_analise_manual:
             st.warning(
                 "Esta é uma análise manual. O app não verificou automaticamente os dados inseridos. "
                 "A qualidade do resultado depende totalmente da qualidade das premissas."

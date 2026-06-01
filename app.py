@@ -15,11 +15,11 @@ from conviccao import renderizar_aba_conviccao
 from decisao import render_resumo_decisao, gerar_bloco_markdown_decisao
 from checklist import renderizar_checklist_erros
 from central_multiativos import renderizar_central_multiativos
+from central_relatorios import renderizar_central_relatorios
 from acoes_brasil import renderizar_motor_acoes_brasil
 from fiis import renderizar_motor_fiis
 from renda_fixa import renderizar_motor_renda_fixa
 from painel_multiativos import renderizar_painel_executivo_multiativos
-from relatorio_multiativos import renderizar_download_relatorio_multiativos
 from watchlist import renderizar_watchlist_multiativos
 from comparativo import (
     gerar_comparativo,
@@ -121,7 +121,7 @@ def renderizar_hero() -> None:
     )
 
     st.caption(
-        "Jornada Guiada • Valuation • Tese • Checklist • Painel Executivo • Watchlist • Multiativos • Relatório Premium"
+        "Jornada Guiada • Valuation • Tese • Checklist • Painel Executivo • Watchlist • Relatórios • Multiativos"
     )
 
     col_home_1, col_home_2, col_home_3, col_home_4 = st.columns(4)
@@ -136,7 +136,7 @@ def renderizar_hero() -> None:
         st.metric("Arquitetura", "Multiativos")
 
     with col_home_4:
-        st.metric("Rotina", "Watchlist")
+        st.metric("Entrega", "Relatórios")
 
     st.warning(
         "Uso educacional. Não representa recomendação de compra, venda ou manutenção de investimentos. "
@@ -532,6 +532,7 @@ try:
         aba_conviccao,
         aba_checklist,
         aba_watchlist,
+        aba_relatorios,
         aba_central_multiativos,
         aba_acoes_brasil,
         aba_fiis,
@@ -551,6 +552,7 @@ try:
             "Tese & Convicção",
             "Checklist",
             "Watchlist",
+            "Relatórios",
             "Multiativos",
             "Ações Brasil",
             "FIIs",
@@ -571,18 +573,6 @@ try:
 
     with aba_painel_executivo:
         renderizar_painel_executivo_multiativos()
-
-        st.divider()
-
-        renderizar_download_relatorio_multiativos(
-            entradas=entradas,
-            resultado=resultado,
-            dados_empresa=dados,
-            simbolo_moeda=simbolo_moeda,
-            formatar_moeda=formatar_moeda,
-            formatar_percentual=formatar_percentual,
-            formatar_numero=formatar_numero,
-        )
 
     with aba_valuation:
         st.markdown("### Valuation")
@@ -683,36 +673,6 @@ try:
 
         st.table(preparar_tabela(tabela_resultado))
 
-        st.divider()
-
-        st.markdown("### Relatório executivo")
-
-        relatorio_markdown = gerar_relatorio_markdown(
-            entradas=entradas,
-            resultado=resultado,
-            dados_empresa=dados,
-            simbolo_moeda=simbolo_moeda,
-            formatar_moeda=formatar_moeda,
-            formatar_percentual=formatar_percentual,
-            formatar_numero=formatar_numero,
-        )
-
-        nome_arquivo_relatorio = gerar_nome_arquivo_relatorio(
-            empresa=entradas.empresa,
-            ticker=entradas.ticker,
-        )
-
-        st.caption(
-            "Baixe um relatório em Markdown com resumo executivo, premissas, indicadores, tese, riscos e aviso educacional."
-        )
-
-        st.download_button(
-            label="Baixar relatório executivo (.md)",
-            data=relatorio_markdown,
-            file_name=nome_arquivo_relatorio,
-            mime="text/markdown",
-        )
-
     with aba_simulador:
         renderizar_simulador_cenarios(
             entradas_base=entradas,
@@ -738,6 +698,17 @@ try:
     with aba_watchlist:
         renderizar_watchlist_multiativos(
             resultado_valuation=st.session_state["resultado_valuation"]
+        )
+
+    with aba_relatorios:
+        renderizar_central_relatorios(
+            entradas=entradas,
+            resultado=resultado,
+            dados_empresa=dados,
+            simbolo_moeda=simbolo_moeda,
+            formatar_moeda=formatar_moeda,
+            formatar_percentual=formatar_percentual,
+            formatar_numero=formatar_numero,
         )
 
     with aba_central_multiativos:
@@ -770,7 +741,7 @@ try:
         st.markdown("### Relatório premium da decisão")
 
         st.caption(
-            "Baixe um relatório executivo enriquecido com valuation, convicção da tese, cenários, alertas e ação educacional sugerida."
+            "Este relatório também está disponível de forma centralizada na aba Relatórios."
         )
 
         resumo_decisao_atual = st.session_state.get("resultado_resumo_decisao")

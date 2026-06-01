@@ -23,6 +23,7 @@ from convite_beta_publico import renderizar_convite_beta_publico
 from release_candidate import renderizar_release_candidate_fase1
 from aprendizado_beta_real import renderizar_aprendizado_beta_real
 from rodadas_beta import renderizar_rodadas_beta
+from priorizacao_feedback import renderizar_priorizacao_feedback_beta
 from persistencia_dados import renderizar_central_persistencia_dados
 from auditoria_ux import renderizar_auditoria_ux
 from educacional import renderizar_aba_educacional
@@ -95,6 +96,7 @@ ABAS_ORDEM_COMPLETA = [
     "Release",
     "Aprendizado Beta",
     "Rodadas Beta",
+    "Prioridades Beta",
     "Dados",
     "UX",
     "Multiativos",
@@ -156,7 +158,7 @@ def renderizar_hero(modo_exibicao: str) -> None:
     )
 
     st.caption(
-        "Produto • Navegação • Onboarding • Valuation • Tese • Checklist • Watchlist • Relatórios • Beta Real • Rodadas • Negócio • Marketing • Release • Dados • UX"
+        "Produto • Navegação • Onboarding • Valuation • Tese • Checklist • Watchlist • Relatórios • Beta Real • Rodadas • Prioridades • Negócio • Marketing • Release • Dados • UX"
     )
 
     col_home_1, col_home_2, col_home_3, col_home_4 = st.columns(4)
@@ -797,6 +799,9 @@ try:
 
             elif nome_aba == "Rodadas Beta":
                 renderizar_rodadas_beta()
+
+            elif nome_aba == "Prioridades Beta":
+                renderizar_priorizacao_feedback_beta()
 
             elif nome_aba == "Dados":
                 renderizar_central_persistencia_dados()

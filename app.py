@@ -7,6 +7,7 @@ from valuation import EntradasValuation, calcular_valuation
 from empresas import EMPRESAS
 from historico import salvar_analise, carregar_historico, CAMINHO_HISTORICO
 from style import aplicar_estilo
+from inicio import renderizar_inicio_premium
 from educacional import renderizar_aba_educacional
 from simulador import renderizar_simulador_cenarios
 from relatorio import gerar_relatorio_markdown, gerar_nome_arquivo_relatorio
@@ -120,7 +121,7 @@ def renderizar_hero() -> None:
     )
 
     st.caption(
-        "Ações EUA • Ações Brasil • FIIs • Renda Fixa • Valuation • Cenários • Convicção • Checklist • Painel Executivo • Watchlist • Relatório Premium"
+        "Jornada Guiada • Valuation • Tese • Checklist • Painel Executivo • Watchlist • Multiativos • Relatório Premium"
     )
 
     col_home_1, col_home_2, col_home_3, col_home_4 = st.columns(4)
@@ -524,17 +525,18 @@ try:
     st.divider()
 
     (
-        aba_central_multiativos,
+        aba_inicio,
         aba_painel_executivo,
+        aba_valuation,
+        aba_simulador,
+        aba_conviccao,
+        aba_checklist,
         aba_watchlist,
+        aba_central_multiativos,
         aba_acoes_brasil,
         aba_fiis,
         aba_renda_fixa,
-        aba_resultado,
-        aba_simulador,
-        aba_conviccao,
         aba_decisao,
-        aba_checklist,
         aba_comparativo,
         aba_tese,
         aba_premissas,
@@ -542,27 +544,28 @@ try:
         aba_educacional,
     ) = st.tabs(
         [
-            "Central Multiativos",
+            "Início",
             "Painel Executivo",
+            "Valuation",
+            "Simulador",
+            "Tese & Convicção",
+            "Checklist",
             "Watchlist",
+            "Multiativos",
             "Ações Brasil",
             "FIIs",
             "Renda Fixa",
-            "Resultado",
-            "Simulador",
-            "Convicção da Tese",
             "Resumo da Decisão",
-            "Checklist de Erros",
             "Comparativo",
-            "Tese da empresa",
-            "Premissas usadas",
+            "Tese qualitativa",
+            "Premissas",
             "Histórico",
-            "Visão educacional",
+            "Educação",
         ]
     )
 
-    with aba_central_multiativos:
-        renderizar_central_multiativos(
+    with aba_inicio:
+        renderizar_inicio_premium(
             resultado_valuation=st.session_state["resultado_valuation"]
         )
 
@@ -581,28 +584,8 @@ try:
             formatar_numero=formatar_numero,
         )
 
-    with aba_watchlist:
-        renderizar_watchlist_multiativos(
-            resultado_valuation=st.session_state["resultado_valuation"]
-        )
-
-    with aba_acoes_brasil:
-        renderizar_motor_acoes_brasil(
-            resultado_valuation=st.session_state["resultado_valuation"]
-        )
-
-    with aba_fiis:
-        renderizar_motor_fiis(
-            resultado_valuation=st.session_state["resultado_valuation"]
-        )
-
-    with aba_renda_fixa:
-        renderizar_motor_renda_fixa(
-            resultado_valuation=st.session_state["resultado_valuation"]
-        )
-
-    with aba_resultado:
-        st.markdown("### Resultado do valuation")
+    with aba_valuation:
+        st.markdown("### Valuation")
 
         col_a, col_b = st.columns(2)
 
@@ -747,6 +730,36 @@ try:
             preparar_tabela=preparar_tabela,
         )
 
+    with aba_checklist:
+        renderizar_checklist_erros(
+            resultado_valuation=st.session_state["resultado_valuation"]
+        )
+
+    with aba_watchlist:
+        renderizar_watchlist_multiativos(
+            resultado_valuation=st.session_state["resultado_valuation"]
+        )
+
+    with aba_central_multiativos:
+        renderizar_central_multiativos(
+            resultado_valuation=st.session_state["resultado_valuation"]
+        )
+
+    with aba_acoes_brasil:
+        renderizar_motor_acoes_brasil(
+            resultado_valuation=st.session_state["resultado_valuation"]
+        )
+
+    with aba_fiis:
+        renderizar_motor_fiis(
+            resultado_valuation=st.session_state["resultado_valuation"]
+        )
+
+    with aba_renda_fixa:
+        renderizar_motor_renda_fixa(
+            resultado_valuation=st.session_state["resultado_valuation"]
+        )
+
     with aba_decisao:
         render_resumo_decisao(
             resultado_valuation=st.session_state["resultado_valuation"]
@@ -788,11 +801,6 @@ try:
             file_name=nome_arquivo_relatorio_decisao,
             mime="text/markdown",
             key="download_relatorio_premium_decisao",
-        )
-
-    with aba_checklist:
-        renderizar_checklist_erros(
-            resultado_valuation=st.session_state["resultado_valuation"]
         )
 
     with aba_comparativo:

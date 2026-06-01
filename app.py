@@ -19,7 +19,9 @@ from marketing import renderizar_central_marketing
 from conteudo_marketing import renderizar_central_conteudo
 from landing_page_beta import renderizar_landing_page_beta
 from lancamento_beta import renderizar_lancamento_beta
+from convite_beta_publico import renderizar_convite_beta_publico
 from persistencia_dados import renderizar_central_persistencia_dados
+from auditoria_ux import renderizar_auditoria_ux
 from educacional import renderizar_aba_educacional
 from simulador import renderizar_simulador_cenarios
 from relatorio import gerar_relatorio_markdown, gerar_nome_arquivo_relatorio
@@ -86,7 +88,9 @@ ABAS_ORDEM_COMPLETA = [
     "Conteúdo",
     "Landing Page",
     "Lançamento",
+    "Convite Beta",
     "Dados",
+    "UX",
     "Multiativos",
     "Ações Brasil",
     "FIIs",
@@ -146,7 +150,7 @@ def renderizar_hero(modo_exibicao: str) -> None:
     )
 
     st.caption(
-        "Produto • Navegação • Onboarding • Valuation • Tese • Checklist • Watchlist • Relatórios • Negócio • Marketing • Dados"
+        "Produto • Navegação • Onboarding • Valuation • Tese • Checklist • Watchlist • Relatórios • Negócio • Marketing • Convite Beta • Dados • UX"
     )
 
     col_home_1, col_home_2, col_home_3, col_home_4 = st.columns(4)
@@ -776,8 +780,14 @@ try:
             elif nome_aba == "Lançamento":
                 renderizar_lancamento_beta()
 
+            elif nome_aba == "Convite Beta":
+                renderizar_convite_beta_publico()
+
             elif nome_aba == "Dados":
                 renderizar_central_persistencia_dados()
+
+            elif nome_aba == "UX":
+                renderizar_auditoria_ux()
 
             elif nome_aba == "Multiativos":
                 renderizar_central_multiativos(

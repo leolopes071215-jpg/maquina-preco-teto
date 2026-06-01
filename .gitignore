@@ -5,4 +5,4 @@ __pycache__/
 .DS_Store
 
 data/historico_analises.csv
-.streamlit/secrets.toml
+.streamlit/secrets.tomlwatchlist_multiativos.csv

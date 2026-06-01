@@ -6,3 +6,4 @@ __pycache__/
 
 data/historico_analises.csv
 .streamlit/secrets.tomlwatchlist_multiativos.csv
+watchlist_multiativos.csv

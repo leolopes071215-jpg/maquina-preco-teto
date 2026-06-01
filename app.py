@@ -14,6 +14,7 @@ from conviccao import renderizar_aba_conviccao
 from decisao import render_resumo_decisao, gerar_bloco_markdown_decisao
 from checklist import renderizar_checklist_erros
 from central_multiativos import renderizar_central_multiativos
+from acoes_brasil import renderizar_motor_acoes_brasil
 from comparativo import (
     gerar_comparativo,
     encontrar_empresa_mais_atrativa,
@@ -519,6 +520,7 @@ try:
 
     (
         aba_central_multiativos,
+        aba_acoes_brasil,
         aba_resultado,
         aba_simulador,
         aba_conviccao,
@@ -532,6 +534,7 @@ try:
     ) = st.tabs(
         [
             "Central Multiativos",
+            "Ações Brasil",
             "Resultado",
             "Simulador",
             "Convicção da Tese",
@@ -547,6 +550,11 @@ try:
 
     with aba_central_multiativos:
         renderizar_central_multiativos(
+            resultado_valuation=st.session_state["resultado_valuation"]
+        )
+
+    with aba_acoes_brasil:
+        renderizar_motor_acoes_brasil(
             resultado_valuation=st.session_state["resultado_valuation"]
         )
 

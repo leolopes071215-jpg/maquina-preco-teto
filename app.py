@@ -17,6 +17,7 @@ from central_multiativos import renderizar_central_multiativos
 from acoes_brasil import renderizar_motor_acoes_brasil
 from fiis import renderizar_motor_fiis
 from renda_fixa import renderizar_motor_renda_fixa
+from painel_multiativos import renderizar_painel_executivo_multiativos
 from comparativo import (
     gerar_comparativo,
     encontrar_empresa_mais_atrativa,
@@ -117,7 +118,7 @@ def renderizar_hero() -> None:
     )
 
     st.caption(
-        "Ações EUA • Ações Brasil • FIIs • Renda Fixa • Valuation • Cenários • Convicção • Checklist • Relatório Premium"
+        "Ações EUA • Ações Brasil • FIIs • Renda Fixa • Valuation • Cenários • Convicção • Checklist • Painel Executivo • Relatório Premium"
     )
 
     col_home_1, col_home_2, col_home_3, col_home_4 = st.columns(4)
@@ -522,6 +523,7 @@ try:
 
     (
         aba_central_multiativos,
+        aba_painel_executivo,
         aba_acoes_brasil,
         aba_fiis,
         aba_renda_fixa,
@@ -538,6 +540,7 @@ try:
     ) = st.tabs(
         [
             "Central Multiativos",
+            "Painel Executivo",
             "Ações Brasil",
             "FIIs",
             "Renda Fixa",
@@ -558,6 +561,9 @@ try:
         renderizar_central_multiativos(
             resultado_valuation=st.session_state["resultado_valuation"]
         )
+
+    with aba_painel_executivo:
+        renderizar_painel_executivo_multiativos()
 
     with aba_acoes_brasil:
         renderizar_motor_acoes_brasil(

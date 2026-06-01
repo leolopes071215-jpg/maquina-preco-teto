@@ -1,7 +1,35 @@
+# conviccao.py
+
 import streamlit as st
+from typing import Any, Dict, List
 
 
-def classificar_conviccao(score: float) -> str:
+# ============================================================
+# MÁQUINA DE PREÇO-TETO
+# Motor de Convicção da Tese
+# ------------------------------------------------------------
+# Este módulo avalia a qualidade qualitativa da tese.
+# Não representa recomendação de investimento.
+# ============================================================
+
+
+def _normalizar_status(status: Any) -> str:
+    if status is None:
+        return "N/D"
+
+    texto = str(status).upper().strip()
+
+    if "COMPRA" in texto:
+        return "COMPRA"
+    if "NEUTRO" in texto:
+        return "NEUTRO"
+    if "AGUARDE" in texto:
+        return "AGUARDE"
+
+    return texto or "N/D"
+
+
+def _classificar_tese(score: int) -> str:
     if score >= 80:
         return "FORTE"
     if score >= 65:
@@ -13,207 +41,282 @@ def classificar_conviccao(score: float) -> str:
     return "RISCO ELEVADO"
 
 
-def gerar_alertas_conviccao(
-    previsibilidade: int,
-    qualidade_caixa: int,
-    endividamento: int,
-    vantagem_competitiva: int,
-    risco_negocio: int,
-    dependencia_premissas: int,
-    qualidade_dados: int,
-) -> list[str]:
-    alertas = []
-
-    if previsibilidade <= 4:
-        alertas.append(
-            "A previsibilidade dos resultados parece baixa. Isso reduz a confiança nas projeções de lucro e fluxo de caixa."
-        )
-
-    if qualidade_caixa <= 4:
-        alertas.append(
-            "A qualidade da geração de caixa parece fraca. O valuation pode estar dependendo demais do lucro contábil."
-        )
-
-    if endividamento <= 4:
-        alertas.append(
-            "O nível de endividamento ou risco financeiro exige atenção antes de elevar a convicção."
-        )
-
-    if vantagem_competitiva <= 4:
-        alertas.append(
-            "A vantagem competitiva parece limitada. Empresas sem proteção clara podem merecer múltiplos mais conservadores."
-        )
-
-    if risco_negocio <= 4:
-        alertas.append(
-            "Os riscos do negócio parecem relevantes. Regulação, concorrência, ciclicidade ou perda de margem podem afetar a tese."
-        )
-
-    if dependencia_premissas <= 4:
-        alertas.append(
-            "A tese parece depender demais de premissas otimistas. Revise crescimento, margens, múltiplos e margem de segurança."
-        )
-
-    if qualidade_dados <= 4:
-        alertas.append(
-            "A qualidade dos dados usados na análise parece limitada. Dados ruins produzem valuation frágil."
-        )
-
-    return alertas
-
-
-def gerar_leitura_executiva(
-    score: float,
+def _gerar_leitura_executiva(
+    score: int,
     classificacao: str,
     status_valuation: str,
-    alertas: list[str],
 ) -> str:
     if classificacao == "FORTE" and status_valuation == "COMPRA":
         return (
-            "A tese apresenta alta qualidade qualitativa e o valuation indica uma zona educacionalmente atrativa. "
-            "Mesmo assim, a leitura deve ser validada com premissas conservadoras, comparação com pares e revisão dos riscos."
+            "A tese apresenta alta qualidade qualitativa e o valuation indica preço dentro da zona conservadora. "
+            "Mesmo assim, a decisão final exige revisão das premissas, riscos e cenários."
         )
 
     if classificacao in ["FORTE", "BOA"] and status_valuation == "AGUARDE":
         return (
-            "A empresa pode ter uma tese interessante, mas o preço atual ainda não oferece margem de segurança suficiente. "
-            "A ação mais disciplinada é acompanhar a empresa e aguardar uma assimetria melhor."
+            "A tese parece qualitativamente interessante, mas o preço atual não parece oferecer margem de segurança suficiente. "
+            "A ação educacional mais racional é acompanhar o ativo e esperar uma zona de preço mais favorável."
         )
 
     if classificacao in ["FORTE", "BOA"] and status_valuation == "NEUTRO":
         return (
-            "A tese tem pontos positivos, mas o preço ainda não entrega uma oportunidade clara. "
-            "O ideal é monitorar, revisar premissas e comparar com outras empresas de qualidade."
+            "A tese possui bons elementos qualitativos, mas o preço ainda exige cuidado. "
+            "Acompanhe o ativo, revise o preço-teto e compare com outras oportunidades."
         )
 
     if classificacao == "MODERADA":
         return (
             "A tese ainda não é fraca, mas também não é suficientemente robusta. "
-            "Antes de aumentar a convicção, revise dados, riscos, vantagem competitiva e qualidade da geração de caixa."
+            "É necessário revisar vantagem competitiva, previsibilidade, caixa, dívida, gestão e riscos."
         )
 
-    if classificacao in ["FRACA", "RISCO ELEVADO"]:
+    if classificacao == "FRACA":
         return (
-            "A análise qualitativa mostra fragilidades importantes. "
-            "Neste momento, a prioridade educacional deve ser entender melhor o negócio, os riscos e a confiabilidade das premissas."
-        )
-
-    if len(alertas) >= 4:
-        return (
-            "A quantidade de alertas qualitativos é elevada. "
-            "Isso sugere que o valuation deve ser tratado com bastante cautela."
+            "A tese apresenta fragilidades relevantes. Antes de confiar no valuation, revise os fundamentos e busque dados mais confiáveis."
         )
 
     return (
-        "A leitura qualitativa está em zona intermediária. "
-        "Use esta análise como apoio para pensar melhor, não como conclusão final."
+        "A tese apresenta risco elevado. O ativo pode até parecer barato, mas a qualidade da análise ainda não sustenta uma conclusão forte."
     )
 
 
-def renderizar_score_visual(score: float, classificacao: str) -> None:
-    st.markdown("### Score de convicção da tese")
+def _gerar_alertas(
+    vantagem_competitiva: int,
+    previsibilidade: int,
+    qualidade_caixa: int,
+    endividamento: int,
+    gestao: int,
+    crescimento: int,
+    margens: int,
+    riscos: int,
+    alinhamento_preco: int,
+    clareza_tese: int,
+) -> List[str]:
+    alertas = []
 
-    col1, col2, col3 = st.columns([1, 1, 2])
+    if vantagem_competitiva <= 4:
+        alertas.append(
+            "Vantagem competitiva fraca: a empresa pode não ter proteção suficiente contra concorrência."
+        )
 
-    with col1:
-        st.metric("Score", f"{score:.0f}/100")
+    if previsibilidade <= 4:
+        alertas.append(
+            "Baixa previsibilidade: lucros e caixa podem oscilar mais do que o valuation assume."
+        )
 
-    with col2:
-        st.metric("Classificação", classificacao)
+    if qualidade_caixa <= 4:
+        alertas.append(
+            "Qualidade do caixa fraca: o lucro pode não estar sendo bem convertido em fluxo de caixa livre."
+        )
 
-    with col3:
-        st.progress(score / 100)
+    if endividamento <= 4:
+        alertas.append(
+            "Endividamento preocupante: dívida elevada reduz margem de erro e pode pressionar o valor justo."
+        )
 
-    if classificacao == "FORTE":
-        st.success(
-            "Convicção forte: a tese parece bem sustentada qualitativamente, considerando os critérios preenchidos."
+    if gestao <= 4:
+        alertas.append(
+            "Gestão pouco confiável: má alocação de capital pode destruir valor no longo prazo."
         )
-    elif classificacao == "BOA":
-        st.success(
-            "Convicção boa: há elementos positivos, mas ainda vale revisar riscos e premissas."
+
+    if crescimento <= 4:
+        alertas.append(
+            "Crescimento fraco ou incerto: múltiplos mais altos podem não ser justificáveis."
         )
-    elif classificacao == "MODERADA":
-        st.warning(
-            "Convicção moderada: a tese exige mais estudo antes de ser tratada como prioridade."
+
+    if margens <= 4:
+        alertas.append(
+            "Margens frágeis: queda de rentabilidade pode comprometer lucro, FCF e preço justo."
         )
-    elif classificacao == "FRACA":
-        st.warning(
-            "Convicção fraca: há pontos relevantes que reduzem a confiança na análise."
+
+    if riscos <= 4:
+        alertas.append(
+            "Riscos relevantes: a tese pode estar ignorando ameaças importantes."
         )
-    else:
-        st.error(
-            "Risco elevado: a tese parece frágil ou dependente demais de premissas incertas."
+
+    if alinhamento_preco <= 4:
+        alertas.append(
+            "Preço pouco alinhado à tese: empresa boa pode virar mau investimento se comprada cara."
         )
+
+    if clareza_tese <= 4:
+        alertas.append(
+            "Tese pouco clara: se a lógica de investimento não é simples de explicar, ela precisa ser revisada."
+        )
+
+    return alertas
+
+
+def _calcular_score_conviccao(
+    vantagem_competitiva: int,
+    previsibilidade: int,
+    qualidade_caixa: int,
+    endividamento: int,
+    gestao: int,
+    crescimento: int,
+    margens: int,
+    riscos: int,
+    alinhamento_preco: int,
+    clareza_tese: int,
+) -> int:
+    score = (
+        vantagem_competitiva * 1.25
+        + previsibilidade * 1.15
+        + qualidade_caixa * 1.20
+        + endividamento * 1.00
+        + gestao * 1.10
+        + crescimento * 0.95
+        + margens * 0.95
+        + riscos * 1.05
+        + alinhamento_preco * 0.95
+        + clareza_tese * 1.00
+    )
+
+    score_final = int(round(score))
+    return max(0, min(100, score_final))
+
+
+def _injetar_css_conviccao() -> None:
+    st.markdown(
+        """
+        <style>
+            .conv-card {
+                padding: 1rem 1.1rem;
+                border-radius: 18px;
+                border: 1px solid rgba(255, 255, 255, 0.08);
+                background: rgba(255, 255, 255, 0.035);
+                box-shadow: 0 10px 35px rgba(0, 0, 0, 0.16);
+                height: 100%;
+            }
+
+            .conv-label {
+                color: rgba(244, 247, 251, 0.58);
+                font-size: 0.76rem;
+                text-transform: uppercase;
+                letter-spacing: 0.08em;
+                font-weight: 800;
+                margin-bottom: 0.35rem;
+            }
+
+            .conv-value {
+                color: #f4f7fb;
+                font-size: 1.25rem;
+                font-weight: 850;
+                margin-bottom: 0.25rem;
+            }
+
+            .conv-note {
+                color: rgba(244, 247, 251, 0.66);
+                font-size: 0.86rem;
+                line-height: 1.45;
+            }
+
+            .conv-alert {
+                padding: 0.82rem 1rem;
+                border-radius: 14px;
+                border-left: 4px solid #d6b56d;
+                background: rgba(214, 181, 109, 0.08);
+                color: rgba(244, 247, 251, 0.84);
+                margin-bottom: 0.6rem;
+            }
+        </style>
+        """,
+        unsafe_allow_html=True,
+    )
+
+
+def _card(label: str, value: str, note: str = "") -> None:
+    st.markdown(
+        f"""
+        <div class="conv-card">
+            <div class="conv-label">{label}</div>
+            <div class="conv-value">{value}</div>
+            <div class="conv-note">{note}</div>
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
 
 
 def renderizar_aba_conviccao(
     empresa: str,
     ticker: str,
-    resultado: dict,
+    resultado: Dict[str, Any],
     preparar_tabela,
 ) -> None:
-    st.markdown("### Motor de Convicção da Tese")
+    """
+    Renderiza a aba Convicção da Tese.
+
+    Parâmetros esperados pelo app.py:
+    - empresa
+    - ticker
+    - resultado
+    - preparar_tabela
+    """
+    _injetar_css_conviccao()
+
+    status_valuation = _normalizar_status(resultado.get("status"))
+
+    st.markdown("### Convicção da Tese")
 
     st.caption(
-        "Esta aba transforma aspectos qualitativos da empresa em uma leitura estruturada. "
-        "O objetivo é evitar que o investidor olhe apenas para o preço-teto e ignore a qualidade da tese."
+        "Avalie a qualidade qualitativa da empresa. O objetivo é evitar que uma ação pareça barata apenas por premissas otimistas."
     )
 
     st.warning(
-        "Uso educacional. Este score não é recomendação de compra, venda ou manutenção. "
-        "Ele serve para organizar pensamento crítico sobre a empresa."
+        "Uso educacional. Esta aba não recomenda compra, venda ou manutenção. "
+        "Ela ajuda a organizar a força da tese e seus riscos."
     )
 
-    status_valuation = resultado.get("status", "N/D")
+    st.divider()
+
+    col_topo_1, col_topo_2, col_topo_3 = st.columns(3)
+
+    with col_topo_1:
+        st.metric("Empresa", empresa)
+
+    with col_topo_2:
+        st.metric("Ticker", ticker.upper())
+
+    with col_topo_3:
+        st.metric("Status valuation", status_valuation)
 
     st.divider()
 
-    st.markdown(f"#### Empresa analisada: {empresa} ({ticker.upper()})")
-
-    col_status_1, col_status_2, col_status_3 = st.columns(3)
-
-    with col_status_1:
-        st.metric("Status do valuation", status_valuation)
-
-    with col_status_2:
-        st.metric(
-            "Preço-teto",
-            f"{resultado.get('preco_teto', 0):.2f}",
-        )
-
-    with col_status_3:
-        st.metric(
-            "Preço justo combinado",
-            f"{resultado.get('preco_justo_combinado', 0):.2f}",
-        )
-
-    st.divider()
-
-    st.markdown("### Matriz qualitativa")
+    st.markdown("### Diagnóstico qualitativo")
 
     st.caption(
-        "Dê notas de 0 a 10 para cada dimensão. Quanto maior a nota, maior a qualidade percebida naquele critério."
+        "Dê notas de 0 a 10. Quanto maior a nota, melhor a qualidade percebida naquele critério."
     )
 
     col1, col2 = st.columns(2)
 
     with col1:
+        vantagem_competitiva = st.slider(
+            "Vantagem competitiva",
+            min_value=0,
+            max_value=10,
+            value=7,
+            help="A empresa possui marca forte, escala, rede, custo baixo, switching cost ou outro diferencial defensável?",
+            key=f"conv_vantagem_{ticker}",
+        )
+
         previsibilidade = st.slider(
             "Previsibilidade dos resultados",
             min_value=0,
             max_value=10,
             value=7,
-            help="Empresas previsíveis costumam permitir valuation mais confiável.",
-            key=f"conviccao_previsibilidade_{ticker}",
+            help="A receita, o lucro e o caixa são previsíveis ou muito cíclicos?",
+            key=f"conv_previsibilidade_{ticker}",
         )
 
         qualidade_caixa = st.slider(
-            "Qualidade da geração de caixa",
+            "Qualidade do caixa",
             min_value=0,
             max_value=10,
             value=7,
-            help="Avalia se a empresa converte lucro em fluxo de caixa livre de forma consistente.",
-            key=f"conviccao_caixa_{ticker}",
+            help="O lucro se transforma em fluxo de caixa livre de forma consistente?",
+            key=f"conv_caixa_{ticker}",
         )
 
         endividamento = st.slider(
@@ -221,17 +324,17 @@ def renderizar_aba_conviccao(
             min_value=0,
             max_value=10,
             value=7,
-            help="Nota maior significa menor risco financeiro percebido.",
-            key=f"conviccao_endividamento_{ticker}",
+            help="A dívida é controlada e compatível com a geração de caixa?",
+            key=f"conv_endividamento_{ticker}",
         )
 
-        vantagem_competitiva = st.slider(
-            "Vantagem competitiva",
+        gestao = st.slider(
+            "Qualidade da gestão",
             min_value=0,
             max_value=10,
             value=7,
-            help="Marcas fortes, escala, rede, switching cost e poder de preço aumentam a nota.",
-            key=f"conviccao_vantagem_{ticker}",
+            help="A gestão aloca bem o capital, comunica bem e protege o acionista?",
+            key=f"conv_gestao_{ticker}",
         )
 
     with col2:
@@ -240,190 +343,177 @@ def renderizar_aba_conviccao(
             min_value=0,
             max_value=10,
             value=6,
-            help="Avalia se o crescimento parece sustentável sem depender de premissas agressivas.",
-            key=f"conviccao_crescimento_{ticker}",
+            help="A empresa tem espaço realista para crescer sem depender de premissas agressivas?",
+            key=f"conv_crescimento_{ticker}",
         )
 
-        qualidade_gestao = st.slider(
-            "Qualidade da gestão e alocação de capital",
+        margens = st.slider(
+            "Qualidade das margens",
             min_value=0,
             max_value=10,
             value=6,
-            help="Avalia disciplina, recompra de ações, aquisições, retorno sobre capital e comunicação com acionistas.",
-            key=f"conviccao_gestao_{ticker}",
+            help="As margens são fortes, estáveis e defensáveis?",
+            key=f"conv_margens_{ticker}",
         )
 
-        risco_negocio = st.slider(
-            "Controle dos riscos do negócio",
+        riscos = st.slider(
+            "Controle dos riscos",
             min_value=0,
             max_value=10,
             value=6,
-            help="Nota maior significa que os riscos parecem mais controlados.",
-            key=f"conviccao_risco_{ticker}",
+            help="Quanto maior a nota, melhor a tese lida com riscos de concorrência, regulação, ciclo, dívida e tecnologia.",
+            key=f"conv_riscos_{ticker}",
         )
 
-        dependencia_premissas = st.slider(
-            "Baixa dependência de premissas otimistas",
+        alinhamento_preco = st.slider(
+            "Alinhamento entre preço e qualidade",
             min_value=0,
             max_value=10,
             value=6,
-            help="Nota maior significa que a tese não depende tanto de cenário perfeito.",
-            key=f"conviccao_premissas_{ticker}",
+            help="O preço atual faz sentido em relação à qualidade do negócio?",
+            key=f"conv_preco_{ticker}",
         )
 
-    qualidade_dados = st.slider(
-        "Qualidade e confiabilidade dos dados usados",
-        min_value=0,
-        max_value=10,
-        value=7,
-        help="Dados atualizados, normalizados e bem conferidos aumentam a confiabilidade da análise.",
-        key=f"conviccao_dados_{ticker}",
-    )
+        clareza_tese = st.slider(
+            "Clareza da tese",
+            min_value=0,
+            max_value=10,
+            value=7,
+            help="A tese é clara, objetiva e fácil de explicar?",
+            key=f"conv_clareza_{ticker}",
+        )
 
-    st.divider()
-
-    score = (
-        previsibilidade * 0.14
-        + qualidade_caixa * 0.16
-        + endividamento * 0.10
-        + vantagem_competitiva * 0.16
-        + crescimento * 0.10
-        + qualidade_gestao * 0.10
-        + risco_negocio * 0.10
-        + dependencia_premissas * 0.08
-        + qualidade_dados * 0.06
-    ) * 10
-
-    score = max(0, min(100, score))
-
-    classificacao = classificar_conviccao(score)
-
-    alertas = gerar_alertas_conviccao(
+    score_conviccao = _calcular_score_conviccao(
+        vantagem_competitiva=vantagem_competitiva,
         previsibilidade=previsibilidade,
         qualidade_caixa=qualidade_caixa,
         endividamento=endividamento,
-        vantagem_competitiva=vantagem_competitiva,
-        risco_negocio=risco_negocio,
-        dependencia_premissas=dependencia_premissas,
-        qualidade_dados=qualidade_dados,
+        gestao=gestao,
+        crescimento=crescimento,
+        margens=margens,
+        riscos=riscos,
+        alinhamento_preco=alinhamento_preco,
+        clareza_tese=clareza_tese,
     )
 
-    leitura_executiva = gerar_leitura_executiva(
-        score=score,
-        classificacao=classificacao,
+    classificacao_tese = _classificar_tese(score_conviccao)
+
+    leitura_executiva = _gerar_leitura_executiva(
+        score=score_conviccao,
+        classificacao=classificacao_tese,
         status_valuation=status_valuation,
-        alertas=alertas,
     )
+
+    alertas = _gerar_alertas(
+        vantagem_competitiva=vantagem_competitiva,
+        previsibilidade=previsibilidade,
+        qualidade_caixa=qualidade_caixa,
+        endividamento=endividamento,
+        gestao=gestao,
+        crescimento=crescimento,
+        margens=margens,
+        riscos=riscos,
+        alinhamento_preco=alinhamento_preco,
+        clareza_tese=clareza_tese,
+    )
+
+    matriz_qualitativa = {
+        "Vantagem competitiva": vantagem_competitiva,
+        "Previsibilidade": previsibilidade,
+        "Qualidade do caixa": qualidade_caixa,
+        "Endividamento": endividamento,
+        "Gestão": gestao,
+        "Crescimento": crescimento,
+        "Margens": margens,
+        "Riscos": riscos,
+        "Alinhamento preço/qualidade": alinhamento_preco,
+        "Clareza da tese": clareza_tese,
+    }
 
     resultado_conviccao = {
         "empresa": empresa,
         "ticker": ticker.upper(),
-        "score_conviccao": round(score, 0),
-        "classificacao_tese": classificacao,
         "status_valuation": status_valuation,
-        "alertas": alertas,
+        "score_conviccao": score_conviccao,
+        "classificacao_tese": classificacao_tese,
         "leitura_executiva": leitura_executiva,
-        "matriz_qualitativa": {
-            "previsibilidade": previsibilidade,
-            "qualidade_caixa": qualidade_caixa,
-            "endividamento": endividamento,
-            "vantagem_competitiva": vantagem_competitiva,
-            "crescimento": crescimento,
-            "qualidade_gestao": qualidade_gestao,
-            "risco_negocio": risco_negocio,
-            "dependencia_premissas": dependencia_premissas,
-            "qualidade_dados": qualidade_dados,
-        },
+        "alertas": alertas,
+        "matriz_qualitativa": matriz_qualitativa,
     }
 
     st.session_state["resultado_conviccao_tese"] = resultado_conviccao
-    st.session_state["score_conviccao"] = round(score, 0)
-    st.session_state["classificacao_tese"] = classificacao
+    st.session_state["score_conviccao"] = score_conviccao
+    st.session_state["classificacao_tese"] = classificacao_tese
     st.session_state["alertas_conviccao"] = alertas
-
-    renderizar_score_visual(score, classificacao)
 
     st.divider()
 
-    st.markdown("### Leitura executiva da tese")
+    st.markdown("### Resultado da convicção")
 
+    col_res_1, col_res_2, col_res_3 = st.columns(3)
+
+    with col_res_1:
+        st.metric("Score de convicção", f"{score_conviccao}/100")
+
+    with col_res_2:
+        st.metric("Classificação da tese", classificacao_tese)
+
+    with col_res_3:
+        st.metric("Alertas", len(alertas))
+
+    st.progress(score_conviccao / 100)
+
+    if score_conviccao >= 70:
+        st.success("A tese apresenta bons sinais qualitativos para as premissas atuais.")
+    elif score_conviccao >= 50:
+        st.warning("A tese possui pontos positivos, mas ainda exige revisão.")
+    else:
+        st.error("A tese apresenta fragilidades relevantes.")
+
+    st.markdown("### Leitura executiva")
     st.info(leitura_executiva)
 
     st.markdown("### Alertas qualitativos")
 
     if len(alertas) == 0:
         st.success(
-            "Nenhum alerta crítico foi identificado com as notas atuais. Ainda assim, revise as premissas antes de usar a análise."
+            "Nenhum alerta crítico foi identificado. Ainda assim, revise dados, riscos e premissas."
         )
     else:
         for alerta in alertas:
-            st.warning(alerta)
+            st.markdown(
+                f"""
+                <div class="conv-alert">
+                    {alerta}
+                </div>
+                """,
+                unsafe_allow_html=True,
+            )
 
     st.divider()
 
-    st.markdown("### Matriz da tese")
+    st.markdown("### Matriz qualitativa")
 
     tabela_matriz = [
         {
-            "Critério": "Previsibilidade dos resultados",
-            "Nota": previsibilidade,
-            "Leitura": "Quanto mais previsível, mais confiável tende a ser o valuation.",
-        },
-        {
-            "Critério": "Qualidade da geração de caixa",
-            "Nota": qualidade_caixa,
-            "Leitura": "Lucro sem caixa pode distorcer o preço justo.",
-        },
-        {
-            "Critério": "Saúde financeira / endividamento",
-            "Nota": endividamento,
-            "Leitura": "Endividamento elevado reduz margem de erro.",
-        },
-        {
-            "Critério": "Vantagem competitiva",
-            "Nota": vantagem_competitiva,
-            "Leitura": "Empresas com fosso competitivo tendem a sustentar retornos superiores.",
-        },
-        {
-            "Critério": "Crescimento sustentável",
-            "Nota": crescimento,
-            "Leitura": "Crescimento bom é aquele que não exige premissas irreais.",
-        },
-        {
-            "Critério": "Gestão e alocação de capital",
-            "Nota": qualidade_gestao,
-            "Leitura": "Boa gestão protege o capital do acionista no longo prazo.",
-        },
-        {
-            "Critério": "Controle dos riscos",
-            "Nota": risco_negocio,
-            "Leitura": "Riscos altos exigem margem de segurança maior.",
-        },
-        {
-            "Critério": "Baixa dependência de otimismo",
-            "Nota": dependencia_premissas,
-            "Leitura": "A melhor tese não precisa de cenário perfeito para fazer sentido.",
-        },
-        {
-            "Critério": "Qualidade dos dados",
-            "Nota": qualidade_dados,
-            "Leitura": "Dados ruins geram conclusões ruins.",
-        },
+            "Critério": criterio,
+            "Nota": nota,
+        }
+        for criterio, nota in matriz_qualitativa.items()
     ]
 
     st.table(preparar_tabela(tabela_matriz))
 
-    st.divider()
-
-    st.markdown("### Como usar essa leitura")
+    st.markdown("### Perguntas críticas")
 
     st.markdown(
         """
-        Use o score de convicção como um filtro de qualidade da tese.
-
-        - Se o valuation parece barato, mas a convicção é fraca, o risco pode estar escondido.
-        - Se a empresa é excelente, mas o valuation manda aguardar, talvez o problema seja preço.
-        - Se a tese depende demais de premissas otimistas, revise o modelo.
-        - Se os dados são ruins, o resultado final perde confiabilidade.
+        - A empresa realmente possui vantagem competitiva defensável?
+        - O lucro é previsível ou depende de ciclo favorável?
+        - O fluxo de caixa confirma a qualidade do lucro?
+        - A dívida permite atravessar cenários difíceis?
+        - A gestão aloca capital com racionalidade?
+        - O preço atual compensa os riscos da tese?
+        - A tese continua válida em cenário conservador?
         """
     )

@@ -32,6 +32,13 @@ from fiis import renderizar_motor_fiis
 from renda_fixa import renderizar_motor_renda_fixa
 from painel_multiativos import renderizar_painel_executivo_multiativos
 from watchlist import renderizar_watchlist_multiativos
+from modo_exibicao import (
+    obter_abas_por_modo,
+    obter_mensagem_modo_para_hero,
+    obter_rotulo_metrica_modo,
+    renderizar_controle_modo_exibicao,
+    renderizar_painel_modo_exibicao,
+)
 from modos_analise import (
     obter_opcoes_modelo,
     obter_dados_modelo,
@@ -56,6 +63,39 @@ st.set_page_config(
 )
 
 aplicar_estilo()
+
+
+ABAS_ORDEM_COMPLETA = [
+    "Produto",
+    "Navegação",
+    "Onboarding",
+    "Início",
+    "Painel Executivo",
+    "Valuation",
+    "Simulador",
+    "Tese & Convicção",
+    "Checklist",
+    "Watchlist",
+    "Relatórios",
+    "Feedback Beta",
+    "Beta Fechado",
+    "Oferta Beta",
+    "Negócio",
+    "Marketing",
+    "Conteúdo",
+    "Landing Page",
+    "Lançamento",
+    "Multiativos",
+    "Ações Brasil",
+    "FIIs",
+    "Renda Fixa",
+    "Resumo da Decisão",
+    "Comparativo",
+    "Tese qualitativa",
+    "Premissas",
+    "Histórico",
+    "Educação",
+]
 
 
 def formatar_moeda(valor: float, simbolo: str = "R$") -> str:
@@ -91,7 +131,7 @@ def converter_tabela_para_csv(tabela: list[dict]) -> str:
     return saida.getvalue()
 
 
-def renderizar_hero() -> None:
+def renderizar_hero(modo_exibicao: str) -> None:
     st.markdown("# 📊 Máquina de Preço-Teto")
 
     st.markdown(
@@ -104,7 +144,7 @@ def renderizar_hero() -> None:
     )
 
     st.caption(
-        "Produto • Navegação • Onboarding • Jornada Guiada • Valuation • Tese • Checklist • Painel Executivo • Watchlist • Relatórios • Negócio • Marketing • Conteúdo • Landing Page • Lançamento"
+        "Produto • Navegação • Onboarding • Valuation • Tese • Checklist • Watchlist • Relatórios • Negócio • Marketing • Lançamento"
     )
 
     col_home_1, col_home_2, col_home_3, col_home_4 = st.columns(4)
@@ -119,7 +159,9 @@ def renderizar_hero() -> None:
         st.metric("Arquitetura", "Multiativos")
 
     with col_home_4:
-        st.metric("UX", "Navegação Guiada")
+        st.metric("Modo", obter_rotulo_metrica_modo(modo_exibicao))
+
+    st.info(obter_mensagem_modo_para_hero(modo_exibicao))
 
     st.warning(
         "Uso educacional. Não representa recomendação de compra, venda ou manutenção de investimentos. "
@@ -299,10 +341,13 @@ def renderizar_ranking_visual(ranking_empresas_reais: list[dict]) -> None:
                 st.markdown(f"**Potencial até justo:** {empresa['Potencial até preço justo']}")
 
 
-renderizar_hero()
-
-
 with st.sidebar:
+    st.header("Configuração")
+
+    modo_exibicao = renderizar_controle_modo_exibicao()
+
+    st.divider()
+
     st.header("Modo e premissas")
 
     opcoes_modelo = obter_opcoes_modelo(EMPRESAS)
@@ -444,6 +489,8 @@ with st.sidebar:
     )
 
 
+renderizar_hero(modo_exibicao)
+
 st.subheader(f"Análise de valuation: {empresa} ({ticker.upper()})")
 
 if modo_demonstracao:
@@ -532,525 +579,474 @@ try:
 
     st.divider()
 
-    (
-        aba_produto,
-        aba_navegacao,
-        aba_onboarding,
-        aba_inicio,
-        aba_painel_executivo,
-        aba_valuation,
-        aba_simulador,
-        aba_conviccao,
-        aba_checklist,
-        aba_watchlist,
-        aba_relatorios,
-        aba_feedback_beta,
-        aba_beta_fechado,
-        aba_oferta_beta,
-        aba_negocio,
-        aba_marketing,
-        aba_conteudo,
-        aba_landing_page,
-        aba_lancamento,
-        aba_central_multiativos,
-        aba_acoes_brasil,
-        aba_fiis,
-        aba_renda_fixa,
-        aba_decisao,
-        aba_comparativo,
-        aba_tese,
-        aba_premissas,
-        aba_historico,
-        aba_educacional,
-    ) = st.tabs(
-        [
-            "Produto",
-            "Navegação",
-            "Onboarding",
-            "Início",
-            "Painel Executivo",
-            "Valuation",
-            "Simulador",
-            "Tese & Convicção",
-            "Checklist",
-            "Watchlist",
-            "Relatórios",
-            "Feedback Beta",
-            "Beta Fechado",
-            "Oferta Beta",
-            "Negócio",
-            "Marketing",
-            "Conteúdo",
-            "Landing Page",
-            "Lançamento",
-            "Multiativos",
-            "Ações Brasil",
-            "FIIs",
-            "Renda Fixa",
-            "Resumo da Decisão",
-            "Comparativo",
-            "Tese qualitativa",
-            "Premissas",
-            "Histórico",
-            "Educação",
-        ]
-    )
-
-    with aba_produto:
-        renderizar_proposta_valor()
-
-    with aba_navegacao:
-        renderizar_navegacao_simplificada()
-
-    with aba_onboarding:
-        renderizar_onboarding_usuario()
-
-    with aba_inicio:
-        renderizar_inicio_premium(
-            resultado_valuation=st.session_state["resultado_valuation"]
-        )
-
-    with aba_painel_executivo:
-        renderizar_painel_executivo_multiativos()
-
-    with aba_valuation:
-        st.markdown("### Valuation")
-
-        col_a, col_b = st.columns(2)
-
-        with col_a:
-            st.metric(
-                "EPS normalizado",
-                formatar_moeda(resultado["eps_normalizado"], simbolo_moeda),
-            )
-
-        with col_b:
-            st.metric(
-                "FCF por ação",
-                formatar_moeda(resultado["fcf_por_acao"], simbolo_moeda),
-            )
-
-        col_c, col_d = st.columns(2)
-
-        with col_c:
-            st.metric(
-                "Preço justo por EPS",
-                formatar_moeda(resultado["preco_justo_eps"], simbolo_moeda),
-            )
-
-        with col_d:
-            st.metric(
-                "Preço justo por FCF",
-                formatar_moeda(resultado["preco_justo_fcf"], simbolo_moeda),
-            )
-
-        st.divider()
-
-        col_e, col_f = st.columns(2)
-
-        with col_e:
-            st.metric(
-                "Preço justo combinado",
-                formatar_moeda(resultado["preco_justo_combinado"], simbolo_moeda),
-                formatar_percentual(resultado["potencial_ate_preco_justo"]),
-            )
-
-        with col_f:
-            st.metric(
-                "Preço-teto com margem de segurança",
-                formatar_moeda(resultado["preco_teto"], simbolo_moeda),
-                formatar_percentual(resultado["margem_ate_preco_teto"]),
-            )
-
-        st.divider()
-
-        renderizar_mapa_valuation(
-            preco_atual=preco_atual,
-            preco_teto=resultado["preco_teto"],
-            preco_justo=resultado["preco_justo_combinado"],
-            simbolo=simbolo_moeda,
-        )
-
-        st.divider()
-
-        st.markdown("### Tabela-resumo")
-
-        tabela_resultado = [
-            {
-                "Indicador": "EPS normalizado",
-                "Valor": formatar_moeda(resultado["eps_normalizado"], simbolo_moeda),
-            },
-            {
-                "Indicador": "FCF por ação",
-                "Valor": formatar_moeda(resultado["fcf_por_acao"], simbolo_moeda),
-            },
-            {
-                "Indicador": "Preço justo por EPS",
-                "Valor": formatar_moeda(resultado["preco_justo_eps"], simbolo_moeda),
-            },
-            {
-                "Indicador": "Preço justo por FCF",
-                "Valor": formatar_moeda(resultado["preco_justo_fcf"], simbolo_moeda),
-            },
-            {
-                "Indicador": "Preço justo combinado",
-                "Valor": formatar_moeda(resultado["preco_justo_combinado"], simbolo_moeda),
-            },
-            {
-                "Indicador": "Preço-teto",
-                "Valor": formatar_moeda(resultado["preco_teto"], simbolo_moeda),
-            },
-            {
-                "Indicador": "Preço atual",
-                "Valor": formatar_moeda(preco_atual, simbolo_moeda),
-            },
-            {
-                "Indicador": "Status",
-                "Valor": resultado["status"],
-            },
-            {
-                "Indicador": "Tipo de análise",
-                "Valor": tipo_analise,
-            },
-        ]
-
-        st.table(preparar_tabela(tabela_resultado))
-
-    with aba_simulador:
-        renderizar_simulador_cenarios(
-            entradas_base=entradas,
-            simbolo_moeda=simbolo_moeda,
-            formatar_moeda=formatar_moeda,
-            formatar_percentual=formatar_percentual,
-            preparar_tabela=preparar_tabela,
-        )
-
-    with aba_conviccao:
-        renderizar_aba_conviccao(
-            empresa=empresa,
-            ticker=ticker,
-            resultado=resultado,
-            preparar_tabela=preparar_tabela,
-        )
-
-    with aba_checklist:
-        renderizar_checklist_erros(
-            resultado_valuation=st.session_state["resultado_valuation"]
-        )
-
-    with aba_watchlist:
-        renderizar_watchlist_multiativos(
-            resultado_valuation=st.session_state["resultado_valuation"]
-        )
-
-    with aba_relatorios:
-        renderizar_central_relatorios(
-            entradas=entradas,
-            resultado=resultado,
-            dados_empresa=dados,
-            simbolo_moeda=simbolo_moeda,
-            formatar_moeda=formatar_moeda,
-            formatar_percentual=formatar_percentual,
-            formatar_numero=formatar_numero,
-        )
-
-    with aba_feedback_beta:
-        renderizar_feedback_beta()
-
-    with aba_beta_fechado:
-        renderizar_beta_fechado()
-
-    with aba_oferta_beta:
-        renderizar_oferta_beta()
-
-    with aba_negocio:
-        renderizar_dashboard_negocio()
-
-    with aba_marketing:
-        renderizar_central_marketing()
-
-    with aba_conteudo:
-        renderizar_central_conteudo()
-
-    with aba_landing_page:
-        renderizar_landing_page_beta()
-
-    with aba_lancamento:
-        renderizar_lancamento_beta()
-
-    with aba_central_multiativos:
-        renderizar_central_multiativos(
-            resultado_valuation=st.session_state["resultado_valuation"]
-        )
-
-    with aba_acoes_brasil:
-        renderizar_motor_acoes_brasil(
-            resultado_valuation=st.session_state["resultado_valuation"]
-        )
-
-    with aba_fiis:
-        renderizar_motor_fiis(
-            resultado_valuation=st.session_state["resultado_valuation"]
-        )
-
-    with aba_renda_fixa:
-        renderizar_motor_renda_fixa(
-            resultado_valuation=st.session_state["resultado_valuation"]
-        )
-
-    with aba_decisao:
-        render_resumo_decisao(
-            resultado_valuation=st.session_state["resultado_valuation"]
-        )
-
-        st.divider()
-
-        st.markdown("### Relatório premium da decisão")
-
-        st.caption(
-            "Este relatório também está disponível de forma centralizada na aba Relatórios."
-        )
-
-        resumo_decisao_atual = st.session_state.get("resultado_resumo_decisao")
-
-        relatorio_markdown_com_decisao = gerar_relatorio_markdown(
-            entradas=entradas,
-            resultado=resultado,
-            dados_empresa=dados,
-            simbolo_moeda=simbolo_moeda,
-            formatar_moeda=formatar_moeda,
-            formatar_percentual=formatar_percentual,
-            formatar_numero=formatar_numero,
-        )
-
-        relatorio_markdown_com_decisao += gerar_bloco_markdown_decisao(
-            resumo_decisao=resumo_decisao_atual,
-            simbolo_moeda=simbolo_moeda,
-        )
-
-        nome_arquivo_relatorio_decisao = gerar_nome_arquivo_relatorio(
-            empresa=entradas.empresa,
-            ticker=entradas.ticker,
-        ).replace(".md", "_decisao.md")
-
-        st.download_button(
-            label="Baixar relatório premium com decisão (.md)",
-            data=relatorio_markdown_com_decisao,
-            file_name=nome_arquivo_relatorio_decisao,
-            mime="text/markdown",
-            key="download_relatorio_premium_decisao",
-        )
-
-    with aba_comparativo:
-        st.markdown("### Central inteligente de comparação")
-
-        st.caption(
-            "Compare empresas pelo mesmo critério de valuation e identifique quais estão mais próximas de uma zona racional de entrada."
-        )
-
-        melhor_empresa = encontrar_empresa_mais_atrativa(
-            EMPRESAS,
-            formatar_moeda,
-            formatar_percentual,
-        )
-
-        renderizar_radar_oportunidade(melhor_empresa)
-
-        st.divider()
-
-        ranking_empresas_reais = gerar_ranking_empresas_reais(
-            EMPRESAS,
-            formatar_moeda,
-            formatar_percentual,
-        )
-
-        renderizar_ranking_visual(ranking_empresas_reais)
-
-        st.markdown("#### Ranking técnico")
-
-        if len(ranking_empresas_reais) == 0:
-            st.warning("Nenhuma empresa real cadastrada para gerar ranking.")
-        else:
-            st.dataframe(
-                preparar_tabela(ranking_empresas_reais),
-                use_container_width=True,
-                hide_index=True,
-            )
-
-        st.divider()
-
-        tabela_comparativo = gerar_comparativo(
-            EMPRESAS,
-            formatar_moeda,
-            formatar_percentual,
-        )
-
-        st.markdown("#### Filtros avançados")
-
-        col_filtro_1, col_filtro_2 = st.columns(2)
-
-        with col_filtro_1:
-            filtro_tipo = st.selectbox(
-                "Filtrar por tipo",
-                ["Todos", "Real", "Didática"],
-                index=1,
-            )
-
-        with col_filtro_2:
-            filtro_status = st.selectbox(
-                "Filtrar por status",
-                ["Todos", "COMPRA", "NEUTRO", "AGUARDE"],
-            )
-
-        tabela_filtrada = tabela_comparativo
-
-        if filtro_tipo != "Todos":
-            tabela_filtrada = [
-                linha for linha in tabela_filtrada
-                if linha["Tipo"] == filtro_tipo
-            ]
-
-        if filtro_status != "Todos":
-            tabela_filtrada = [
-                linha for linha in tabela_filtrada
-                if linha["Status"] == filtro_status
-            ]
-
-        st.markdown("#### Base completa de comparação")
-
-        if len(tabela_filtrada) == 0:
-            st.warning("Nenhuma empresa encontrada com os filtros selecionados.")
-        else:
-            tabela_preparada = preparar_tabela(tabela_filtrada)
-
-            st.dataframe(
-                tabela_preparada,
-                use_container_width=True,
-                hide_index=True,
-            )
-
-            csv_comparativo = converter_tabela_para_csv(tabela_preparada)
-
-            st.download_button(
-                label="Baixar comparativo em CSV",
-                data=csv_comparativo,
-                file_name="comparativo_preco_teto.csv",
-                mime="text/csv",
-            )
-
-    with aba_tese:
-        st.markdown("### Tese qualitativa da empresa")
-
-        st.text_area(
-            "Tese da empresa",
-            value=dados["tese"],
-            height=130,
-            key=f"tese_{modelo_escolhido}",
-        )
-
-        st.text_area(
-            "Principais riscos",
-            value=dados["riscos"],
-            height=130,
-            key=f"riscos_{modelo_escolhido}",
-        )
-
-        st.text_area(
-            "Fundamentos observados",
-            value=dados["fundamentos"],
-            height=130,
-            key=f"fundamentos_{modelo_escolhido}",
-        )
-
-    with aba_premissas:
-        st.markdown("### Premissas utilizadas")
-
-        moeda_unidade = dados.get("moeda", "Não informado").replace("$", "\\$")
-
-        st.info(
-            f"""
-            **Tipo de análise:** {tipo_analise}  
-            **Modo selecionado:** {modelo_escolhido}  
-            **Perfil da empresa:** {dados.get("perfil_empresa", "Não informado")}  
-            **Moeda/unidade:** {moeda_unidade}  
-            **Data de referência:** {dados.get("data_referencia", "Não informado")}  
-            **Fonte das premissas:** {dados.get("fonte_premissas", "Não informado")}
-            """
-        )
-
-        if modo_demonstracao:
-            st.warning(
-                "Esta é uma demonstração com dados fictícios. Não use como análise real."
-            )
-
-        if nova_analise_manual:
-            st.warning(
-                "Esta é uma análise manual. O app não verificou automaticamente os dados inseridos. "
-                "A qualidade do resultado depende totalmente da qualidade das premissas."
-            )
-
-        tabela_premissas = [
-            {
-                "Premissa": "Lucro líquido sustentável",
-                "Valor": formatar_moeda(lucro_liquido_sustentavel, simbolo_moeda),
-            },
-            {
-                "Premissa": "Fluxo de caixa livre",
-                "Valor": formatar_moeda(fluxo_caixa_livre, simbolo_moeda),
-            },
-            {
-                "Premissa": "Quantidade de ações",
-                "Valor": formatar_numero(quantidade_acoes),
-            },
-            {
-                "Premissa": "Preço atual",
-                "Valor": formatar_moeda(preco_atual, simbolo_moeda),
-            },
-            {
-                "Premissa": "Múltiplo justo EPS",
-                "Valor": multiplo_justo_eps,
-            },
-            {
-                "Premissa": "Múltiplo justo FCF",
-                "Valor": multiplo_justo_fcf,
-            },
-            {
-                "Premissa": "Peso EPS",
-                "Valor": f"{peso_eps}%",
-            },
-            {
-                "Premissa": "Peso FCF",
-                "Valor": f"{peso_fcf}%",
-            },
-            {
-                "Premissa": "Margem de segurança",
-                "Valor": f"{margem_seguranca}%",
-            },
-        ]
-
-        st.table(preparar_tabela(tabela_premissas))
-
-    with aba_historico:
-        st.markdown("### Histórico de análises salvas")
-
-        historico = carregar_historico()
-
-        if len(historico) == 0:
-            st.info("Nenhuma análise foi salva ainda.")
-        else:
-            historico_mais_recente_primeiro = list(reversed(historico))
-            st.table(preparar_tabela(historico_mais_recente_primeiro))
-
-            with open(CAMINHO_HISTORICO, "rb") as arquivo:
-                st.download_button(
-                    label="Baixar histórico em CSV",
-                    data=arquivo,
-                    file_name="historico_analises.csv",
-                    mime="text/csv",
+    abas_permitidas = obter_abas_por_modo(modo_exibicao)
+
+    abas_visiveis = [
+        nome_aba for nome_aba in ABAS_ORDEM_COMPLETA
+        if nome_aba in abas_permitidas
+    ]
+
+    abas_renderizadas = st.tabs(abas_visiveis)
+
+    for nome_aba, aba in zip(abas_visiveis, abas_renderizadas):
+        with aba:
+            if nome_aba == "Produto":
+                renderizar_proposta_valor()
+
+            elif nome_aba == "Navegação":
+                renderizar_painel_modo_exibicao(modo_exibicao)
+                st.divider()
+                renderizar_navegacao_simplificada()
+
+            elif nome_aba == "Onboarding":
+                renderizar_onboarding_usuario()
+
+            elif nome_aba == "Início":
+                renderizar_inicio_premium(
+                    resultado_valuation=st.session_state["resultado_valuation"]
                 )
 
-    with aba_educacional:
-        renderizar_aba_educacional()
+            elif nome_aba == "Painel Executivo":
+                renderizar_painel_executivo_multiativos()
+
+            elif nome_aba == "Valuation":
+                st.markdown("### Valuation")
+
+                col_a, col_b = st.columns(2)
+
+                with col_a:
+                    st.metric(
+                        "EPS normalizado",
+                        formatar_moeda(resultado["eps_normalizado"], simbolo_moeda),
+                    )
+
+                with col_b:
+                    st.metric(
+                        "FCF por ação",
+                        formatar_moeda(resultado["fcf_por_acao"], simbolo_moeda),
+                    )
+
+                col_c, col_d = st.columns(2)
+
+                with col_c:
+                    st.metric(
+                        "Preço justo por EPS",
+                        formatar_moeda(resultado["preco_justo_eps"], simbolo_moeda),
+                    )
+
+                with col_d:
+                    st.metric(
+                        "Preço justo por FCF",
+                        formatar_moeda(resultado["preco_justo_fcf"], simbolo_moeda),
+                    )
+
+                st.divider()
+
+                col_e, col_f = st.columns(2)
+
+                with col_e:
+                    st.metric(
+                        "Preço justo combinado",
+                        formatar_moeda(resultado["preco_justo_combinado"], simbolo_moeda),
+                        formatar_percentual(resultado["potencial_ate_preco_justo"]),
+                    )
+
+                with col_f:
+                    st.metric(
+                        "Preço-teto com margem de segurança",
+                        formatar_moeda(resultado["preco_teto"], simbolo_moeda),
+                        formatar_percentual(resultado["margem_ate_preco_teto"]),
+                    )
+
+                st.divider()
+
+                renderizar_mapa_valuation(
+                    preco_atual=preco_atual,
+                    preco_teto=resultado["preco_teto"],
+                    preco_justo=resultado["preco_justo_combinado"],
+                    simbolo=simbolo_moeda,
+                )
+
+                st.divider()
+
+                st.markdown("### Tabela-resumo")
+
+                tabela_resultado = [
+                    {
+                        "Indicador": "EPS normalizado",
+                        "Valor": formatar_moeda(resultado["eps_normalizado"], simbolo_moeda),
+                    },
+                    {
+                        "Indicador": "FCF por ação",
+                        "Valor": formatar_moeda(resultado["fcf_por_acao"], simbolo_moeda),
+                    },
+                    {
+                        "Indicador": "Preço justo por EPS",
+                        "Valor": formatar_moeda(resultado["preco_justo_eps"], simbolo_moeda),
+                    },
+                    {
+                        "Indicador": "Preço justo por FCF",
+                        "Valor": formatar_moeda(resultado["preco_justo_fcf"], simbolo_moeda),
+                    },
+                    {
+                        "Indicador": "Preço justo combinado",
+                        "Valor": formatar_moeda(resultado["preco_justo_combinado"], simbolo_moeda),
+                    },
+                    {
+                        "Indicador": "Preço-teto",
+                        "Valor": formatar_moeda(resultado["preco_teto"], simbolo_moeda),
+                    },
+                    {
+                        "Indicador": "Preço atual",
+                        "Valor": formatar_moeda(preco_atual, simbolo_moeda),
+                    },
+                    {
+                        "Indicador": "Status",
+                        "Valor": resultado["status"],
+                    },
+                    {
+                        "Indicador": "Tipo de análise",
+                        "Valor": tipo_analise,
+                    },
+                ]
+
+                st.table(preparar_tabela(tabela_resultado))
+
+            elif nome_aba == "Simulador":
+                renderizar_simulador_cenarios(
+                    entradas_base=entradas,
+                    simbolo_moeda=simbolo_moeda,
+                    formatar_moeda=formatar_moeda,
+                    formatar_percentual=formatar_percentual,
+                    preparar_tabela=preparar_tabela,
+                )
+
+            elif nome_aba == "Tese & Convicção":
+                renderizar_aba_conviccao(
+                    empresa=empresa,
+                    ticker=ticker,
+                    resultado=resultado,
+                    preparar_tabela=preparar_tabela,
+                )
+
+            elif nome_aba == "Checklist":
+                renderizar_checklist_erros(
+                    resultado_valuation=st.session_state["resultado_valuation"]
+                )
+
+            elif nome_aba == "Watchlist":
+                renderizar_watchlist_multiativos(
+                    resultado_valuation=st.session_state["resultado_valuation"]
+                )
+
+            elif nome_aba == "Relatórios":
+                renderizar_central_relatorios(
+                    entradas=entradas,
+                    resultado=resultado,
+                    dados_empresa=dados,
+                    simbolo_moeda=simbolo_moeda,
+                    formatar_moeda=formatar_moeda,
+                    formatar_percentual=formatar_percentual,
+                    formatar_numero=formatar_numero,
+                )
+
+            elif nome_aba == "Feedback Beta":
+                renderizar_feedback_beta()
+
+            elif nome_aba == "Beta Fechado":
+                renderizar_beta_fechado()
+
+            elif nome_aba == "Oferta Beta":
+                renderizar_oferta_beta()
+
+            elif nome_aba == "Negócio":
+                renderizar_dashboard_negocio()
+
+            elif nome_aba == "Marketing":
+                renderizar_central_marketing()
+
+            elif nome_aba == "Conteúdo":
+                renderizar_central_conteudo()
+
+            elif nome_aba == "Landing Page":
+                renderizar_landing_page_beta()
+
+            elif nome_aba == "Lançamento":
+                renderizar_lancamento_beta()
+
+            elif nome_aba == "Multiativos":
+                renderizar_central_multiativos(
+                    resultado_valuation=st.session_state["resultado_valuation"]
+                )
+
+            elif nome_aba == "Ações Brasil":
+                renderizar_motor_acoes_brasil(
+                    resultado_valuation=st.session_state["resultado_valuation"]
+                )
+
+            elif nome_aba == "FIIs":
+                renderizar_motor_fiis(
+                    resultado_valuation=st.session_state["resultado_valuation"]
+                )
+
+            elif nome_aba == "Renda Fixa":
+                renderizar_motor_renda_fixa(
+                    resultado_valuation=st.session_state["resultado_valuation"]
+                )
+
+            elif nome_aba == "Resumo da Decisão":
+                render_resumo_decisao(
+                    resultado_valuation=st.session_state["resultado_valuation"]
+                )
+
+                st.divider()
+
+                st.markdown("### Relatório premium da decisão")
+
+                st.caption(
+                    "Este relatório também está disponível de forma centralizada na aba Relatórios."
+                )
+
+                resumo_decisao_atual = st.session_state.get("resultado_resumo_decisao")
+
+                relatorio_markdown_com_decisao = gerar_relatorio_markdown(
+                    entradas=entradas,
+                    resultado=resultado,
+                    dados_empresa=dados,
+                    simbolo_moeda=simbolo_moeda,
+                    formatar_moeda=formatar_moeda,
+                    formatar_percentual=formatar_percentual,
+                    formatar_numero=formatar_numero,
+                )
+
+                relatorio_markdown_com_decisao += gerar_bloco_markdown_decisao(
+                    resumo_decisao=resumo_decisao_atual,
+                    simbolo_moeda=simbolo_moeda,
+                )
+
+                nome_arquivo_relatorio_decisao = gerar_nome_arquivo_relatorio(
+                    empresa=entradas.empresa,
+                    ticker=entradas.ticker,
+                ).replace(".md", "_decisao.md")
+
+                st.download_button(
+                    label="Baixar relatório premium com decisão (.md)",
+                    data=relatorio_markdown_com_decisao,
+                    file_name=nome_arquivo_relatorio_decisao,
+                    mime="text/markdown",
+                    key="download_relatorio_premium_decisao",
+                )
+
+            elif nome_aba == "Comparativo":
+                st.markdown("### Central inteligente de comparação")
+
+                st.caption(
+                    "Compare empresas pelo mesmo critério de valuation e identifique quais estão mais próximas de uma zona racional de entrada."
+                )
+
+                melhor_empresa = encontrar_empresa_mais_atrativa(
+                    EMPRESAS,
+                    formatar_moeda,
+                    formatar_percentual,
+                )
+
+                renderizar_radar_oportunidade(melhor_empresa)
+
+                st.divider()
+
+                ranking_empresas_reais = gerar_ranking_empresas_reais(
+                    EMPRESAS,
+                    formatar_moeda,
+                    formatar_percentual,
+                )
+
+                renderizar_ranking_visual(ranking_empresas_reais)
+
+                st.markdown("#### Ranking técnico")
+
+                if len(ranking_empresas_reais) == 0:
+                    st.warning("Nenhuma empresa real cadastrada para gerar ranking.")
+                else:
+                    st.dataframe(
+                        preparar_tabela(ranking_empresas_reais),
+                        use_container_width=True,
+                        hide_index=True,
+                    )
+
+                st.divider()
+
+                tabela_comparativo = gerar_comparativo(
+                    EMPRESAS,
+                    formatar_moeda,
+                    formatar_percentual,
+                )
+
+                st.markdown("#### Filtros avançados")
+
+                col_filtro_1, col_filtro_2 = st.columns(2)
+
+                with col_filtro_1:
+                    filtro_tipo = st.selectbox(
+                        "Filtrar por tipo",
+                        ["Todos", "Real", "Didática"],
+                        index=1,
+                    )
+
+                with col_filtro_2:
+                    filtro_status = st.selectbox(
+                        "Filtrar por status",
+                        ["Todos", "COMPRA", "NEUTRO", "AGUARDE"],
+                    )
+
+                tabela_filtrada = tabela_comparativo
+
+                if filtro_tipo != "Todos":
+                    tabela_filtrada = [
+                        linha for linha in tabela_filtrada
+                        if linha["Tipo"] == filtro_tipo
+                    ]
+
+                if filtro_status != "Todos":
+                    tabela_filtrada = [
+                        linha for linha in tabela_filtrada
+                        if linha["Status"] == filtro_status
+                    ]
+
+                st.markdown("#### Base completa de comparação")
+
+                if len(tabela_filtrada) == 0:
+                    st.warning("Nenhuma empresa encontrada com os filtros selecionados.")
+                else:
+                    tabela_preparada = preparar_tabela(tabela_filtrada)
+
+                    st.dataframe(
+                        tabela_preparada,
+                        use_container_width=True,
+                        hide_index=True,
+                    )
+
+                    csv_comparativo = converter_tabela_para_csv(tabela_preparada)
+
+                    st.download_button(
+                        label="Baixar comparativo em CSV",
+                        data=csv_comparativo,
+                        file_name="comparativo_preco_teto.csv",
+                        mime="text/csv",
+                    )
+
+            elif nome_aba == "Tese qualitativa":
+                st.markdown("### Tese qualitativa da empresa")
+
+                st.text_area(
+                    "Tese da empresa",
+                    value=dados["tese"],
+                    height=130,
+                    key=f"tese_{modelo_escolhido}",
+                )
+
+                st.text_area(
+                    "Principais riscos",
+                    value=dados["riscos"],
+                    height=130,
+                    key=f"riscos_{modelo_escolhido}",
+                )
+
+                st.text_area(
+                    "Fundamentos observados",
+                    value=dados["fundamentos"],
+                    height=130,
+                    key=f"fundamentos_{modelo_escolhido}",
+                )
+
+            elif nome_aba == "Premissas":
+                st.markdown("### Premissas utilizadas")
+
+                moeda_unidade = dados.get("moeda", "Não informado").replace("$", "\\$")
+
+                st.info(
+                    f"""
+                    **Tipo de análise:** {tipo_analise}  
+                    **Modo selecionado:** {modelo_escolhido}  
+                    **Perfil da empresa:** {dados.get("perfil_empresa", "Não informado")}  
+                    **Moeda/unidade:** {moeda_unidade}  
+                    **Data de referência:** {dados.get("data_referencia", "Não informado")}  
+                    **Fonte das premissas:** {dados.get("fonte_premissas", "Não informado")}
+                    """
+                )
+
+                if modo_demonstracao:
+                    st.warning(
+                        "Esta é uma demonstração com dados fictícios. Não use como análise real."
+                    )
+
+                if nova_analise_manual:
+                    st.warning(
+                        "Esta é uma análise manual. O app não verificou automaticamente os dados inseridos. "
+                        "A qualidade do resultado depende totalmente da qualidade das premissas."
+                    )
+
+                tabela_premissas = [
+                    {
+                        "Premissa": "Lucro líquido sustentável",
+                        "Valor": formatar_moeda(lucro_liquido_sustentavel, simbolo_moeda),
+                    },
+                    {
+                        "Premissa": "Fluxo de caixa livre",
+                        "Valor": formatar_moeda(fluxo_caixa_livre, simbolo_moeda),
+                    },
+                    {
+                        "Premissa": "Quantidade de ações",
+                        "Valor": formatar_numero(quantidade_acoes),
+                    },
+                    {
+                        "Premissa": "Preço atual",
+                        "Valor": formatar_moeda(preco_atual, simbolo_moeda),
+                    },
+                    {
+                        "Premissa": "Múltiplo justo EPS",
+                        "Valor": multiplo_justo_eps,
+                    },
+                    {
+                        "Premissa": "Múltiplo justo FCF",
+                        "Valor": multiplo_justo_fcf,
+                    },
+                    {
+                        "Premissa": "Peso EPS",
+                        "Valor": f"{peso_eps}%",
+                    },
+                    {
+                        "Premissa": "Peso FCF",
+                        "Valor": f"{peso_fcf}%",
+                    },
+                    {
+                        "Premissa": "Margem de segurança",
+                        "Valor": f"{margem_seguranca}%",
+                    },
+                ]
+
+                st.table(preparar_tabela(tabela_premissas))
+
+            elif nome_aba == "Histórico":
+                st.markdown("### Histórico de análises salvas")
+
+                historico = carregar_historico()
+
+                if len(historico) == 0:
+                    st.info("Nenhuma análise foi salva ainda.")
+                else:
+                    historico_mais_recente_primeiro = list(reversed(historico))
+                    st.table(preparar_tabela(historico_mais_recente_primeiro))
+
+                    with open(CAMINHO_HISTORICO, "rb") as arquivo:
+                        st.download_button(
+                            label="Baixar histórico em CSV",
+                            data=arquivo,
+                            file_name="historico_analises.csv",
+                            mime="text/csv",
+                        )
+
+            elif nome_aba == "Educação":
+                renderizar_aba_educacional()
 
 except ValueError as erro:
     st.error(str(erro))

@@ -7,7 +7,7 @@ import streamlit as st
 
 # ============================================================
 # MÁQUINA DE PREÇO-TETO
-# v1.40 — Modo Usuário Beta / Investidor / Fundador
+# v2.1 — Modo Usuário Beta / Investidor / Fundador
 # ------------------------------------------------------------
 # Este arquivo controla a experiência de navegação do app.
 #
@@ -15,6 +15,7 @@ import streamlit as st
 # - reduzir excesso de abas para usuário beta
 # - separar áreas de uso real e áreas internas do fundador
 # - preparar o produto para testes com usuários reais
+# - iniciar a Fase 2 com aprendizado real de usuários
 # ============================================================
 
 
@@ -93,6 +94,7 @@ ABAS_FUNDADOR = [
     "Lançamento",
     "Convite Beta",
     "Release",
+    "Aprendizado Beta",
     "Dados",
     "UX",
     "Multiativos",
@@ -119,7 +121,7 @@ DESCRICAO_MODOS = {
         "foco": "Clareza, valor rápido e feedback.",
         "risco_reduzido": (
             "Evita expor áreas internas de negócio, marketing, lançamento, convite beta, "
-            "release, dados e UX para usuários comuns."
+            "release, aprendizado beta, dados e UX para usuários comuns."
         ),
     },
     MODO_INVESTIDOR_COMPLETO: {
@@ -139,11 +141,15 @@ DESCRICAO_MODOS = {
         "titulo": "Modo Fundador",
         "descricao": (
             "Experiência total do produto, incluindo áreas de validação, negócio, marketing, "
-            "conteúdo, landing page, lançamento, convite beta, release, dados e auditoria UX."
+            "conteúdo, landing page, lançamento, convite beta, release, aprendizado beta, "
+            "dados e auditoria UX."
         ),
         "ideal_para": "Leo, gestor do produto, fundador e operadores do negócio.",
-        "foco": "Construção, validação, aquisição, lançamento, convite beta, release, dados, UX, backups e monetização.",
-        "risco_reduzido": "Nenhum filtro: mostra tudo que existe no MVP.",
+        "foco": (
+            "Construção, validação, aquisição, lançamento, convite beta, release, "
+            "aprendizado real, dados, UX, backups e monetização."
+        ),
+        "risco_reduzido": "Nenhum filtro: mostra tudo que existe no MVP e na Fase 2.",
     },
 }
 
@@ -191,10 +197,10 @@ def obter_resumo_modos() -> List[Dict[str, str]]:
         {
             "Modo": MODO_FUNDADOR,
             "Quantidade de abas": str(len(ABAS_FUNDADOR)),
-            "Uso ideal": "Gestão completa do produto e negócio.",
+            "Uso ideal": "Gestão completa do produto, negócio e aprendizado do beta real.",
             "O que mostra": (
                 "Tudo: produto, análise, beta, negócio, marketing, conteúdo, landing, "
-                "lançamento, convite beta, release, dados e UX."
+                "lançamento, convite beta, release, aprendizado beta, dados e UX."
             ),
         },
     ]

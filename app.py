@@ -11,6 +11,7 @@ from inicio import renderizar_inicio_premium
 from proposta_valor import renderizar_proposta_valor
 from feedback_beta import renderizar_feedback_beta
 from beta_fechado import renderizar_beta_fechado
+from oferta_beta import renderizar_oferta_beta
 from educacional import renderizar_aba_educacional
 from simulador import renderizar_simulador_cenarios
 from relatorio import gerar_relatorio_markdown, gerar_nome_arquivo_relatorio
@@ -96,7 +97,7 @@ def renderizar_hero() -> None:
     )
 
     st.caption(
-        "Produto • Jornada Guiada • Valuation • Tese • Checklist • Painel Executivo • Watchlist • Relatórios • Feedback Beta • Beta Fechado"
+        "Produto • Jornada Guiada • Valuation • Tese • Checklist • Painel Executivo • Watchlist • Relatórios • Feedback Beta • Beta Fechado • Oferta Beta"
     )
 
     col_home_1, col_home_2, col_home_3, col_home_4 = st.columns(4)
@@ -111,7 +112,7 @@ def renderizar_hero() -> None:
         st.metric("Arquitetura", "Multiativos")
 
     with col_home_4:
-        st.metric("Validação", "Beta Fechado")
+        st.metric("Monetização", "Oferta Beta")
 
     st.warning(
         "Uso educacional. Não representa recomendação de compra, venda ou manutenção de investimentos. "
@@ -536,6 +537,7 @@ try:
         aba_relatorios,
         aba_feedback_beta,
         aba_beta_fechado,
+        aba_oferta_beta,
         aba_central_multiativos,
         aba_acoes_brasil,
         aba_fiis,
@@ -559,6 +561,7 @@ try:
             "Relatórios",
             "Feedback Beta",
             "Beta Fechado",
+            "Oferta Beta",
             "Multiativos",
             "Ações Brasil",
             "FIIs",
@@ -729,6 +732,9 @@ try:
 
     with aba_beta_fechado:
         renderizar_beta_fechado()
+
+    with aba_oferta_beta:
+        renderizar_oferta_beta()
 
     with aba_central_multiativos:
         renderizar_central_multiativos(

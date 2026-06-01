@@ -8,3 +8,4 @@ data/historico_analises.csv
 .streamlit/secrets.tomlwatchlist_multiativos.csv
 watchlist_multiativos.csv
 feedback_beta.csv
+lista_espera_beta.csv

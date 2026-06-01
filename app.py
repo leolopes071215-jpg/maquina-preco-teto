@@ -20,6 +20,7 @@ from conteudo_marketing import renderizar_central_conteudo
 from landing_page_beta import renderizar_landing_page_beta
 from lancamento_beta import renderizar_lancamento_beta
 from convite_beta_publico import renderizar_convite_beta_publico
+from release_candidate import renderizar_release_candidate_fase1
 from persistencia_dados import renderizar_central_persistencia_dados
 from auditoria_ux import renderizar_auditoria_ux
 from educacional import renderizar_aba_educacional
@@ -89,6 +90,7 @@ ABAS_ORDEM_COMPLETA = [
     "Landing Page",
     "Lançamento",
     "Convite Beta",
+    "Release",
     "Dados",
     "UX",
     "Multiativos",
@@ -150,7 +152,7 @@ def renderizar_hero(modo_exibicao: str) -> None:
     )
 
     st.caption(
-        "Produto • Navegação • Onboarding • Valuation • Tese • Checklist • Watchlist • Relatórios • Negócio • Marketing • Convite Beta • Dados • UX"
+        "Produto • Navegação • Onboarding • Valuation • Tese • Checklist • Watchlist • Relatórios • Negócio • Marketing • Convite Beta • Release • Dados • UX"
     )
 
     col_home_1, col_home_2, col_home_3, col_home_4 = st.columns(4)
@@ -782,6 +784,9 @@ try:
 
             elif nome_aba == "Convite Beta":
                 renderizar_convite_beta_publico()
+
+            elif nome_aba == "Release":
+                renderizar_release_candidate_fase1()
 
             elif nome_aba == "Dados":
                 renderizar_central_persistencia_dados()

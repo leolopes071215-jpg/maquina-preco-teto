@@ -11,7 +11,8 @@ from educacional import renderizar_aba_educacional
 from simulador import renderizar_simulador_cenarios
 from relatorio import gerar_relatorio_markdown, gerar_nome_arquivo_relatorio
 from conviccao import renderizar_aba_conviccao
-from decisao import render_resumo_decisao
+from decisao import render_resumo_decisao, gerar_bloco_markdown_decisao
+from checklist import renderizar_checklist_erros
 from comparativo import (
     gerar_comparativo,
     encontrar_empresa_mais_atrativa,
@@ -106,12 +107,13 @@ def renderizar_hero() -> None:
         """
         ### Valuation disciplinado com lucro, fluxo de caixa livre e margem de segurança.
 
-        Plataforma educacional para organizar premissas, comparar empresas e estimar uma zona racional de preço.
+        Plataforma educacional para organizar premissas, comparar empresas, auditar erros de análise
+        e estimar uma zona racional de preço.
         """
     )
 
     st.caption(
-        "Modelo EPS + FCF • Radar de oportunidade • Simulador de cenários • Convicção da tese • Resumo da decisão • Relatório executivo"
+        "Modelo EPS + FCF • Radar de oportunidade • Simulador de cenários • Convicção da tese • Checklist de erros • Resumo da decisão • Relatório executivo"
     )
 
     col_home_1, col_home_2, col_home_3, col_home_4 = st.columns(4)
@@ -123,7 +125,7 @@ def renderizar_hero() -> None:
         st.metric("Motor", "EPS + FCF")
 
     with col_home_3:
-        st.metric("Leitura", "3 status")
+        st.metric("Leitura", "Multiativos")
 
     with col_home_4:
         st.metric("Modo", "Manual + Base")
@@ -519,6 +521,7 @@ try:
         aba_simulador,
         aba_conviccao,
         aba_decisao,
+        aba_checklist,
         aba_comparativo,
         aba_tese,
         aba_premissas,
@@ -530,6 +533,7 @@ try:
             "Simulador",
             "Convicção da Tese",
             "Resumo da Decisão",
+            "Checklist de Erros",
             "Comparativo",
             "Tese da empresa",
             "Premissas usadas",
@@ -686,6 +690,49 @@ try:
 
     with aba_decisao:
         render_resumo_decisao(
+            resultado_valuation=st.session_state["resultado_valuation"]
+        )
+
+        st.divider()
+
+        st.markdown("### Relatório premium da decisão")
+
+        st.caption(
+            "Baixe um relatório executivo enriquecido com valuation, convicção da tese, cenários, alertas e ação educacional sugerida."
+        )
+
+        resumo_decisao_atual = st.session_state.get("resultado_resumo_decisao")
+
+        relatorio_markdown_com_decisao = gerar_relatorio_markdown(
+            entradas=entradas,
+            resultado=resultado,
+            dados_empresa=dados,
+            simbolo_moeda=simbolo_moeda,
+            formatar_moeda=formatar_moeda,
+            formatar_percentual=formatar_percentual,
+            formatar_numero=formatar_numero,
+        )
+
+        relatorio_markdown_com_decisao += gerar_bloco_markdown_decisao(
+            resumo_decisao=resumo_decisao_atual,
+            simbolo_moeda=simbolo_moeda,
+        )
+
+        nome_arquivo_relatorio_decisao = gerar_nome_arquivo_relatorio(
+            empresa=entradas.empresa,
+            ticker=entradas.ticker,
+        ).replace(".md", "_decisao.md")
+
+        st.download_button(
+            label="Baixar relatório premium com decisão (.md)",
+            data=relatorio_markdown_com_decisao,
+            file_name=nome_arquivo_relatorio_decisao,
+            mime="text/markdown",
+            key="download_relatorio_premium_decisao",
+        )
+
+    with aba_checklist:
+        renderizar_checklist_erros(
             resultado_valuation=st.session_state["resultado_valuation"]
         )
 

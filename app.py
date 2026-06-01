@@ -9,6 +9,7 @@ from historico import salvar_analise, carregar_historico, CAMINHO_HISTORICO
 from style import aplicar_estilo
 from inicio import renderizar_inicio_premium
 from proposta_valor import renderizar_proposta_valor
+from feedback_beta import renderizar_feedback_beta
 from educacional import renderizar_aba_educacional
 from simulador import renderizar_simulador_cenarios
 from relatorio import gerar_relatorio_markdown, gerar_nome_arquivo_relatorio
@@ -94,7 +95,7 @@ def renderizar_hero() -> None:
     )
 
     st.caption(
-        "Produto • Jornada Guiada • Valuation • Tese • Checklist • Painel Executivo • Watchlist • Relatórios • Multiativos"
+        "Produto • Jornada Guiada • Valuation • Tese • Checklist • Painel Executivo • Watchlist • Relatórios • Feedback Beta"
     )
 
     col_home_1, col_home_2, col_home_3, col_home_4 = st.columns(4)
@@ -109,7 +110,7 @@ def renderizar_hero() -> None:
         st.metric("Arquitetura", "Multiativos")
 
     with col_home_4:
-        st.metric("Entrega", "Relatórios")
+        st.metric("Validação", "Beta")
 
     st.warning(
         "Uso educacional. Não representa recomendação de compra, venda ou manutenção de investimentos. "
@@ -532,6 +533,7 @@ try:
         aba_checklist,
         aba_watchlist,
         aba_relatorios,
+        aba_feedback_beta,
         aba_central_multiativos,
         aba_acoes_brasil,
         aba_fiis,
@@ -553,6 +555,7 @@ try:
             "Checklist",
             "Watchlist",
             "Relatórios",
+            "Feedback Beta",
             "Multiativos",
             "Ações Brasil",
             "FIIs",
@@ -717,6 +720,9 @@ try:
             formatar_percentual=formatar_percentual,
             formatar_numero=formatar_numero,
         )
+
+    with aba_feedback_beta:
+        renderizar_feedback_beta()
 
     with aba_central_multiativos:
         renderizar_central_multiativos(

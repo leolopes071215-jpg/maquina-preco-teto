@@ -13,6 +13,7 @@ from relatorio import gerar_relatorio_markdown, gerar_nome_arquivo_relatorio
 from conviccao import renderizar_aba_conviccao
 from decisao import render_resumo_decisao, gerar_bloco_markdown_decisao
 from checklist import renderizar_checklist_erros
+from central_multiativos import renderizar_central_multiativos
 from comparativo import (
     gerar_comparativo,
     encontrar_empresa_mais_atrativa,
@@ -105,15 +106,15 @@ def renderizar_hero() -> None:
 
     st.markdown(
         """
-        ### Valuation disciplinado com lucro, fluxo de caixa livre e margem de segurança.
+        ### Valuation disciplinado, decisão educacional e análise multiativos.
 
-        Plataforma educacional para organizar premissas, comparar empresas, auditar erros de análise
-        e estimar uma zona racional de preço.
+        Plataforma educacional para organizar premissas, comparar empresas, auditar erros de análise,
+        avaliar diferentes classes de ativos e estimar zonas racionais de decisão.
         """
     )
 
     st.caption(
-        "Modelo EPS + FCF • Radar de oportunidade • Simulador de cenários • Convicção da tese • Checklist de erros • Resumo da decisão • Relatório executivo"
+        "Ações EUA • Ações Brasil • FIIs • Renda Fixa • Valuation • Cenários • Convicção • Checklist • Relatório Premium"
     )
 
     col_home_1, col_home_2, col_home_3, col_home_4 = st.columns(4)
@@ -122,10 +123,10 @@ def renderizar_hero() -> None:
         st.metric("Empresas", len(EMPRESAS))
 
     with col_home_2:
-        st.metric("Motor", "EPS + FCF")
+        st.metric("Motor atual", "EPS + FCF")
 
     with col_home_3:
-        st.metric("Leitura", "Multiativos")
+        st.metric("Arquitetura", "Multiativos")
 
     with col_home_4:
         st.metric("Modo", "Manual + Base")
@@ -517,6 +518,7 @@ try:
     st.divider()
 
     (
+        aba_central_multiativos,
         aba_resultado,
         aba_simulador,
         aba_conviccao,
@@ -529,6 +531,7 @@ try:
         aba_educacional,
     ) = st.tabs(
         [
+            "Central Multiativos",
             "Resultado",
             "Simulador",
             "Convicção da Tese",
@@ -541,6 +544,11 @@ try:
             "Visão educacional",
         ]
     )
+
+    with aba_central_multiativos:
+        renderizar_central_multiativos(
+            resultado_valuation=st.session_state["resultado_valuation"]
+        )
 
     with aba_resultado:
         st.markdown("### Resultado do valuation")

@@ -8,6 +8,7 @@ from empresas import EMPRESAS
 from historico import salvar_analise, carregar_historico, CAMINHO_HISTORICO
 from style import aplicar_estilo
 from inicio import renderizar_inicio_premium
+from proposta_valor import renderizar_proposta_valor
 from educacional import renderizar_aba_educacional
 from simulador import renderizar_simulador_cenarios
 from relatorio import gerar_relatorio_markdown, gerar_nome_arquivo_relatorio
@@ -93,7 +94,7 @@ def renderizar_hero() -> None:
     )
 
     st.caption(
-        "Jornada Guiada • Valuation • Tese • Checklist • Painel Executivo • Watchlist • Relatórios • Multiativos"
+        "Produto • Jornada Guiada • Valuation • Tese • Checklist • Painel Executivo • Watchlist • Relatórios • Multiativos"
     )
 
     col_home_1, col_home_2, col_home_3, col_home_4 = st.columns(4)
@@ -522,6 +523,7 @@ try:
     st.divider()
 
     (
+        aba_produto,
         aba_inicio,
         aba_painel_executivo,
         aba_valuation,
@@ -542,6 +544,7 @@ try:
         aba_educacional,
     ) = st.tabs(
         [
+            "Produto",
             "Início",
             "Painel Executivo",
             "Valuation",
@@ -562,6 +565,9 @@ try:
             "Educação",
         ]
     )
+
+    with aba_produto:
+        renderizar_proposta_valor()
 
     with aba_inicio:
         renderizar_inicio_premium(

@@ -18,6 +18,7 @@ from acoes_brasil import renderizar_motor_acoes_brasil
 from fiis import renderizar_motor_fiis
 from renda_fixa import renderizar_motor_renda_fixa
 from painel_multiativos import renderizar_painel_executivo_multiativos
+from relatorio_multiativos import renderizar_download_relatorio_multiativos
 from comparativo import (
     gerar_comparativo,
     encontrar_empresa_mais_atrativa,
@@ -564,6 +565,18 @@ try:
 
     with aba_painel_executivo:
         renderizar_painel_executivo_multiativos()
+
+        st.divider()
+
+        renderizar_download_relatorio_multiativos(
+            entradas=entradas,
+            resultado=resultado,
+            dados_empresa=dados,
+            simbolo_moeda=simbolo_moeda,
+            formatar_moeda=formatar_moeda,
+            formatar_percentual=formatar_percentual,
+            formatar_numero=formatar_numero,
+        )
 
     with aba_acoes_brasil:
         renderizar_motor_acoes_brasil(

@@ -13,6 +13,7 @@ from feedback_beta import renderizar_feedback_beta
 from beta_fechado import renderizar_beta_fechado
 from oferta_beta import renderizar_oferta_beta
 from dashboard_negocio import renderizar_dashboard_negocio
+from marketing import renderizar_central_marketing
 from educacional import renderizar_aba_educacional
 from simulador import renderizar_simulador_cenarios
 from relatorio import gerar_relatorio_markdown, gerar_nome_arquivo_relatorio
@@ -98,7 +99,7 @@ def renderizar_hero() -> None:
     )
 
     st.caption(
-        "Produto • Jornada Guiada • Valuation • Tese • Checklist • Painel Executivo • Watchlist • Relatórios • Feedback Beta • Oferta Beta • Negócio"
+        "Produto • Jornada Guiada • Valuation • Tese • Checklist • Painel Executivo • Watchlist • Relatórios • Negócio • Marketing"
     )
 
     col_home_1, col_home_2, col_home_3, col_home_4 = st.columns(4)
@@ -113,7 +114,7 @@ def renderizar_hero() -> None:
         st.metric("Arquitetura", "Multiativos")
 
     with col_home_4:
-        st.metric("Gestão", "Negócio")
+        st.metric("Aquisição", "Marketing")
 
     st.warning(
         "Uso educacional. Não representa recomendação de compra, venda ou manutenção de investimentos. "
@@ -540,6 +541,7 @@ try:
         aba_beta_fechado,
         aba_oferta_beta,
         aba_negocio,
+        aba_marketing,
         aba_central_multiativos,
         aba_acoes_brasil,
         aba_fiis,
@@ -565,6 +567,7 @@ try:
             "Beta Fechado",
             "Oferta Beta",
             "Negócio",
+            "Marketing",
             "Multiativos",
             "Ações Brasil",
             "FIIs",
@@ -741,6 +744,9 @@ try:
 
     with aba_negocio:
         renderizar_dashboard_negocio()
+
+    with aba_marketing:
+        renderizar_central_marketing()
 
     with aba_central_multiativos:
         renderizar_central_multiativos(

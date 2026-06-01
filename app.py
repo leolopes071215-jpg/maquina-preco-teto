@@ -9,6 +9,7 @@ from historico import salvar_analise, carregar_historico, CAMINHO_HISTORICO
 from style import aplicar_estilo
 from inicio import renderizar_inicio_premium
 from proposta_valor import renderizar_proposta_valor
+from onboarding_usuario import renderizar_onboarding_usuario
 from feedback_beta import renderizar_feedback_beta
 from beta_fechado import renderizar_beta_fechado
 from oferta_beta import renderizar_oferta_beta
@@ -102,7 +103,7 @@ def renderizar_hero() -> None:
     )
 
     st.caption(
-        "Produto • Jornada Guiada • Valuation • Tese • Checklist • Painel Executivo • Watchlist • Relatórios • Negócio • Marketing • Conteúdo • Landing Page • Lançamento"
+        "Produto • Onboarding • Jornada Guiada • Valuation • Tese • Checklist • Painel Executivo • Watchlist • Relatórios • Negócio • Marketing • Conteúdo • Landing Page • Lançamento"
     )
 
     col_home_1, col_home_2, col_home_3, col_home_4 = st.columns(4)
@@ -117,7 +118,7 @@ def renderizar_hero() -> None:
         st.metric("Arquitetura", "Multiativos")
 
     with col_home_4:
-        st.metric("Execução", "Lançamento Beta")
+        st.metric("Experiência", "Onboarding")
 
     st.warning(
         "Uso educacional. Não representa recomendação de compra, venda ou manutenção de investimentos. "
@@ -532,6 +533,7 @@ try:
 
     (
         aba_produto,
+        aba_onboarding,
         aba_inicio,
         aba_painel_executivo,
         aba_valuation,
@@ -561,6 +563,7 @@ try:
     ) = st.tabs(
         [
             "Produto",
+            "Onboarding",
             "Início",
             "Painel Executivo",
             "Valuation",
@@ -592,6 +595,9 @@ try:
 
     with aba_produto:
         renderizar_proposta_valor()
+
+    with aba_onboarding:
+        renderizar_onboarding_usuario()
 
     with aba_inicio:
         renderizar_inicio_premium(

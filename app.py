@@ -19,6 +19,7 @@ from fiis import renderizar_motor_fiis
 from renda_fixa import renderizar_motor_renda_fixa
 from painel_multiativos import renderizar_painel_executivo_multiativos
 from relatorio_multiativos import renderizar_download_relatorio_multiativos
+from watchlist import renderizar_watchlist_multiativos
 from comparativo import (
     gerar_comparativo,
     encontrar_empresa_mais_atrativa,
@@ -114,12 +115,12 @@ def renderizar_hero() -> None:
         ### Valuation disciplinado, decisão educacional e análise multiativos.
 
         Plataforma educacional para organizar premissas, comparar empresas, auditar erros de análise,
-        avaliar diferentes classes de ativos e estimar zonas racionais de decisão.
+        avaliar diferentes classes de ativos, estimar zonas racionais de decisão e acompanhar oportunidades.
         """
     )
 
     st.caption(
-        "Ações EUA • Ações Brasil • FIIs • Renda Fixa • Valuation • Cenários • Convicção • Checklist • Painel Executivo • Relatório Premium"
+        "Ações EUA • Ações Brasil • FIIs • Renda Fixa • Valuation • Cenários • Convicção • Checklist • Painel Executivo • Watchlist • Relatório Premium"
     )
 
     col_home_1, col_home_2, col_home_3, col_home_4 = st.columns(4)
@@ -134,7 +135,7 @@ def renderizar_hero() -> None:
         st.metric("Arquitetura", "Multiativos")
 
     with col_home_4:
-        st.metric("Modo", "Manual + Base")
+        st.metric("Rotina", "Watchlist")
 
     st.warning(
         "Uso educacional. Não representa recomendação de compra, venda ou manutenção de investimentos. "
@@ -525,6 +526,7 @@ try:
     (
         aba_central_multiativos,
         aba_painel_executivo,
+        aba_watchlist,
         aba_acoes_brasil,
         aba_fiis,
         aba_renda_fixa,
@@ -542,6 +544,7 @@ try:
         [
             "Central Multiativos",
             "Painel Executivo",
+            "Watchlist",
             "Ações Brasil",
             "FIIs",
             "Renda Fixa",
@@ -576,6 +579,11 @@ try:
             formatar_moeda=formatar_moeda,
             formatar_percentual=formatar_percentual,
             formatar_numero=formatar_numero,
+        )
+
+    with aba_watchlist:
+        renderizar_watchlist_multiativos(
+            resultado_valuation=st.session_state["resultado_valuation"]
         )
 
     with aba_acoes_brasil:

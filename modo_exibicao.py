@@ -7,7 +7,7 @@ import streamlit as st
 
 # ============================================================
 # MÁQUINA DE PREÇO-TETO
-# v1.36 — Modo Usuário Beta / Investidor / Fundador
+# v1.37 — Modo Usuário Beta / Investidor / Fundador
 # ------------------------------------------------------------
 # Este arquivo controla a experiência de navegação do app.
 #
@@ -91,6 +91,7 @@ ABAS_FUNDADOR = [
     "Conteúdo",
     "Landing Page",
     "Lançamento",
+    "Dados",
     "Multiativos",
     "Ações Brasil",
     "FIIs",
@@ -113,7 +114,7 @@ DESCRICAO_MODOS = {
         ),
         "ideal_para": "Usuários convidados, primeiros beta testers e pessoas sem contexto prévio.",
         "foco": "Clareza, valor rápido e feedback.",
-        "risco_reduzido": "Evita expor áreas internas de negócio e marketing para usuários comuns.",
+        "risco_reduzido": "Evita expor áreas internas de negócio, marketing, lançamento e dados para usuários comuns.",
     },
     MODO_INVESTIDOR_COMPLETO: {
         "titulo": "Modo Investidor Completo",
@@ -127,10 +128,10 @@ DESCRICAO_MODOS = {
     MODO_FUNDADOR: {
         "titulo": "Modo Fundador",
         "descricao": (
-            "Experiência total do produto, incluindo áreas de validação, negócio, marketing, conteúdo, landing page e lançamento."
+            "Experiência total do produto, incluindo áreas de validação, negócio, marketing, conteúdo, landing page, lançamento e dados."
         ),
         "ideal_para": "Leo, gestor do produto, fundador e operadores do negócio.",
-        "foco": "Construção, validação, aquisição, lançamento e monetização.",
+        "foco": "Construção, validação, aquisição, lançamento, dados, backups e monetização.",
         "risco_reduzido": "Nenhum filtro: mostra tudo que existe no MVP.",
     },
 }
@@ -180,7 +181,7 @@ def obter_resumo_modos() -> List[Dict[str, str]]:
             "Modo": MODO_FUNDADOR,
             "Quantidade de abas": str(len(ABAS_FUNDADOR)),
             "Uso ideal": "Gestão completa do produto e negócio.",
-            "O que mostra": "Tudo: produto, análise, beta, negócio, marketing, conteúdo, landing e lançamento.",
+            "O que mostra": "Tudo: produto, análise, beta, negócio, marketing, conteúdo, landing, lançamento e dados.",
         },
     ]
 
@@ -229,7 +230,6 @@ def renderizar_controle_modo_exibicao() -> str:
 def renderizar_painel_modo_exibicao(modo: str) -> None:
     """
     Renderiza uma visão resumida do modo atual.
-    Pode ser usada dentro da aba Navegação futuramente.
     """
     descricao = obter_descricao_modo(modo)
     abas_visiveis = obter_abas_por_modo(modo)

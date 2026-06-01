@@ -16,6 +16,7 @@ from dashboard_negocio import renderizar_dashboard_negocio
 from marketing import renderizar_central_marketing
 from conteudo_marketing import renderizar_central_conteudo
 from landing_page_beta import renderizar_landing_page_beta
+from lancamento_beta import renderizar_lancamento_beta
 from educacional import renderizar_aba_educacional
 from simulador import renderizar_simulador_cenarios
 from relatorio import gerar_relatorio_markdown, gerar_nome_arquivo_relatorio
@@ -101,7 +102,7 @@ def renderizar_hero() -> None:
     )
 
     st.caption(
-        "Produto • Jornada Guiada • Valuation • Tese • Checklist • Painel Executivo • Watchlist • Relatórios • Negócio • Marketing • Conteúdo • Landing Page"
+        "Produto • Jornada Guiada • Valuation • Tese • Checklist • Painel Executivo • Watchlist • Relatórios • Negócio • Marketing • Conteúdo • Landing Page • Lançamento"
     )
 
     col_home_1, col_home_2, col_home_3, col_home_4 = st.columns(4)
@@ -116,7 +117,7 @@ def renderizar_hero() -> None:
         st.metric("Arquitetura", "Multiativos")
 
     with col_home_4:
-        st.metric("Conversão", "Landing Page")
+        st.metric("Execução", "Lançamento Beta")
 
     st.warning(
         "Uso educacional. Não representa recomendação de compra, venda ou manutenção de investimentos. "
@@ -546,6 +547,7 @@ try:
         aba_marketing,
         aba_conteudo,
         aba_landing_page,
+        aba_lancamento,
         aba_central_multiativos,
         aba_acoes_brasil,
         aba_fiis,
@@ -574,6 +576,7 @@ try:
             "Marketing",
             "Conteúdo",
             "Landing Page",
+            "Lançamento",
             "Multiativos",
             "Ações Brasil",
             "FIIs",
@@ -759,6 +762,9 @@ try:
 
     with aba_landing_page:
         renderizar_landing_page_beta()
+
+    with aba_lancamento:
+        renderizar_lancamento_beta()
 
     with aba_central_multiativos:
         renderizar_central_multiativos(

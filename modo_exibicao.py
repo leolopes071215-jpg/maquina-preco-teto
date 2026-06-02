@@ -7,7 +7,7 @@ import streamlit as st
 
 # ============================================================
 # MÁQUINA DE PREÇO-TETO
-# v3.8.5 — Modo Usuário Beta / Investidor / Fundador
+# v3.8.7 — Modo Usuário Beta / Investidor / Fundador
 # ------------------------------------------------------------
 # Este arquivo controla a experiência de navegação do app.
 #
@@ -21,7 +21,8 @@ import streamlit as st
 #   painel mestre da Fase 3, métricas da Fase 3,
 #   decisão Go/No-Go, plano de migração para Fase 4,
 #   arquitetura profissional da Fase 4, Core Engine,
-#   compatibilidade Core vs Legacy e Motor Adapter
+#   compatibilidade Core vs Legacy, Motor Adapter
+#   e Motor Controlado
 # ============================================================
 
 
@@ -120,6 +121,7 @@ ABAS_FUNDADOR = [
     "Core Engine",
     "Compatibilidade Core",
     "Motor Adapter",
+    "Motor Controlado",
     "Dados",
     "UX",
     "Multiativos",
@@ -150,7 +152,7 @@ DESCRICAO_MODOS = {
             "pré-venda beta, oferta paga, CRM beta, painel beta, Fase 3, clientes beta, "
             "suporte beta, retenção beta, painel Fase 3, métricas Fase 3, decisão Fase 3, "
             "plano Fase 4, arquitetura Fase 4, Core Engine, compatibilidade Core, Motor Adapter, "
-            "dados e UX para usuários comuns."
+            "Motor Controlado, dados e UX para usuários comuns."
         ),
     },
     MODO_INVESTIDOR_COMPLETO: {
@@ -175,7 +177,7 @@ DESCRICAO_MODOS = {
             "CRM beta, painel beta, Fase 3, clientes beta pagos, suporte beta, retenção beta, "
             "painel mestre da Fase 3, métricas da Fase 3, decisão Go/No-Go, plano Fase 4, "
             "arquitetura Fase 4, Core Engine, compatibilidade Core vs Legacy, Motor Adapter, "
-            "dados e auditoria UX."
+            "Motor Controlado, dados e auditoria UX."
         ),
         "ideal_para": "Leo, gestor do produto, fundador e operadores do negócio.",
         "foco": (
@@ -184,14 +186,16 @@ DESCRICAO_MODOS = {
             "CRM, painel mestre, preparação da Fase 3, clientes beta pagos, suporte beta, "
             "retenção, painel mestre da Fase 3, métricas, unit economics, decisão Go/No-Go, "
             "plano de migração para Fase 4, arquitetura profissional, Core Engine, "
-            "compatibilidade entre motores, Motor Adapter, dados, UX, backups e monetização."
+            "compatibilidade entre motores, Motor Adapter, Motor Controlado, dados, UX, "
+            "backups e monetização."
         ),
         "risco_reduzido": (
             "Nenhum filtro: mostra tudo que existe no MVP, na Fase 2, no painel de decisão, "
             "na preparação do beta pago controlado, no controle de clientes pagantes, no suporte, "
             "na retenção, no painel estratégico da Fase 3, nas métricas de negócio, na decisão "
             "Go/No-Go, no plano de migração, no blueprint técnico da Fase 4, no Core Engine, "
-            "na auditoria de compatibilidade entre motor antigo e motor novo e no Motor Adapter."
+            "na auditoria de compatibilidade entre motor antigo e motor novo, no Motor Adapter "
+            "e no Motor Controlado."
         ),
     },
 }
@@ -247,7 +251,8 @@ def obter_resumo_modos() -> List[Dict[str, str]]:
                 "prioridades beta, sprints beta, pré-venda beta, oferta paga, CRM beta, "
                 "painel beta, Fase 3, clientes beta, suporte beta, retenção beta, "
                 "painel Fase 3, métricas Fase 3, decisão Fase 3, plano Fase 4, "
-                "arquitetura Fase 4, Core Engine, compatibilidade Core, Motor Adapter, dados e UX."
+                "arquitetura Fase 4, Core Engine, compatibilidade Core, Motor Adapter, "
+                "Motor Controlado, dados e UX."
             ),
         },
     ]

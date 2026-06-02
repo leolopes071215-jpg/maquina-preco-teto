@@ -102,8 +102,8 @@ from comparativo import (
 
 
 st.set_page_config(
-    page_title="Máquina de Preço-Teto",
-    page_icon="📊",
+    page_title="Valoris",
+    page_icon="📈",
     layout="wide",
 )
 
@@ -220,53 +220,73 @@ def obter_rotulo_motor_executado(resultado: dict, motor_valuation: str) -> str:
 
 def renderizar_hero(modo_exibicao: str, motor_valuation: str) -> None:
     if modo_exibicao == MODO_USUARIO_BETA:
-        st.markdown("# 📊 Máquina de Preço-Teto")
+        st.markdown("# VALORIS")
 
         st.markdown(
             """
-            ### Pare de comprar ação no impulso.
+            ### Plataforma de Valuation e Decisão de Investimentos
 
-            Descubra o preço máximo que faz sentido pagar por uma empresa com base em
-            lucro, fluxo de caixa, múltiplos e margem de segurança.
+            ## Descubra quanto vale um ativo antes de investir.
+
+            O mercado recompensa boas empresas.  
+            Mas o patrimônio é construído por quem entende a diferença entre **preço** e **valor**.
+
+            A maioria dos investidores procura a próxima ação vencedora.  
+            Poucos param para responder uma pergunta mais importante:
+
+            **Quanto ela realmente vale?**
+
+            O Valoris transforma essa pergunta em um processo.
+
+            Você organiza premissas.  
+            Constrói uma tese.  
+            Estima valor intrínseco.  
+            Aplica margem de segurança.  
+            E só então toma uma decisão.
+
+            Porque investir não é prever o futuro.  
+            É tomar boas decisões repetidamente — com método, clareza e disciplina.
             """
         )
 
         st.caption(
-            "Análise • Preço-teto • Margem de segurança • Checklist • Relatório • Feedback"
+            "Valor Intrínseco • Valuation • Análise Fundamentalista • Margem de Segurança • Convicção • Decisão"
         )
 
         col_home_1, col_home_2, col_home_3, col_home_4 = st.columns(4)
 
         with col_home_1:
-            st.metric("Método", "Preço-teto")
+            st.metric("Método", "Valuation")
 
         with col_home_2:
             st.metric("Foco", "Margem de segurança")
 
         with col_home_3:
-            st.metric("Experiência", "Beta")
+            st.metric("Experiência", "Valoris")
 
         with col_home_4:
             st.metric("Uso", "Educacional")
 
-        st.info(obter_mensagem_modo_para_hero(modo_exibicao))
+        st.info(
+            "Comece pela análise ao lado: escolha uma empresa, revise as premissas e observe se o preço atual oferece margem de segurança."
+        )
 
         st.warning(
-            "Ferramenta educacional. Não representa recomendação de compra, venda "
-            "ou manutenção de investimentos."
+            "O Valoris é uma plataforma educacional. Não representa recomendação de compra, venda ou manutenção de investimentos. "
+            "Os resultados dependem diretamente das premissas utilizadas."
         )
 
         st.divider()
         return
 
-    st.markdown("# 📊 Máquina de Preço-Teto")
+    st.markdown("# VALORIS")
 
     st.markdown(
         """
-        ### Valuation disciplinado, decisão educacional e análise multiativos.
+        ### Plataforma de Valuation, Análise Fundamentalista e Decisão de Investimentos
 
-        Plataforma educacional para organizar premissas, comparar empresas, auditar erros de análise,
-        avaliar diferentes classes de ativos, estimar zonas racionais de decisão e acompanhar oportunidades.
+        O Valoris organiza o processo completo do investidor racional: premissas, valuation,
+        tese, checklist, margem de segurança, comparação, relatório, aprendizado beta e governança do produto.
         """
     )
 
@@ -296,7 +316,6 @@ def renderizar_hero(modo_exibicao: str, motor_valuation: str) -> None:
     )
 
     st.divider()
-
 
 def renderizar_barra_valuation(
     rotulo: str,

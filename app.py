@@ -78,11 +78,11 @@ from modos_analise import (
     eh_nova_analise_manual,
 )
 from motor_valuation_controlado import (
-    calcular_valuation_controlado,
     obter_descricao_motor,
     obter_motor_padrao,
     obter_motores_disponiveis,
 )
+from fallback_motor_valuation import calcular_valuation_com_fallback
 from comparativo import (
     gerar_comparativo,
     encontrar_empresa_mais_atrativa,
@@ -192,6 +192,15 @@ def converter_tabela_para_csv(tabela: list[dict]) -> str:
     return saida.getvalue()
 
 
+def obter_rotulo_motor_executado(resultado: dict, motor_valuation: str) -> str:
+    return str(
+        resultado.get(
+            "motor_executado",
+            resultado.get("motor_selecionado", motor_valuation),
+        )
+    )
+
+
 def renderizar_hero(modo_exibicao: str, motor_valuation: str) -> None:
     st.markdown("# 📊 Máquina de Preço-Teto")
 
@@ -214,7 +223,7 @@ def renderizar_hero(modo_exibicao: str, motor_valuation: str) -> None:
         st.metric("Empresas", len(EMPRESAS))
 
     with col_home_2:
-        st.metric("Motor atual", motor_valuation)
+        st.metric("Motor preferido", motor_valuation)
 
     with col_home_3:
         st.metric("Arquitetura", "Multiativos")
@@ -311,6 +320,7 @@ def renderizar_painel_decisao(
     preco_atual: float,
     resultado: dict,
     simbolo_moeda: str,
+    motor_valuation: str,
 ) -> None:
     with st.container(border=True):
         col1, col2, col3 = st.columns([1, 1, 1])
@@ -341,9 +351,15 @@ def renderizar_painel_decisao(
         st.markdown("#### Leitura automática")
         st.info(resultado["explicacao_status"])
 
-        st.caption(
-            f"Motor usado no cálculo: {resultado.get('motor_selecionado', resultado.get('motor', 'Legacy'))}"
-        )
+        motor_executado = obter_rotulo_motor_executado(resultado, motor_valuation)
+
+        st.caption(f"Motor preferido: {motor_valuation}")
+        st.caption(f"Motor executado: {motor_executado}")
+
+        if resultado.get("fallback_ocorreu"):
+            st.warning(
+                "Fallback executado: o motor preferido falhou e o sistema voltou automaticamente para Legacy."
+            )
 
 
 def renderizar_radar_oportunidade(melhor_empresa: dict) -> None:
@@ -575,14 +591,22 @@ with st.sidebar:
 
         st.caption(descricao_motor["descricao"])
 
+        permitir_fallback_principal = st.checkbox(
+            "Permitir fallback automático para Legacy",
+            value=True,
+            help="Se o Core Engine falhar, o app volta automaticamente para Legacy.",
+            key="permitir_fallback_principal",
+        )
+
         if motor_valuation == "Core Engine":
             st.warning(
-                "Core Engine ativado no fluxo principal. Use apenas após as auditorias permanecerem aprovadas."
+                "Core Engine ativado no fluxo principal. O fallback automático deve permanecer ligado durante a transição."
             )
         else:
             st.success("Legacy ativo como motor seguro padrão.")
     else:
         motor_valuation = obter_motor_padrao()
+        permitir_fallback_principal = True
 
 
 renderizar_hero(
@@ -620,11 +644,15 @@ try:
         preco_atual=preco_atual,
     )
 
-    resultado = calcular_valuation_controlado(
+    resultado = calcular_valuation_com_fallback(
         entradas=entradas,
-        motor=motor_valuation,
+        motor_preferido=motor_valuation,
         moeda=simbolo_moeda,
+        permitir_fallback=permitir_fallback_principal,
+        forcar_falha_core=False,
     )
+
+    motor_executado = obter_rotulo_motor_executado(resultado, motor_valuation)
 
     st.session_state["resultado_valuation"] = {
         "empresa": empresa,
@@ -641,8 +669,14 @@ try:
         "margem_ate_preco_teto": resultado["margem_ate_preco_teto"],
         "potencial_ate_preco_justo": resultado["potencial_ate_preco_justo"],
         "simbolo_moeda": simbolo_moeda,
+        "motor_preferido": motor_valuation,
+        "motor_executado": motor_executado,
         "motor_selecionado": resultado.get("motor_selecionado", motor_valuation),
         "motor_id": resultado.get("motor_id", ""),
+        "motor_executado_id": resultado.get("motor_executado_id", ""),
+        "fallback_ocorreu": resultado.get("fallback_ocorreu", False),
+        "status_fallback": resultado.get("status_fallback", ""),
+        "versao_fallback_motor": resultado.get("versao_fallback_motor", ""),
         "versao_motor_controlado": resultado.get("versao_motor_controlado", ""),
         "versao_motor": resultado.get("versao_motor", ""),
     }
@@ -662,12 +696,15 @@ try:
         "margem_seguranca": margem_seguranca,
         "preco_atual": preco_atual,
         "motor_valuation": motor_valuation,
+        "motor_executado": motor_executado,
+        "fallback_ocorreu": resultado.get("fallback_ocorreu", False),
     }
 
     renderizar_painel_decisao(
         preco_atual=preco_atual,
         resultado=resultado,
         simbolo_moeda=simbolo_moeda,
+        motor_valuation=motor_valuation,
     )
 
     st.divider()
@@ -817,12 +854,20 @@ try:
                         "Valor": tipo_analise,
                     },
                     {
-                        "Indicador": "Motor selecionado",
-                        "Valor": resultado.get("motor_selecionado", motor_valuation),
+                        "Indicador": "Motor preferido",
+                        "Valor": motor_valuation,
                     },
                     {
-                        "Indicador": "Versão do controlador",
-                        "Valor": resultado.get("versao_motor_controlado", "N/D"),
+                        "Indicador": "Motor executado",
+                        "Valor": motor_executado,
+                    },
+                    {
+                        "Indicador": "Fallback ocorreu",
+                        "Valor": "Sim" if resultado.get("fallback_ocorreu") else "Não",
+                    },
+                    {
+                        "Indicador": "Versão do fallback",
+                        "Valor": resultado.get("versao_fallback_motor", "N/D"),
                     },
                 ]
 
@@ -1220,8 +1265,16 @@ try:
                         "Valor": f"{margem_seguranca}%",
                     },
                     {
-                        "Premissa": "Motor de valuation",
-                        "Valor": resultado.get("motor_selecionado", motor_valuation),
+                        "Premissa": "Motor preferido",
+                        "Valor": motor_valuation,
+                    },
+                    {
+                        "Premissa": "Motor executado",
+                        "Valor": motor_executado,
+                    },
+                    {
+                        "Premissa": "Fallback ocorreu",
+                        "Valor": "Sim" if resultado.get("fallback_ocorreu") else "Não",
                     },
                 ]
 
@@ -1250,4 +1303,6 @@ try:
                 renderizar_aba_educacional()
 
 except ValueError as erro:
+    st.error(str(erro))
+except RuntimeError as erro:
     st.error(str(erro))

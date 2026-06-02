@@ -83,7 +83,10 @@ from motor_valuation_controlado import (
     obter_motor_padrao,
     obter_motores_disponiveis,
 )
-from fallback_motor_valuation import calcular_valuation_com_fallback
+from logs_motor_valuation import (
+    CAMINHO_LOGS_MOTOR,
+    calcular_valuation_com_log,
+)
 from comparativo import (
     gerar_comparativo,
     encontrar_empresa_mais_atrativa,
@@ -362,6 +365,9 @@ def renderizar_painel_decisao(
             st.warning(
                 "Fallback executado: o motor preferido falhou e o sistema voltou automaticamente para Legacy."
             )
+
+        if resultado.get("log_motor_registrado"):
+            st.caption(f"Log técnico registrado: {resultado.get('id_log_motor', '')}")
 
 
 def renderizar_radar_oportunidade(melhor_empresa: dict) -> None:
@@ -646,11 +652,14 @@ try:
         preco_atual=preco_atual,
     )
 
-    resultado = calcular_valuation_com_fallback(
+    resultado = calcular_valuation_com_log(
         entradas=entradas,
         motor_preferido=motor_valuation,
         moeda=simbolo_moeda,
         permitir_fallback=permitir_fallback_principal,
+        origem="app",
+        contexto="fluxo_principal",
+        caminho_log=CAMINHO_LOGS_MOTOR,
         forcar_falha_core=False,
     )
 
@@ -678,6 +687,9 @@ try:
         "motor_executado_id": resultado.get("motor_executado_id", ""),
         "fallback_ocorreu": resultado.get("fallback_ocorreu", False),
         "status_fallback": resultado.get("status_fallback", ""),
+        "log_motor_registrado": resultado.get("log_motor_registrado", False),
+        "id_log_motor": resultado.get("id_log_motor", ""),
+        "versao_logs_motor": resultado.get("versao_logs_motor", ""),
         "versao_fallback_motor": resultado.get("versao_fallback_motor", ""),
         "versao_motor_controlado": resultado.get("versao_motor_controlado", ""),
         "versao_motor": resultado.get("versao_motor", ""),
@@ -700,6 +712,8 @@ try:
         "motor_valuation": motor_valuation,
         "motor_executado": motor_executado,
         "fallback_ocorreu": resultado.get("fallback_ocorreu", False),
+        "log_motor_registrado": resultado.get("log_motor_registrado", False),
+        "id_log_motor": resultado.get("id_log_motor", ""),
     }
 
     renderizar_painel_decisao(
@@ -868,8 +882,16 @@ try:
                         "Valor": "Sim" if resultado.get("fallback_ocorreu") else "Não",
                     },
                     {
-                        "Indicador": "Versão do fallback",
-                        "Valor": resultado.get("versao_fallback_motor", "N/D"),
+                        "Indicador": "Log registrado",
+                        "Valor": "Sim" if resultado.get("log_motor_registrado") else "Não",
+                    },
+                    {
+                        "Indicador": "ID do log",
+                        "Valor": resultado.get("id_log_motor", "N/D"),
+                    },
+                    {
+                        "Indicador": "Versão logs",
+                        "Valor": resultado.get("versao_logs_motor", "N/D"),
                     },
                 ]
 
@@ -1280,6 +1302,14 @@ try:
                     {
                         "Premissa": "Fallback ocorreu",
                         "Valor": "Sim" if resultado.get("fallback_ocorreu") else "Não",
+                    },
+                    {
+                        "Premissa": "Log técnico registrado",
+                        "Valor": "Sim" if resultado.get("log_motor_registrado") else "Não",
+                    },
+                    {
+                        "Premissa": "ID do log",
+                        "Valor": resultado.get("id_log_motor", "N/D"),
                     },
                 ]
 

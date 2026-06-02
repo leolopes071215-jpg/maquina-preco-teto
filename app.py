@@ -49,6 +49,7 @@ from painel_saude_motor import renderizar_painel_saude_motor
 from painel_decisao_core import renderizar_painel_decisao_core
 from painel_promocao_core import renderizar_painel_promocao_core
 from produto_estrategico import renderizar_produto_estrategico
+from experiencia_beta import renderizar_experiencia_usuario_beta
 from persistencia_dados import renderizar_central_persistencia_dados
 from auditoria_ux import renderizar_auditoria_ux
 from educacional import renderizar_aba_educacional
@@ -66,6 +67,7 @@ from painel_multiativos import renderizar_painel_executivo_multiativos
 from watchlist import renderizar_watchlist_multiativos
 from modo_exibicao import (
     MODO_FUNDADOR,
+    MODO_USUARIO_BETA,
     obter_abas_por_modo,
     obter_mensagem_modo_para_hero,
     obter_rotulo_metrica_modo,
@@ -215,6 +217,46 @@ def obter_rotulo_motor_executado(resultado: dict, motor_valuation: str) -> str:
 
 
 def renderizar_hero(modo_exibicao: str, motor_valuation: str) -> None:
+    if modo_exibicao == MODO_USUARIO_BETA:
+        st.markdown("# 📊 Máquina de Preço-Teto")
+
+        st.markdown(
+            """
+            ### Pare de comprar ação no impulso.
+
+            Descubra o preço máximo que faz sentido pagar por uma empresa com base em
+            lucro, fluxo de caixa, múltiplos e margem de segurança.
+            """
+        )
+
+        st.caption(
+            "Análise • Preço-teto • Margem de segurança • Checklist • Relatório • Feedback"
+        )
+
+        col_home_1, col_home_2, col_home_3, col_home_4 = st.columns(4)
+
+        with col_home_1:
+            st.metric("Método", "Preço-teto")
+
+        with col_home_2:
+            st.metric("Foco", "Margem de segurança")
+
+        with col_home_3:
+            st.metric("Experiência", "Beta")
+
+        with col_home_4:
+            st.metric("Uso", "Educacional")
+
+        st.info(obter_mensagem_modo_para_hero(modo_exibicao))
+
+        st.warning(
+            "Ferramenta educacional. Não representa recomendação de compra, venda "
+            "ou manutenção de investimentos."
+        )
+
+        st.divider()
+        return
+
     st.markdown("# 📊 Máquina de Preço-Teto")
 
     st.markdown(
@@ -771,9 +813,15 @@ try:
                 renderizar_onboarding_usuario()
 
             elif nome_aba == "Início":
-                renderizar_inicio_premium(
-                    resultado_valuation=st.session_state["resultado_valuation"]
-                )
+                if modo_exibicao == MODO_USUARIO_BETA:
+                    renderizar_experiencia_usuario_beta(
+                        resultado_valuation=st.session_state["resultado_valuation"],
+                        entradas_valuation=st.session_state["entradas_valuation"],
+                    )
+                else:
+                    renderizar_inicio_premium(
+                        resultado_valuation=st.session_state["resultado_valuation"]
+                    )
 
             elif nome_aba == "Painel Executivo":
                 renderizar_painel_executivo_multiativos()

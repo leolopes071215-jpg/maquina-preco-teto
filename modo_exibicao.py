@@ -7,24 +7,15 @@ import streamlit as st
 
 # ============================================================
 # MÁQUINA DE PREÇO-TETO
-# v3.8.23 — Modo Usuário Beta / Investidor / Fundador
+# v3.8.25 — Modo Usuário Beta / Investidor / Fundador
 # ------------------------------------------------------------
 # Este arquivo controla a experiência de navegação do app.
 #
 # Objetivo:
-# - reduzir excesso de abas para usuário beta
-# - separar áreas de uso real e áreas internas do fundador
-# - preparar o produto para testes com usuários reais
-# - estruturar aprendizado, rodadas, priorização, sprints,
-#   pré-venda, oferta paga, CRM beta, painel mestre beta,
-#   Fase 3, clientes beta pagos, suporte beta, retenção beta,
-#   painel mestre da Fase 3, métricas da Fase 3,
-#   decisão Go/No-Go, plano de migração para Fase 4,
-#   arquitetura profissional da Fase 4, Core Engine,
-#   compatibilidade Core vs Legacy, Motor Adapter,
-#   Motor Controlado, Auditoria Motor Principal,
-#   Fallback Motor, Logs Motor, Saúde Motor, Decisão Core,
-#   Promoção Core e Estratégia Produto
+# - reduzir ruído para usuário beta
+# - abrir o app por padrão em experiência simples
+# - separar produto real de áreas internas do fundador
+# - preparar o MVP para teste público com usuários reais
 # ============================================================
 
 
@@ -39,18 +30,15 @@ MODOS_EXIBICAO = [
 ]
 
 
+# Experiência enxuta para teste real.
+# O usuário beta precisa entender valor, analisar, revisar, baixar relatório e dar feedback.
 ABAS_USUARIO_BETA = [
-    "Produto",
-    "Navegação",
-    "Onboarding",
     "Início",
     "Valuation",
-    "Tese & Convicção",
     "Checklist",
     "Relatórios",
     "Feedback Beta",
     "Oferta Beta",
-    "Educação",
 ]
 
 
@@ -150,19 +138,14 @@ DESCRICAO_MODOS = {
     MODO_USUARIO_BETA: {
         "titulo": "Modo Usuário Beta",
         "descricao": (
-            "Experiência simplificada para alguém testar o produto sem se perder. "
-            "Mostra apenas as áreas essenciais para entender, analisar, baixar relatório e enviar feedback."
+            "Experiência enxuta para teste real. Mostra apenas o essencial: análise, "
+            "preço-teto, checklist, relatório, feedback e oferta."
         ),
         "ideal_para": "Usuários convidados, primeiros beta testers e pessoas sem contexto prévio.",
-        "foco": "Clareza, valor rápido e feedback.",
+        "foco": "Clareza, valor rápido e feedback real.",
         "risco_reduzido": (
-            "Evita expor áreas internas de negócio, marketing, lançamento, convite beta, "
-            "release, aprendizado beta, rodadas beta, prioridades beta, sprints beta, "
-            "pré-venda beta, oferta paga, CRM beta, painel beta, Fase 3, clientes beta, "
-            "suporte beta, retenção beta, painel Fase 3, métricas Fase 3, decisão Fase 3, "
-            "plano Fase 4, arquitetura Fase 4, Core Engine, compatibilidade Core, Motor Adapter, "
-            "Motor Controlado, Auditoria Motor Principal, Fallback Motor, Logs Motor, Saúde Motor, "
-            "Decisão Core, Promoção Core, Estratégia Produto, dados e UX para usuários comuns."
+            "Oculta áreas internas de fundador, governança técnica, negócio, arquitetura, "
+            "métricas, logs, motores e módulos avançados."
         ),
     },
     MODO_INVESTIDOR_COMPLETO: {
@@ -192,30 +175,20 @@ DESCRICAO_MODOS = {
         ),
         "ideal_para": "Leo, gestor do produto, fundador e operadores do negócio.",
         "foco": (
-            "Construção, validação, aquisição, lançamento, convite beta, release, "
-            "aprendizado real, rodadas beta, prioridades, sprints, pré-venda, oferta paga, "
-            "CRM, painel mestre, preparação da Fase 3, clientes beta pagos, suporte beta, "
-            "retenção, painel mestre da Fase 3, métricas, unit economics, decisão Go/No-Go, "
-            "plano de migração para Fase 4, arquitetura profissional, Core Engine, "
-            "compatibilidade entre motores, Motor Adapter, Motor Controlado, Auditoria Motor Principal, "
-            "Fallback Motor, Logs Motor, Saúde Motor, Decisão Core, Promoção Core, Estratégia Produto, "
-            "dados, UX, backups e monetização."
+            "Construção, validação, aquisição, lançamento, produto, beta real, oferta, "
+            "arquitetura, governança técnica, dados, UX, backups e monetização."
         ),
         "risco_reduzido": (
-            "Nenhum filtro: mostra tudo que existe no MVP, na Fase 2, no painel de decisão, "
-            "na preparação do beta pago controlado, no controle de clientes pagantes, no suporte, "
-            "na retenção, no painel estratégico da Fase 3, nas métricas de negócio, na decisão "
-            "Go/No-Go, no plano de migração, no blueprint técnico da Fase 4, no Core Engine, "
-            "na auditoria de compatibilidade entre motor antigo e motor novo, no Motor Adapter, "
-            "no Motor Controlado, na Auditoria Motor Principal, no Fallback Motor, nos Logs Motor, "
-            "na Saúde Motor, na Decisão Core, na Promoção Core e na Estratégia Produto."
+            "Nenhum filtro: mostra tudo que existe no MVP, na Fase 2, Fase 3, Fase 4, "
+            "núcleo técnico, estratégia, negócio, marketing e operação."
         ),
     },
 }
 
 
 def obter_modo_exibicao_padrao() -> str:
-    return MODO_FUNDADOR
+    # Para teste público, o padrão precisa ser a experiência do usuário comum.
+    return MODO_USUARIO_BETA
 
 
 def obter_abas_por_modo(modo: str) -> List[str]:
@@ -229,7 +202,7 @@ def obter_abas_por_modo(modo: str) -> List[str]:
 
 
 def obter_descricao_modo(modo: str) -> Dict[str, str]:
-    return DESCRICAO_MODOS.get(modo, DESCRICAO_MODOS[MODO_FUNDADOR])
+    return DESCRICAO_MODOS.get(modo, DESCRICAO_MODOS[MODO_USUARIO_BETA])
 
 
 def aba_ativa(nome_aba: str, modo: str) -> bool:
@@ -246,7 +219,7 @@ def obter_resumo_modos() -> List[Dict[str, str]]:
             "Modo": MODO_USUARIO_BETA,
             "Quantidade de abas": str(len(ABAS_USUARIO_BETA)),
             "Uso ideal": "Teste rápido com usuários reais.",
-            "O que mostra": "Produto, navegação, onboarding, valuation, relatório, feedback e oferta.",
+            "O que mostra": "Início, valuation, checklist, relatório, feedback e oferta.",
         },
         {
             "Modo": MODO_INVESTIDOR_COMPLETO,
@@ -260,13 +233,8 @@ def obter_resumo_modos() -> List[Dict[str, str]]:
             "Uso ideal": "Gestão completa do produto, negócio e aprendizado do beta real.",
             "O que mostra": (
                 "Tudo: produto, análise, beta, negócio, marketing, conteúdo, landing, "
-                "lançamento, convite beta, release, aprendizado beta, rodadas beta, "
-                "prioridades beta, sprints beta, pré-venda beta, oferta paga, CRM beta, "
-                "painel beta, Fase 3, clientes beta, suporte beta, retenção beta, "
-                "painel Fase 3, métricas Fase 3, decisão Fase 3, plano Fase 4, "
-                "arquitetura Fase 4, Core Engine, compatibilidade Core, Motor Adapter, "
-                "Motor Controlado, Auditoria Motor Principal, Fallback Motor, Logs Motor, "
-                "Saúde Motor, Decisão Core, Promoção Core, Estratégia Produto, dados e UX."
+                "lançamento, CRM, Fase 3, Fase 4, Core Engine, logs, saúde, decisão, "
+                "promoção, estratégia, dados e UX."
             ),
         },
     ]
@@ -304,7 +272,7 @@ def renderizar_controle_modo_exibicao() -> str:
     st.caption(descricao["descricao"])
 
     if modo == MODO_USUARIO_BETA:
-        st.success("Interface simplificada para teste beta.")
+        st.success("Interface enxuta para teste beta.")
     elif modo == MODO_INVESTIDOR_COMPLETO:
         st.info("Interface completa para análise e acompanhamento.")
     else:
@@ -353,7 +321,7 @@ def renderizar_painel_modo_exibicao(modo: str) -> None:
 
 def obter_mensagem_modo_para_hero(modo: str) -> str:
     if modo == MODO_USUARIO_BETA:
-        return "Experiência simplificada para teste beta"
+        return "Descubra seu preço-teto antes de investir"
 
     if modo == MODO_INVESTIDOR_COMPLETO:
         return "Experiência completa para análise de investimentos"
@@ -363,7 +331,7 @@ def obter_mensagem_modo_para_hero(modo: str) -> str:
 
 def obter_rotulo_metrica_modo(modo: str) -> str:
     if modo == MODO_USUARIO_BETA:
-        return "Usuário Beta"
+        return "Beta"
 
     if modo == MODO_INVESTIDOR_COMPLETO:
         return "Investidor"

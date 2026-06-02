@@ -3,7 +3,7 @@ from io import StringIO
 
 import streamlit as st
 
-from valuation import EntradasValuation, calcular_valuation
+from valuation import EntradasValuation
 from empresas import EMPRESAS
 from historico import salvar_analise, carregar_historico, CAMINHO_HISTORICO
 from style import aplicar_estilo
@@ -58,6 +58,7 @@ from renda_fixa import renderizar_motor_renda_fixa
 from painel_multiativos import renderizar_painel_executivo_multiativos
 from watchlist import renderizar_watchlist_multiativos
 from modo_exibicao import (
+    MODO_FUNDADOR,
     obter_abas_por_modo,
     obter_mensagem_modo_para_hero,
     obter_rotulo_metrica_modo,
@@ -73,6 +74,12 @@ from modos_analise import (
     obter_descricao_modo,
     eh_modo_demonstracao,
     eh_nova_analise_manual,
+)
+from motor_valuation_controlado import (
+    calcular_valuation_controlado,
+    obter_descricao_motor,
+    obter_motor_padrao,
+    obter_motores_disponiveis,
 )
 from comparativo import (
     gerar_comparativo,
@@ -181,7 +188,7 @@ def converter_tabela_para_csv(tabela: list[dict]) -> str:
     return saida.getvalue()
 
 
-def renderizar_hero(modo_exibicao: str) -> None:
+def renderizar_hero(modo_exibicao: str, motor_valuation: str) -> None:
     st.markdown("# 📊 Máquina de Preço-Teto")
 
     st.markdown(
@@ -203,7 +210,7 @@ def renderizar_hero(modo_exibicao: str) -> None:
         st.metric("Empresas", len(EMPRESAS))
 
     with col_home_2:
-        st.metric("Motor atual", "EPS + FCF")
+        st.metric("Motor atual", motor_valuation)
 
     with col_home_3:
         st.metric("Arquitetura", "Multiativos")
@@ -329,6 +336,10 @@ def renderizar_painel_decisao(
 
         st.markdown("#### Leitura automática")
         st.info(resultado["explicacao_status"])
+
+        st.caption(
+            f"Motor usado no cálculo: {resultado.get('motor_selecionado', resultado.get('motor', 'Legacy'))}"
+        )
 
 
 def renderizar_radar_oportunidade(melhor_empresa: dict) -> None:
@@ -538,8 +549,42 @@ with st.sidebar:
         key=f"margem_{modelo_escolhido}",
     )
 
+    st.divider()
 
-renderizar_hero(modo_exibicao)
+    if modo_exibicao == MODO_FUNDADOR:
+        st.markdown("#### Motor de valuation")
+
+        motores_disponiveis = obter_motores_disponiveis()
+
+        if "motor_valuation_principal" not in st.session_state:
+            st.session_state["motor_valuation_principal"] = obter_motor_padrao()
+
+        motor_valuation = st.selectbox(
+            "Motor usado no cálculo principal",
+            motores_disponiveis,
+            index=motores_disponiveis.index(st.session_state["motor_valuation_principal"]),
+            help="Use Legacy como padrão seguro. Use Core Engine apenas para teste controlado.",
+            key="motor_valuation_principal",
+        )
+
+        descricao_motor = obter_descricao_motor(motor_valuation)
+
+        st.caption(descricao_motor["descricao"])
+
+        if motor_valuation == "Core Engine":
+            st.warning(
+                "Core Engine ativado no fluxo principal. Use apenas após as auditorias permanecerem aprovadas."
+            )
+        else:
+            st.success("Legacy ativo como motor seguro padrão.")
+    else:
+        motor_valuation = obter_motor_padrao()
+
+
+renderizar_hero(
+    modo_exibicao=modo_exibicao,
+    motor_valuation=motor_valuation,
+)
 
 st.subheader(f"Análise de valuation: {empresa} ({ticker.upper()})")
 
@@ -571,7 +616,11 @@ try:
         preco_atual=preco_atual,
     )
 
-    resultado = calcular_valuation(entradas)
+    resultado = calcular_valuation_controlado(
+        entradas=entradas,
+        motor=motor_valuation,
+        moeda=simbolo_moeda,
+    )
 
     st.session_state["resultado_valuation"] = {
         "empresa": empresa,
@@ -588,6 +637,10 @@ try:
         "margem_ate_preco_teto": resultado["margem_ate_preco_teto"],
         "potencial_ate_preco_justo": resultado["potencial_ate_preco_justo"],
         "simbolo_moeda": simbolo_moeda,
+        "motor_selecionado": resultado.get("motor_selecionado", motor_valuation),
+        "motor_id": resultado.get("motor_id", ""),
+        "versao_motor_controlado": resultado.get("versao_motor_controlado", ""),
+        "versao_motor": resultado.get("versao_motor", ""),
     }
 
     st.session_state["entradas_valuation"] = {
@@ -604,6 +657,7 @@ try:
         "peso_fcf": peso_fcf,
         "margem_seguranca": margem_seguranca,
         "preco_atual": preco_atual,
+        "motor_valuation": motor_valuation,
     }
 
     renderizar_painel_decisao(
@@ -757,6 +811,14 @@ try:
                     {
                         "Indicador": "Tipo de análise",
                         "Valor": tipo_analise,
+                    },
+                    {
+                        "Indicador": "Motor selecionado",
+                        "Valor": resultado.get("motor_selecionado", motor_valuation),
+                    },
+                    {
+                        "Indicador": "Versão do controlador",
+                        "Valor": resultado.get("versao_motor_controlado", "N/D"),
                     },
                 ]
 
@@ -1146,6 +1208,10 @@ try:
                     {
                         "Premissa": "Margem de segurança",
                         "Valor": f"{margem_seguranca}%",
+                    },
+                    {
+                        "Premissa": "Motor de valuation",
+                        "Valor": resultado.get("motor_selecionado", motor_valuation),
                     },
                 ]
 

@@ -43,6 +43,7 @@ from painel_compatibilidade_core import renderizar_painel_compatibilidade_core
 from painel_motor_adapter import renderizar_painel_motor_adapter
 from painel_motor_controlado import renderizar_painel_motor_controlado
 from painel_auditoria_motor_principal import renderizar_painel_auditoria_motor_principal
+from painel_fallback_motor import renderizar_painel_fallback_motor
 from persistencia_dados import renderizar_central_persistencia_dados
 from auditoria_ux import renderizar_auditoria_ux
 from educacional import renderizar_aba_educacional
@@ -142,6 +143,7 @@ ABAS_ORDEM_COMPLETA = [
     "Motor Adapter",
     "Motor Controlado",
     "Auditoria Motor Principal",
+    "Fallback Motor",
     "Dados",
     "UX",
     "Multiativos",
@@ -203,7 +205,7 @@ def renderizar_hero(modo_exibicao: str, motor_valuation: str) -> None:
     )
 
     st.caption(
-        "Produto • Navegação • Onboarding • Valuation • Tese • Checklist • Watchlist • Relatórios • Beta Real • Rodadas • Prioridades • Sprints • Pré-venda • Oferta Paga • CRM • Painel Beta • Fase 3 • Clientes Beta • Suporte Beta • Retenção Beta • Painel Fase 3 • Métricas Fase 3 • Decisão Fase 3 • Plano Fase 4 • Arquitetura Fase 4 • Core Engine • Compatibilidade Core • Motor Adapter • Motor Controlado • Auditoria Motor Principal • Negócio • Marketing • Release • Dados • UX"
+        "Produto • Navegação • Onboarding • Valuation • Tese • Checklist • Watchlist • Relatórios • Beta Real • Rodadas • Prioridades • Sprints • Pré-venda • Oferta Paga • CRM • Painel Beta • Fase 3 • Clientes Beta • Suporte Beta • Retenção Beta • Painel Fase 3 • Métricas Fase 3 • Decisão Fase 3 • Plano Fase 4 • Arquitetura Fase 4 • Core Engine • Compatibilidade Core • Motor Adapter • Motor Controlado • Auditoria Motor Principal • Fallback Motor • Negócio • Marketing • Release • Dados • UX"
     )
 
     col_home_1, col_home_2, col_home_3, col_home_4 = st.columns(4)
@@ -959,6 +961,9 @@ try:
 
             elif nome_aba == "Auditoria Motor Principal":
                 renderizar_painel_auditoria_motor_principal()
+
+            elif nome_aba == "Fallback Motor":
+                renderizar_painel_fallback_motor()
 
             elif nome_aba == "Dados":
                 renderizar_central_persistencia_dados()

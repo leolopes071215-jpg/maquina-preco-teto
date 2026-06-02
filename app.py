@@ -33,6 +33,9 @@ from fase3_lancamento import renderizar_fase3_lancamento
 from clientes_beta import renderizar_clientes_beta
 from suporte_beta import renderizar_suporte_beta
 from retencao_beta import renderizar_retencao_beta
+from painel_fase3 import renderizar_painel_fase3
+from metricas_fase3 import renderizar_metricas_fase3
+from go_no_go_fase3 import renderizar_go_no_go_fase3
 from persistencia_dados import renderizar_central_persistencia_dados
 from auditoria_ux import renderizar_auditoria_ux
 from educacional import renderizar_aba_educacional
@@ -115,6 +118,9 @@ ABAS_ORDEM_COMPLETA = [
     "Clientes Beta",
     "Suporte Beta",
     "Retenção Beta",
+    "Painel Fase 3",
+    "Métricas Fase 3",
+    "Decisão Fase 3",
     "Dados",
     "UX",
     "Multiativos",
@@ -176,7 +182,7 @@ def renderizar_hero(modo_exibicao: str) -> None:
     )
 
     st.caption(
-        "Produto • Navegação • Onboarding • Valuation • Tese • Checklist • Watchlist • Relatórios • Beta Real • Rodadas • Prioridades • Sprints • Pré-venda • Oferta Paga • CRM • Painel Beta • Fase 3 • Clientes Beta • Suporte Beta • Retenção Beta • Negócio • Marketing • Release • Dados • UX"
+        "Produto • Navegação • Onboarding • Valuation • Tese • Checklist • Watchlist • Relatórios • Beta Real • Rodadas • Prioridades • Sprints • Pré-venda • Oferta Paga • CRM • Painel Beta • Fase 3 • Clientes Beta • Suporte Beta • Retenção Beta • Painel Fase 3 • Métricas Fase 3 • Decisão Fase 3 • Negócio • Marketing • Release • Dados • UX"
     )
 
     col_home_1, col_home_2, col_home_3, col_home_4 = st.columns(4)
@@ -847,6 +853,15 @@ try:
 
             elif nome_aba == "Retenção Beta":
                 renderizar_retencao_beta()
+
+            elif nome_aba == "Painel Fase 3":
+                renderizar_painel_fase3()
+
+            elif nome_aba == "Métricas Fase 3":
+                renderizar_metricas_fase3()
+
+            elif nome_aba == "Decisão Fase 3":
+                renderizar_go_no_go_fase3()
 
             elif nome_aba == "Dados":
                 renderizar_central_persistencia_dados()

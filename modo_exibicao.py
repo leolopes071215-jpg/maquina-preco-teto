@@ -7,7 +7,7 @@ import streamlit as st
 
 # ============================================================
 # MÁQUINA DE PREÇO-TETO
-# v3.2 — Modo Usuário Beta / Investidor / Fundador
+# v3.5 — Modo Usuário Beta / Investidor / Fundador
 # ------------------------------------------------------------
 # Este arquivo controla a experiência de navegação do app.
 #
@@ -17,7 +17,8 @@ import streamlit as st
 # - preparar o produto para testes com usuários reais
 # - estruturar aprendizado, rodadas, priorização, sprints,
 #   pré-venda, oferta paga, CRM beta, painel mestre beta,
-#   Fase 3, clientes beta pagos, suporte beta e retenção beta
+#   Fase 3, clientes beta pagos, suporte beta, retenção beta,
+#   painel mestre da Fase 3, métricas da Fase 3 e decisão Go/No-Go
 # ============================================================
 
 
@@ -108,6 +109,9 @@ ABAS_FUNDADOR = [
     "Clientes Beta",
     "Suporte Beta",
     "Retenção Beta",
+    "Painel Fase 3",
+    "Métricas Fase 3",
+    "Decisão Fase 3",
     "Dados",
     "UX",
     "Multiativos",
@@ -136,7 +140,8 @@ DESCRICAO_MODOS = {
             "Evita expor áreas internas de negócio, marketing, lançamento, convite beta, "
             "release, aprendizado beta, rodadas beta, prioridades beta, sprints beta, "
             "pré-venda beta, oferta paga, CRM beta, painel beta, Fase 3, clientes beta, "
-            "suporte beta, retenção beta, dados e UX para usuários comuns."
+            "suporte beta, retenção beta, painel Fase 3, métricas Fase 3, decisão Fase 3, "
+            "dados e UX para usuários comuns."
         ),
     },
     MODO_INVESTIDOR_COMPLETO: {
@@ -159,19 +164,20 @@ DESCRICAO_MODOS = {
             "conteúdo, landing page, lançamento, convite beta, release, aprendizado beta, "
             "rodadas beta, prioridades beta, sprints beta, pré-venda beta, oferta paga, "
             "CRM beta, painel beta, Fase 3, clientes beta pagos, suporte beta, retenção beta, "
-            "dados e auditoria UX."
+            "painel mestre da Fase 3, métricas da Fase 3, decisão Go/No-Go, dados e auditoria UX."
         ),
         "ideal_para": "Leo, gestor do produto, fundador e operadores do negócio.",
         "foco": (
             "Construção, validação, aquisição, lançamento, convite beta, release, "
             "aprendizado real, rodadas beta, prioridades, sprints, pré-venda, oferta paga, "
             "CRM, painel mestre, preparação da Fase 3, clientes beta pagos, suporte beta, "
-            "retenção, dados, UX, backups e monetização."
+            "retenção, painel mestre da Fase 3, métricas, unit economics, decisão Go/No-Go, "
+            "dados, UX, backups e monetização."
         ),
         "risco_reduzido": (
             "Nenhum filtro: mostra tudo que existe no MVP, na Fase 2, no painel de decisão, "
-            "na preparação do beta pago controlado, no controle de clientes pagantes, no suporte "
-            "e na retenção."
+            "na preparação do beta pago controlado, no controle de clientes pagantes, no suporte, "
+            "na retenção, no painel estratégico da Fase 3, nas métricas de negócio e na decisão Go/No-Go."
         ),
     },
 }
@@ -225,7 +231,8 @@ def obter_resumo_modos() -> List[Dict[str, str]]:
                 "Tudo: produto, análise, beta, negócio, marketing, conteúdo, landing, "
                 "lançamento, convite beta, release, aprendizado beta, rodadas beta, "
                 "prioridades beta, sprints beta, pré-venda beta, oferta paga, CRM beta, "
-                "painel beta, Fase 3, clientes beta, suporte beta, retenção beta, dados e UX."
+                "painel beta, Fase 3, clientes beta, suporte beta, retenção beta, "
+                "painel Fase 3, métricas Fase 3, decisão Fase 3, dados e UX."
             ),
         },
     ]

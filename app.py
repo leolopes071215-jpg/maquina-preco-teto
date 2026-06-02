@@ -49,6 +49,7 @@ from painel_saude_motor import renderizar_painel_saude_motor
 from painel_decisao_core import renderizar_painel_decisao_core
 from painel_promocao_core import renderizar_painel_promocao_core
 from produto_estrategico import renderizar_produto_estrategico
+from deploy_publico import renderizar_deploy_publico
 from experiencia_beta import renderizar_experiencia_usuario_beta
 from persistencia_dados import renderizar_central_persistencia_dados
 from auditoria_ux import renderizar_auditoria_ux
@@ -159,6 +160,7 @@ ABAS_ORDEM_COMPLETA = [
     "Decisão Core",
     "Promoção Core",
     "Estratégia Produto",
+    "Deploy Público",
     "Dados",
     "UX",
     "Multiativos",
@@ -269,7 +271,7 @@ def renderizar_hero(modo_exibicao: str, motor_valuation: str) -> None:
     )
 
     st.caption(
-        "Produto • Navegação • Onboarding • Valuation • Tese • Checklist • Watchlist • Relatórios • Beta Real • Rodadas • Prioridades • Sprints • Pré-venda • Oferta Paga • CRM • Painel Beta • Fase 3 • Clientes Beta • Suporte Beta • Retenção Beta • Painel Fase 3 • Métricas Fase 3 • Decisão Fase 3 • Plano Fase 4 • Arquitetura Fase 4 • Core Engine • Compatibilidade Core • Motor Adapter • Motor Controlado • Auditoria Motor Principal • Fallback Motor • Logs Motor • Saúde Motor • Decisão Core • Promoção Core • Estratégia Produto • Negócio • Marketing • Release • Dados • UX"
+        "Produto • Navegação • Onboarding • Valuation • Tese • Checklist • Watchlist • Relatórios • Beta Real • Rodadas • Prioridades • Sprints • Pré-venda • Oferta Paga • CRM • Painel Beta • Fase 3 • Clientes Beta • Suporte Beta • Retenção Beta • Painel Fase 3 • Métricas Fase 3 • Decisão Fase 3 • Plano Fase 4 • Arquitetura Fase 4 • Core Engine • Compatibilidade Core • Motor Adapter • Motor Controlado • Auditoria Motor Principal • Fallback Motor • Logs Motor • Saúde Motor • Decisão Core • Promoção Core • Estratégia Produto • Deploy Público • Negócio • Marketing • Release • Dados • UX"
     )
 
     col_home_1, col_home_2, col_home_3, col_home_4 = st.columns(4)
@@ -1104,6 +1106,9 @@ try:
 
             elif nome_aba == "Estratégia Produto":
                 renderizar_produto_estrategico()
+
+            elif nome_aba == "Deploy Público":
+                renderizar_deploy_publico()
 
             elif nome_aba == "Dados":
                 renderizar_central_persistencia_dados()

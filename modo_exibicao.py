@@ -7,7 +7,7 @@ import streamlit as st
 
 # ============================================================
 # MÁQUINA DE PREÇO-TETO
-# v3.8.25 — Modo Usuário Beta / Investidor / Fundador
+# v3.8.26 — Deploy Público no Modo Fundador
 # ------------------------------------------------------------
 # Este arquivo controla a experiência de navegação do app.
 #
@@ -15,6 +15,7 @@ import streamlit as st
 # - reduzir ruído para usuário beta
 # - abrir o app por padrão em experiência simples
 # - separar produto real de áreas internas do fundador
+# - integrar a preparação para deploy público apenas no Modo Fundador
 # - preparar o MVP para teste público com usuários reais
 # ============================================================
 
@@ -119,6 +120,7 @@ ABAS_FUNDADOR = [
     "Decisão Core",
     "Promoção Core",
     "Estratégia Produto",
+    "Deploy Público",
     "Dados",
     "UX",
     "Multiativos",
@@ -171,16 +173,16 @@ DESCRICAO_MODOS = {
             "painel mestre da Fase 3, métricas da Fase 3, decisão Go/No-Go, plano Fase 4, "
             "arquitetura Fase 4, Core Engine, compatibilidade Core vs Legacy, Motor Adapter, "
             "Motor Controlado, Auditoria Motor Principal, Fallback Motor, Logs Motor, Saúde Motor, "
-            "Decisão Core, Promoção Core, Estratégia Produto, dados e auditoria UX."
+            "Decisão Core, Promoção Core, Estratégia Produto, Deploy Público, dados e auditoria UX."
         ),
         "ideal_para": "Leo, gestor do produto, fundador e operadores do negócio.",
         "foco": (
             "Construção, validação, aquisição, lançamento, produto, beta real, oferta, "
-            "arquitetura, governança técnica, dados, UX, backups e monetização."
+            "arquitetura, governança técnica, deploy público, dados, UX, backups e monetização."
         ),
         "risco_reduzido": (
             "Nenhum filtro: mostra tudo que existe no MVP, na Fase 2, Fase 3, Fase 4, "
-            "núcleo técnico, estratégia, negócio, marketing e operação."
+            "núcleo técnico, estratégia, deploy público, negócio, marketing e operação."
         ),
     },
 }
@@ -234,7 +236,7 @@ def obter_resumo_modos() -> List[Dict[str, str]]:
             "O que mostra": (
                 "Tudo: produto, análise, beta, negócio, marketing, conteúdo, landing, "
                 "lançamento, CRM, Fase 3, Fase 4, Core Engine, logs, saúde, decisão, "
-                "promoção, estratégia, dados e UX."
+                "promoção, estratégia, deploy público, dados e UX."
             ),
         },
     ]

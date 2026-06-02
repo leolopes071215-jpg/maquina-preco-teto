@@ -46,6 +46,8 @@ from painel_auditoria_motor_principal import renderizar_painel_auditoria_motor_p
 from painel_fallback_motor import renderizar_painel_fallback_motor
 from painel_logs_motor import renderizar_painel_logs_motor
 from painel_saude_motor import renderizar_painel_saude_motor
+from painel_decisao_core import renderizar_painel_decisao_core
+from painel_promocao_core import renderizar_painel_promocao_core
 from persistencia_dados import renderizar_central_persistencia_dados
 from auditoria_ux import renderizar_auditoria_ux
 from educacional import renderizar_aba_educacional
@@ -151,6 +153,8 @@ ABAS_ORDEM_COMPLETA = [
     "Fallback Motor",
     "Logs Motor",
     "Saúde Motor",
+    "Decisão Core",
+    "Promoção Core",
     "Dados",
     "UX",
     "Multiativos",
@@ -221,7 +225,7 @@ def renderizar_hero(modo_exibicao: str, motor_valuation: str) -> None:
     )
 
     st.caption(
-        "Produto • Navegação • Onboarding • Valuation • Tese • Checklist • Watchlist • Relatórios • Beta Real • Rodadas • Prioridades • Sprints • Pré-venda • Oferta Paga • CRM • Painel Beta • Fase 3 • Clientes Beta • Suporte Beta • Retenção Beta • Painel Fase 3 • Métricas Fase 3 • Decisão Fase 3 • Plano Fase 4 • Arquitetura Fase 4 • Core Engine • Compatibilidade Core • Motor Adapter • Motor Controlado • Auditoria Motor Principal • Fallback Motor • Logs Motor • Saúde Motor • Negócio • Marketing • Release • Dados • UX"
+        "Produto • Navegação • Onboarding • Valuation • Tese • Checklist • Watchlist • Relatórios • Beta Real • Rodadas • Prioridades • Sprints • Pré-venda • Oferta Paga • CRM • Painel Beta • Fase 3 • Clientes Beta • Suporte Beta • Retenção Beta • Painel Fase 3 • Métricas Fase 3 • Decisão Fase 3 • Plano Fase 4 • Arquitetura Fase 4 • Core Engine • Compatibilidade Core • Motor Adapter • Motor Controlado • Auditoria Motor Principal • Fallback Motor • Logs Motor • Saúde Motor • Decisão Core • Promoção Core • Negócio • Marketing • Release • Dados • UX"
     )
 
     col_home_1, col_home_2, col_home_3, col_home_4 = st.columns(4)
@@ -1041,6 +1045,12 @@ try:
 
             elif nome_aba == "Saúde Motor":
                 renderizar_painel_saude_motor()
+
+            elif nome_aba == "Decisão Core":
+                renderizar_painel_decisao_core()
+
+            elif nome_aba == "Promoção Core":
+                renderizar_painel_promocao_core()
 
             elif nome_aba == "Dados":
                 renderizar_central_persistencia_dados()

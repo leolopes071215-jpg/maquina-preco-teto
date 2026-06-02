@@ -7,7 +7,7 @@ import streamlit as st
 
 # ============================================================
 # MÁQUINA DE PREÇO-TETO
-# v3.8.22 — Modo Usuário Beta / Investidor / Fundador
+# v3.8.23 — Modo Usuário Beta / Investidor / Fundador
 # ------------------------------------------------------------
 # Este arquivo controla a experiência de navegação do app.
 #
@@ -23,8 +23,8 @@ import streamlit as st
 #   arquitetura profissional da Fase 4, Core Engine,
 #   compatibilidade Core vs Legacy, Motor Adapter,
 #   Motor Controlado, Auditoria Motor Principal,
-#   Fallback Motor, Logs Motor, Saúde Motor, Decisão Core
-#   e Promoção Core
+#   Fallback Motor, Logs Motor, Saúde Motor, Decisão Core,
+#   Promoção Core e Estratégia Produto
 # ============================================================
 
 
@@ -130,6 +130,7 @@ ABAS_FUNDADOR = [
     "Saúde Motor",
     "Decisão Core",
     "Promoção Core",
+    "Estratégia Produto",
     "Dados",
     "UX",
     "Multiativos",
@@ -161,7 +162,7 @@ DESCRICAO_MODOS = {
             "suporte beta, retenção beta, painel Fase 3, métricas Fase 3, decisão Fase 3, "
             "plano Fase 4, arquitetura Fase 4, Core Engine, compatibilidade Core, Motor Adapter, "
             "Motor Controlado, Auditoria Motor Principal, Fallback Motor, Logs Motor, Saúde Motor, "
-            "Decisão Core, Promoção Core, dados e UX para usuários comuns."
+            "Decisão Core, Promoção Core, Estratégia Produto, dados e UX para usuários comuns."
         ),
     },
     MODO_INVESTIDOR_COMPLETO: {
@@ -187,7 +188,7 @@ DESCRICAO_MODOS = {
             "painel mestre da Fase 3, métricas da Fase 3, decisão Go/No-Go, plano Fase 4, "
             "arquitetura Fase 4, Core Engine, compatibilidade Core vs Legacy, Motor Adapter, "
             "Motor Controlado, Auditoria Motor Principal, Fallback Motor, Logs Motor, Saúde Motor, "
-            "Decisão Core, Promoção Core, dados e auditoria UX."
+            "Decisão Core, Promoção Core, Estratégia Produto, dados e auditoria UX."
         ),
         "ideal_para": "Leo, gestor do produto, fundador e operadores do negócio.",
         "foco": (
@@ -197,7 +198,8 @@ DESCRICAO_MODOS = {
             "retenção, painel mestre da Fase 3, métricas, unit economics, decisão Go/No-Go, "
             "plano de migração para Fase 4, arquitetura profissional, Core Engine, "
             "compatibilidade entre motores, Motor Adapter, Motor Controlado, Auditoria Motor Principal, "
-            "Fallback Motor, Logs Motor, Saúde Motor, Decisão Core, Promoção Core, dados, UX, backups e monetização."
+            "Fallback Motor, Logs Motor, Saúde Motor, Decisão Core, Promoção Core, Estratégia Produto, "
+            "dados, UX, backups e monetização."
         ),
         "risco_reduzido": (
             "Nenhum filtro: mostra tudo que existe no MVP, na Fase 2, no painel de decisão, "
@@ -206,7 +208,7 @@ DESCRICAO_MODOS = {
             "Go/No-Go, no plano de migração, no blueprint técnico da Fase 4, no Core Engine, "
             "na auditoria de compatibilidade entre motor antigo e motor novo, no Motor Adapter, "
             "no Motor Controlado, na Auditoria Motor Principal, no Fallback Motor, nos Logs Motor, "
-            "na Saúde Motor, na Decisão Core e na Promoção Core."
+            "na Saúde Motor, na Decisão Core, na Promoção Core e na Estratégia Produto."
         ),
     },
 }
@@ -264,7 +266,7 @@ def obter_resumo_modos() -> List[Dict[str, str]]:
                 "painel Fase 3, métricas Fase 3, decisão Fase 3, plano Fase 4, "
                 "arquitetura Fase 4, Core Engine, compatibilidade Core, Motor Adapter, "
                 "Motor Controlado, Auditoria Motor Principal, Fallback Motor, Logs Motor, "
-                "Saúde Motor, Decisão Core, Promoção Core, dados e UX."
+                "Saúde Motor, Decisão Core, Promoção Core, Estratégia Produto, dados e UX."
             ),
         },
     ]

@@ -7,7 +7,7 @@ import streamlit as st
 
 # ============================================================
 # MÁQUINA DE PREÇO-TETO
-# v2.8 — Modo Usuário Beta / Investidor / Fundador
+# v2.9 — Modo Usuário Beta / Investidor / Fundador
 # ------------------------------------------------------------
 # Este arquivo controla a experiência de navegação do app.
 #
@@ -16,7 +16,8 @@ import streamlit as st
 # - separar áreas de uso real e áreas internas do fundador
 # - preparar o produto para testes com usuários reais
 # - estruturar aprendizado, rodadas, priorização, sprints,
-#   pré-venda, oferta paga, CRM beta e painel mestre beta
+#   pré-venda, oferta paga, CRM beta, painel mestre beta
+#   e preparação da Fase 3
 # ============================================================
 
 
@@ -103,6 +104,7 @@ ABAS_FUNDADOR = [
     "Oferta Paga",
     "CRM Beta",
     "Painel Beta",
+    "Fase 3",
     "Dados",
     "UX",
     "Multiativos",
@@ -130,7 +132,7 @@ DESCRICAO_MODOS = {
         "risco_reduzido": (
             "Evita expor áreas internas de negócio, marketing, lançamento, convite beta, "
             "release, aprendizado beta, rodadas beta, prioridades beta, sprints beta, "
-            "pré-venda beta, oferta paga, CRM beta, painel beta, dados e UX para usuários comuns."
+            "pré-venda beta, oferta paga, CRM beta, painel beta, Fase 3, dados e UX para usuários comuns."
         ),
     },
     MODO_INVESTIDOR_COMPLETO: {
@@ -152,15 +154,18 @@ DESCRICAO_MODOS = {
             "Experiência total do produto, incluindo áreas de validação, negócio, marketing, "
             "conteúdo, landing page, lançamento, convite beta, release, aprendizado beta, "
             "rodadas beta, prioridades beta, sprints beta, pré-venda beta, oferta paga, "
-            "CRM beta, painel beta, dados e auditoria UX."
+            "CRM beta, painel beta, Fase 3, dados e auditoria UX."
         ),
         "ideal_para": "Leo, gestor do produto, fundador e operadores do negócio.",
         "foco": (
             "Construção, validação, aquisição, lançamento, convite beta, release, "
             "aprendizado real, rodadas beta, prioridades, sprints, pré-venda, oferta paga, "
-            "CRM, painel mestre, dados, UX, backups e monetização."
+            "CRM, painel mestre, preparação da Fase 3, dados, UX, backups e monetização."
         ),
-        "risco_reduzido": "Nenhum filtro: mostra tudo que existe no MVP, na Fase 2 e no painel de decisão.",
+        "risco_reduzido": (
+            "Nenhum filtro: mostra tudo que existe no MVP, na Fase 2, no painel de decisão "
+            "e na preparação do beta pago controlado."
+        ),
     },
 }
 
@@ -213,7 +218,7 @@ def obter_resumo_modos() -> List[Dict[str, str]]:
                 "Tudo: produto, análise, beta, negócio, marketing, conteúdo, landing, "
                 "lançamento, convite beta, release, aprendizado beta, rodadas beta, "
                 "prioridades beta, sprints beta, pré-venda beta, oferta paga, CRM beta, "
-                "painel beta, dados e UX."
+                "painel beta, Fase 3, dados e UX."
             ),
         },
     ]

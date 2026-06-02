@@ -6,23 +6,24 @@ import streamlit as st
 
 
 # ============================================================
-# MÁQUINA DE PREÇO-TETO
-# v3.8.26 — Deploy Público no Modo Fundador
+# VALORIS
+# v3.8.29 — Proteção da Experiência Pública
 # ------------------------------------------------------------
 # Este arquivo controla a experiência de navegação do app.
 #
 # Objetivo:
-# - reduzir ruído para usuário beta
-# - abrir o app por padrão em experiência simples
-# - separar produto real de áreas internas do fundador
-# - integrar a preparação para deploy público apenas no Modo Fundador
-# - preparar o MVP para teste público com usuários reais
+# - abrir o app público sempre em Usuário Beta
+# - impedir que usuários comuns vejam áreas internas de Fundador
+# - manter acesso de fundador por código simples
+# - separar produto real da sala de máquinas do negócio
 # ============================================================
 
 
 MODO_USUARIO_BETA = "Usuário Beta"
 MODO_INVESTIDOR_COMPLETO = "Investidor Completo"
 MODO_FUNDADOR = "Fundador"
+
+CODIGO_ACESSO_FUNDADOR = "valoris-fundador"
 
 MODOS_EXIBICAO = [
     MODO_USUARIO_BETA,
@@ -31,8 +32,6 @@ MODOS_EXIBICAO = [
 ]
 
 
-# Experiência enxuta para teste real.
-# O usuário beta precisa entender valor, analisar, revisar, baixar relatório e dar feedback.
 ABAS_USUARIO_BETA = [
     "Início",
     "Valuation",
@@ -189,8 +188,24 @@ DESCRICAO_MODOS = {
 
 
 def obter_modo_exibicao_padrao() -> str:
-    # Para teste público, o padrão precisa ser a experiência do usuário comum.
     return MODO_USUARIO_BETA
+
+
+def usuario_tem_acesso_fundador() -> bool:
+    return bool(st.session_state.get("acesso_fundador_liberado", False))
+
+
+def liberar_acesso_fundador(codigo_digitado: str) -> bool:
+    if codigo_digitado.strip() == CODIGO_ACESSO_FUNDADOR:
+        st.session_state["acesso_fundador_liberado"] = True
+        return True
+
+    return False
+
+
+def bloquear_acesso_fundador() -> None:
+    st.session_state["acesso_fundador_liberado"] = False
+    st.session_state["modo_exibicao_app"] = MODO_USUARIO_BETA
 
 
 def obter_abas_por_modo(modo: str) -> List[str]:
@@ -200,10 +215,16 @@ def obter_abas_por_modo(modo: str) -> List[str]:
     if modo == MODO_INVESTIDOR_COMPLETO:
         return ABAS_INVESTIDOR_COMPLETO
 
-    return ABAS_FUNDADOR
+    if modo == MODO_FUNDADOR and usuario_tem_acesso_fundador():
+        return ABAS_FUNDADOR
+
+    return ABAS_USUARIO_BETA
 
 
 def obter_descricao_modo(modo: str) -> Dict[str, str]:
+    if modo == MODO_FUNDADOR and not usuario_tem_acesso_fundador():
+        return DESCRICAO_MODOS[MODO_USUARIO_BETA]
+
     return DESCRICAO_MODOS.get(modo, DESCRICAO_MODOS[MODO_USUARIO_BETA])
 
 
@@ -249,22 +270,65 @@ def obter_abas_ocultas_no_modo(modo: str) -> List[str]:
     return sorted(list(abas_fundador - abas_modo))
 
 
+def renderizar_acesso_fundador() -> None:
+    with st.expander("Acesso interno", expanded=False):
+        if usuario_tem_acesso_fundador():
+            st.success("Acesso fundador liberado.")
+
+            if st.button("Bloquear modo fundador"):
+                bloquear_acesso_fundador()
+                st.rerun()
+
+            return
+
+        codigo_digitado = st.text_input(
+            "Código de acesso",
+            type="password",
+            placeholder="Digite o código interno",
+            key="codigo_acesso_fundador",
+        )
+
+        if st.button("Liberar acesso fundador"):
+            if liberar_acesso_fundador(codigo_digitado):
+                st.success("Acesso fundador liberado.")
+                st.rerun()
+            else:
+                st.error("Código inválido.")
+
+
 def renderizar_controle_modo_exibicao() -> str:
     """
     Renderiza o seletor de modo na sidebar e retorna o modo escolhido.
     """
+    if "acesso_fundador_liberado" not in st.session_state:
+        st.session_state["acesso_fundador_liberado"] = False
+
     if "modo_exibicao_app" not in st.session_state:
         st.session_state["modo_exibicao_app"] = obter_modo_exibicao_padrao()
 
+    if not usuario_tem_acesso_fundador():
+        st.session_state["modo_exibicao_app"] = MODO_USUARIO_BETA
+
     st.markdown("#### Experiência do app")
+
+    if usuario_tem_acesso_fundador():
+        opcoes_modo = MODOS_EXIBICAO
+    else:
+        opcoes_modo = [MODO_USUARIO_BETA]
+
+    modo_atual = st.session_state.get("modo_exibicao_app", MODO_USUARIO_BETA)
+
+    if modo_atual not in opcoes_modo:
+        modo_atual = MODO_USUARIO_BETA
+        st.session_state["modo_exibicao_app"] = MODO_USUARIO_BETA
 
     modo = st.radio(
         "Modo de exibição",
-        MODOS_EXIBICAO,
-        index=MODOS_EXIBICAO.index(st.session_state["modo_exibicao_app"]),
+        opcoes_modo,
+        index=opcoes_modo.index(modo_atual),
         help=(
-            "Escolha quais áreas do app devem aparecer. "
-            "Use Usuário Beta para testes reais e Fundador para construção do negócio."
+            "Usuários públicos acessam a experiência beta. "
+            "O modo fundador exige liberação interna."
         ),
         key="modo_exibicao_app",
     )
@@ -279,6 +343,9 @@ def renderizar_controle_modo_exibicao() -> str:
         st.info("Interface completa para análise e acompanhamento.")
     else:
         st.warning("Modo fundador: áreas internas de negócio visíveis.")
+
+    st.divider()
+    renderizar_acesso_fundador()
 
     return modo
 
@@ -323,12 +390,15 @@ def renderizar_painel_modo_exibicao(modo: str) -> None:
 
 def obter_mensagem_modo_para_hero(modo: str) -> str:
     if modo == MODO_USUARIO_BETA:
-        return "Descubra seu preço-teto antes de investir"
+        return "Descubra quanto vale uma empresa antes de investir"
 
     if modo == MODO_INVESTIDOR_COMPLETO:
         return "Experiência completa para análise de investimentos"
 
-    return "Experiência completa do fundador"
+    if modo == MODO_FUNDADOR and usuario_tem_acesso_fundador():
+        return "Experiência completa do fundador"
+
+    return "Descubra quanto vale uma empresa antes de investir"
 
 
 def obter_rotulo_metrica_modo(modo: str) -> str:
@@ -338,4 +408,7 @@ def obter_rotulo_metrica_modo(modo: str) -> str:
     if modo == MODO_INVESTIDOR_COMPLETO:
         return "Investidor"
 
-    return "Fundador"
+    if modo == MODO_FUNDADOR and usuario_tem_acesso_fundador():
+        return "Fundador"
+
+    return "Beta"

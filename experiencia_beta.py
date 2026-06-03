@@ -10,7 +10,7 @@ from explicabilidade_valoris import renderizar_explicabilidade_valoris
 
 # ============================================================
 # MÁQUINA DE PREÇO-TETO
-# v3.8.32 — Experiência Beta com Auditor Valoris
+# v3.8.34 — Camadas de Profundidade
 # ------------------------------------------------------------
 # Este arquivo cria uma experiência simplificada e vendável
 # para o usuário comum.
@@ -24,7 +24,7 @@ from explicabilidade_valoris import renderizar_explicabilidade_valoris
 # ============================================================
 
 
-VERSAO_EXPERIENCIA_BETA = "3.8.32"
+VERSAO_EXPERIENCIA_BETA = "3.8.34"
 
 
 COPY_EXPERIENCIA_BETA = {
@@ -33,7 +33,7 @@ COPY_EXPERIENCIA_BETA = {
         "A Valoris estima valor, aplica margem de segurança e audita os principais "
         "riscos que podem distorcer sua decisão antes da compra."
     ),
-    "promessa": "Menos caixa-preta. Mais explicação. Mais proteção contra decisões ruins.",
+    "promessa": "Escolha a profundidade da análise: leitura simples, revisão intermediária ou premissas avançadas.",
     "disclaimer": (
         "Ferramenta educacional. Não representa recomendação de compra, venda "
         "ou manutenção de investimentos."
@@ -633,6 +633,150 @@ def _renderizar_alerta_status(snapshot: Dict[str, Any]) -> None:
         st.warning(mensagem)
 
 
+
+def _normalizar_camada_visualizacao(camada: Any) -> str:
+    texto = _safe_str(camada, "Intermediário").lower()
+
+    if "leigo" in texto or "simples" in texto or "iniciante" in texto:
+        return "Leigo"
+
+    if "avanç" in texto or "avanc" in texto or "pro" in texto:
+        return "Avançado"
+
+    return "Intermediário"
+
+
+def _obter_descricao_camada(camada: str) -> Dict[str, str]:
+    camada_normalizada = _normalizar_camada_visualizacao(camada)
+
+    descricoes = {
+        "Leigo": {
+            "titulo": "Leitura simples",
+            "descricao": (
+                "Mostra a resposta principal em linguagem humana, sem excesso de termos técnicos. "
+                "Ideal para entender rapidamente se o ativo está em zona de oportunidade, atenção ou paciência."
+            ),
+        },
+        "Intermediário": {
+            "titulo": "Análise guiada",
+            "descricao": (
+                "Mostra a leitura principal, o mapa da decisão, próximos passos e o Auditor Valoris. "
+                "Ideal para quem quer entender o raciocínio sem abrir todas as premissas."
+            ),
+        },
+        "Avançado": {
+            "titulo": "Premissas abertas",
+            "descricao": (
+                "Mostra a análise completa, incluindo premissas, pesos, múltiplos, checklist e relatório. "
+                "Ideal para quem quer revisar a estrutura do modelo e questionar os inputs."
+            ),
+        },
+    }
+
+    return descricoes[camada_normalizada]
+
+
+def _renderizar_card_texto(label: str, valor: str, nota: str = "") -> None:
+    st.markdown(
+        f"""
+        <div class="xb-card">
+            <div class="xb-card-label">{label}</div>
+            <div class="xb-card-value">{valor}</div>
+            <div class="xb-card-note">{nota}</div>
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
+
+
+def _renderizar_lista_acoes(snapshot: Dict[str, Any]) -> None:
+    st.markdown("### Próximas ações sugeridas")
+
+    for indice, acao in enumerate(gerar_acoes_sugeridas_beta(snapshot), start=1):
+        with st.container(border=True):
+            st.markdown(f"**{indice}. {acao['Ação']}**")
+            st.caption(acao["Motivo"])
+
+
+def _renderizar_checklist_beta() -> None:
+    st.markdown("### Checklist antes de decidir")
+
+    for item in CHECKLIST_BETA_DECISAO:
+        with st.container(border=True):
+            st.markdown(f"**{item['Pergunta']}**")
+            st.caption(item["Por que importa"])
+
+
+def _renderizar_resumo_beta(snapshot: Dict[str, Any]) -> None:
+    st.markdown("### Resumo da análise")
+
+    for item in gerar_tabela_resumo_beta(snapshot):
+        with st.container(border=True):
+            col_nome, col_valor = st.columns([1, 2])
+
+            with col_nome:
+                st.caption(item["Indicador"])
+
+            with col_valor:
+                st.markdown(f"**{item['Valor']}**")
+
+
+def _renderizar_mapa_simples_decisao(snapshot: Dict[str, Any]) -> None:
+    st.markdown("### Mapa simples da decisão")
+
+    valor_maximo = max(
+        _safe_float(snapshot.get("preco_atual", 0)),
+        _safe_float(snapshot.get("preco_teto", 0)),
+        _safe_float(snapshot.get("preco_justo", 0)),
+        1,
+    )
+
+    progresso_preco_atual = min(_safe_float(snapshot.get("preco_atual", 0)) / valor_maximo, 1)
+    progresso_preco_teto = min(_safe_float(snapshot.get("preco_teto", 0)) / valor_maximo, 1)
+    progresso_preco_justo = min(_safe_float(snapshot.get("preco_justo", 0)) / valor_maximo, 1)
+
+    st.caption("Preço atual")
+    st.progress(progresso_preco_atual)
+
+    st.caption("Preço-teto")
+    st.progress(progresso_preco_teto)
+
+    st.caption("Preço justo")
+    st.progress(progresso_preco_justo)
+
+    col_m1, col_m2, col_m3 = st.columns(3)
+
+    with col_m1:
+        st.metric(
+            "Margem até preço-teto",
+            _formatar_percentual(snapshot.get("margem_ate_preco_teto", 0)),
+        )
+
+    with col_m2:
+        st.metric(
+            "Potencial até preço justo",
+            _formatar_percentual(snapshot.get("potencial_ate_preco_justo", 0)),
+        )
+
+    with col_m3:
+        st.metric(
+            "Margem de segurança usada",
+            _formatar_percentual(snapshot.get("margem_seguranca", 0)),
+        )
+
+
+def _renderizar_relatorio_beta(snapshot: Dict[str, Any]) -> None:
+    st.markdown("### Relatório beta")
+
+    st.download_button(
+        label="Baixar análise beta (.md)",
+        data=gerar_markdown_experiencia_beta(snapshot),
+        file_name=f"analise_beta_{snapshot['ticker'].lower()}.md",
+        mime="text/markdown",
+        key="download_experiencia_beta",
+    )
+
+
 def renderizar_experiencia_usuario_beta(
     resultado_valuation: Dict[str, Any],
     entradas_valuation: Optional[Dict[str, Any]] = None,
@@ -698,9 +842,9 @@ def renderizar_experiencia_usuario_beta(
 
     with col_4:
         _card(
-            "Status",
-            str(snapshot.get("status", "")),
-            "Leitura educacional do modelo.",
+            "Zona",
+            str(snapshot.get("leitura_titulo", "")),
+            "Tradução humana do status do modelo.",
         )
 
     st.divider()
@@ -709,97 +853,86 @@ def renderizar_experiencia_usuario_beta(
 
     st.divider()
 
-    renderizar_explicabilidade_valoris(
-        resultado_valuation=resultado_valuation,
-        entradas_valuation=entradas_valuation,
-        snapshot=snapshot,
+    st.markdown("### Como você quer visualizar esta análise?")
+
+    camada_visualizacao = st.radio(
+        "Escolha a profundidade da análise",
+        ["Leigo", "Intermediário", "Avançado"],
+        index=1,
+        horizontal=True,
+        key="camada_visualizacao_valoris_beta",
+        help=(
+            "Leigo simplifica a leitura. Intermediário mostra o auditor e os próximos passos. "
+            "Avançado abre premissas e revisão técnica."
+        ),
     )
+
+    camada_visualizacao = _normalizar_camada_visualizacao(camada_visualizacao)
+    descricao_camada = _obter_descricao_camada(camada_visualizacao)
+
+    st.info(f"**{descricao_camada['titulo']}** — {descricao_camada['descricao']}")
 
     st.divider()
 
-    st.markdown("### Mapa simples da decisão")
+    if camada_visualizacao == "Leigo":
+        _renderizar_lista_acoes(snapshot)
 
-    valor_maximo = max(
-        _safe_float(snapshot.get("preco_atual", 0)),
-        _safe_float(snapshot.get("preco_teto", 0)),
-        _safe_float(snapshot.get("preco_justo", 0)),
-        1,
-    )
+        st.divider()
 
-    progresso_preco_atual = min(_safe_float(snapshot.get("preco_atual", 0)) / valor_maximo, 1)
-    progresso_preco_teto = min(_safe_float(snapshot.get("preco_teto", 0)) / valor_maximo, 1)
-    progresso_preco_justo = min(_safe_float(snapshot.get("preco_justo", 0)) / valor_maximo, 1)
-
-    st.caption("Preço atual")
-    st.progress(progresso_preco_atual)
-
-    st.caption("Preço-teto")
-    st.progress(progresso_preco_teto)
-
-    st.caption("Preço justo")
-    st.progress(progresso_preco_justo)
-
-    col_m1, col_m2, col_m3 = st.columns(3)
-
-    with col_m1:
-        st.metric(
-            "Margem até preço-teto",
-            _formatar_percentual(snapshot.get("margem_ate_preco_teto", 0)),
+        renderizar_explicabilidade_valoris(
+            resultado_valuation=resultado_valuation,
+            entradas_valuation=entradas_valuation,
+            snapshot=snapshot,
+            camada_visualizacao="Leigo",
         )
 
-    with col_m2:
-        st.metric(
-            "Potencial até preço justo",
-            _formatar_percentual(snapshot.get("potencial_ate_preco_justo", 0)),
+    elif camada_visualizacao == "Intermediário":
+        _renderizar_mapa_simples_decisao(snapshot)
+
+        st.divider()
+
+        _renderizar_lista_acoes(snapshot)
+
+        st.divider()
+
+        renderizar_explicabilidade_valoris(
+            resultado_valuation=resultado_valuation,
+            entradas_valuation=entradas_valuation,
+            snapshot=snapshot,
+            camada_visualizacao="Intermediário",
         )
 
-    with col_m3:
-        st.metric(
-            "Margem de segurança usada",
-            _formatar_percentual(snapshot.get("margem_seguranca", 0)),
+        st.divider()
+
+        _renderizar_checklist_beta()
+
+    else:
+        _renderizar_mapa_simples_decisao(snapshot)
+
+        st.divider()
+
+        renderizar_explicabilidade_valoris(
+            resultado_valuation=resultado_valuation,
+            entradas_valuation=entradas_valuation,
+            snapshot=snapshot,
+            camada_visualizacao="Avançado",
         )
 
-    st.divider()
+        st.divider()
 
-    st.markdown("### Próximas ações sugeridas")
+        _renderizar_lista_acoes(snapshot)
 
-    st.dataframe(
-        gerar_acoes_sugeridas_beta(snapshot),
-        use_container_width=True,
-        hide_index=True,
-    )
+        st.divider()
 
-    st.divider()
+        _renderizar_checklist_beta()
 
-    st.markdown("### Checklist antes de decidir")
+        st.divider()
 
-    st.dataframe(
-        CHECKLIST_BETA_DECISAO,
-        use_container_width=True,
-        hide_index=True,
-    )
+        _renderizar_resumo_beta(snapshot)
 
-    st.divider()
+        st.divider()
 
-    st.markdown("### Resumo da análise")
-
-    st.dataframe(
-        gerar_tabela_resumo_beta(snapshot),
-        use_container_width=True,
-        hide_index=True,
-    )
-
-    st.divider()
-
-    st.markdown("### Relatório beta")
-
-    st.download_button(
-        label="Baixar análise beta (.md)",
-        data=gerar_markdown_experiencia_beta(snapshot),
-        file_name=f"analise_beta_{snapshot['ticker'].lower()}.md",
-        mime="text/markdown",
-        key="download_experiencia_beta",
-    )
+        _renderizar_relatorio_beta(snapshot)
 
     st.markdown(
         f"""

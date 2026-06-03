@@ -7,7 +7,7 @@ import streamlit as st
 
 # ============================================================
 # VALORIS
-# v3.8.32.1 — Explicabilidade leve + Auditor Valoris
+# v3.8.34 — Explicabilidade por camada + Auditor Valoris
 # ------------------------------------------------------------
 # Este módulo explica o cálculo e inicia o Auditor Valoris
 # sem depender de pandas ou bibliotecas pesadas.
@@ -20,7 +20,7 @@ import streamlit as st
 # ============================================================
 
 
-VERSAO_EXPLICABILIDADE_VALORIS = "3.8.32.1"
+VERSAO_EXPLICABILIDADE_VALORIS = "3.8.34"
 
 
 def _safe_str(valor: Any, default: str = "") -> str:
@@ -59,6 +59,19 @@ def _normalizar_status(status: Any) -> str:
         return "AGUARDE"
 
     return texto if texto else "N/D"
+
+
+
+def _normalizar_camada_visualizacao(camada: Any) -> str:
+    texto = _safe_str(camada, "Intermediário").lower()
+
+    if "leigo" in texto or "simples" in texto or "iniciante" in texto:
+        return "Leigo"
+
+    if "avanç" in texto or "avanc" in texto or "pro" in texto:
+        return "Avançado"
+
+    return "Intermediário"
 
 
 def _obter_valor(
@@ -544,6 +557,7 @@ def renderizar_explicabilidade_valoris(
     resultado_valuation: Dict[str, Any],
     entradas_valuation: Optional[Dict[str, Any]] = None,
     snapshot: Optional[Dict[str, Any]] = None,
+    camada_visualizacao: str = "Intermediário",
 ) -> None:
     """
     Renderiza a camada de explicabilidade e auditoria da Valoris.
@@ -553,6 +567,8 @@ def renderizar_explicabilidade_valoris(
         entradas_valuation=entradas_valuation,
         snapshot=snapshot,
     )
+
+    camada = _normalizar_camada_visualizacao(camada_visualizacao)
 
     st.markdown("## Auditor Valoris")
 
@@ -572,46 +588,86 @@ def renderizar_explicabilidade_valoris(
             """
         )
 
-    aba_leigo, aba_intermediario, aba_avancado = st.tabs(
-        ["Leigo", "Intermediário", "Avançado"]
-    )
-
-    with aba_leigo:
+    if camada == "Leigo":
         _renderizar_leigo(contexto)
 
-    with aba_intermediario:
+        st.divider()
+
+        st.markdown("### Alertas principais")
+
+        alertas = _gerar_alertas_auditor(contexto)
+
+        for alerta in alertas[:3]:
+            _renderizar_bloco_alerta(alerta)
+
+        st.info(
+            "Esta é a leitura simplificada. Para abrir premissas, múltiplos e revisão técnica, "
+            "troque a visualização para Intermediário ou Avançado."
+        )
+
+    elif camada == "Intermediário":
+        _renderizar_leigo(contexto)
+
+        st.divider()
+
         _renderizar_intermediario(contexto)
 
-    with aba_avancado:
+        st.divider()
+
+        st.markdown("### O que pode estar errado nessa decisão?")
+
+        alertas = _gerar_alertas_auditor(contexto)
+
+        for alerta in alertas:
+            _renderizar_bloco_alerta(alerta)
+
+        st.divider()
+
+        st.markdown("### Regra de ouro da Valoris")
+
+        st.info(
+            "Empresa boa não é automaticamente investimento bom. "
+            "O preço pago, a qualidade das premissas e a margem de segurança definem a qualidade da decisão."
+        )
+
+    else:
+        _renderizar_leigo(contexto)
+
+        st.divider()
+
+        _renderizar_intermediario(contexto)
+
+        st.divider()
+
         _renderizar_avancado(contexto)
 
-    st.divider()
+        st.divider()
 
-    st.markdown("### O que pode estar errado nessa decisão?")
+        st.markdown("### O que pode estar errado nessa decisão?")
 
-    alertas = _gerar_alertas_auditor(contexto)
+        alertas = _gerar_alertas_auditor(contexto)
 
-    for alerta in alertas:
-        _renderizar_bloco_alerta(alerta)
+        for alerta in alertas:
+            _renderizar_bloco_alerta(alerta)
 
-    st.divider()
+        st.divider()
 
-    st.markdown("### Checklist de confiança antes de decidir")
+        st.markdown("### Checklist de confiança antes de decidir")
 
-    st.caption(
-        "Marque mentalmente os pontos abaixo. Se muitas respostas forem incertas, o valuation ainda não está maduro."
-    )
+        st.caption(
+            "Marque mentalmente os pontos abaixo. Se muitas respostas forem incertas, o valuation ainda não está maduro."
+        )
 
-    _renderizar_checklist_confianca()
+        _renderizar_checklist_confianca()
 
-    st.divider()
+        st.divider()
 
-    st.markdown("### Regra de ouro da Valoris")
+        st.markdown("### Regra de ouro da Valoris")
 
-    st.info(
-        "Empresa boa não é automaticamente investimento bom. "
-        "O preço pago, a qualidade das premissas e a margem de segurança definem a qualidade da decisão."
-    )
+        st.info(
+            "Empresa boa não é automaticamente investimento bom. "
+            "O preço pago, a qualidade das premissas e a margem de segurança definem a qualidade da decisão."
+        )
 
 
 def executar_autoteste_explicabilidade_valoris() -> List[Dict[str, str]]:

@@ -7,21 +7,27 @@ import streamlit as st
 
 # ============================================================
 # VALORIS
-# v3.8.35 — Auditor Valoris Automático
+# v3.8.36 — Motor de Auditoria Fundamentalista
 # ------------------------------------------------------------
-# Este módulo explica o cálculo e transforma o Auditor Valoris
-# em um diagnóstico automático da qualidade da decisão.
+# Este módulo explica o cálculo, audita automaticamente o que
+# é possível com os dados atuais e adiciona uma camada de
+# Auditoria Fundamentalista manual/híbrida.
 #
 # Objetivo:
 # - reduzir sensação de caixa-preta
 # - separar o que a Valoris consegue auditar sozinha do que ainda precisa de dados externos
 # - criar um índice simples de confiança da análise
-# - mostrar limitações com honestidade intelectual
+# - iniciar auditorias de dividendos, dívida, margens, ciclo setorial e tese
 # - manter o módulo leve, sem pandas e sem dependências pesadas
 # ============================================================
 
 
-VERSAO_EXPLICABILIDADE_VALORIS = "3.8.35"
+VERSAO_EXPLICABILIDADE_VALORIS = "3.8.36"
+
+
+# ============================================================
+# Funções utilitárias
+# ============================================================
 
 
 def _safe_str(valor: Any, default: str = "") -> str:
@@ -94,6 +100,11 @@ def _obter_valor(
         return entradas_valuation.get(chave, default)
 
     return default
+
+
+# ============================================================
+# Contexto central da análise
+# ============================================================
 
 
 def _montar_contexto(
@@ -213,6 +224,11 @@ def _montar_contexto(
     }
 
 
+# ============================================================
+# Leitura humana e premissas
+# ============================================================
+
+
 def _gerar_leitura_humana(contexto: Dict[str, Any]) -> Dict[str, str]:
     status = contexto["status"]
 
@@ -293,6 +309,11 @@ def _gerar_premissas_chave(contexto: Dict[str, Any]) -> List[Dict[str, str]]:
             "explicacao": "Indica quanto o modelo aceita pagar pelo fluxo de caixa livre por ação.",
         },
     ]
+
+
+# ============================================================
+# Auditor automático da decisão
+# ============================================================
 
 
 def _gerar_alertas_auditor(contexto: Dict[str, Any]) -> List[Dict[str, str]]:
@@ -736,6 +757,466 @@ def _calcular_indice_confianca_valoris(contexto: Dict[str, Any]) -> Dict[str, An
     }
 
 
+# ============================================================
+# Motor de Auditoria Fundamentalista
+# ============================================================
+
+
+def _inferir_setor_por_ticker(ticker: str) -> str:
+    ticker_limpo = _safe_str(ticker).upper()
+
+    mapa_aproximado = {
+        "PETR": "Commodity",
+        "VALE": "Commodity",
+        "CSNA": "Commodity",
+        "GGBR": "Commodity",
+        "USIM": "Commodity",
+        "TAEE": "Elétrica",
+        "TRPL": "Elétrica",
+        "EGIE": "Elétrica",
+        "CPFE": "Elétrica",
+        "CMIG": "Elétrica",
+        "ITUB": "Banco",
+        "BBDC": "Banco",
+        "BBAS": "Banco",
+        "SANB": "Banco",
+        "BPAC": "Banco",
+        "WEGE": "Industrial",
+        "ABEV": "Consumo",
+        "MGLU": "Varejo",
+        "VIIA": "Varejo",
+        "LREN": "Varejo",
+        "RENT": "Serviços",
+        "SBSP": "Saneamento",
+        "SAPR": "Saneamento",
+        "KLBN": "Papel e Celulose",
+        "SUZB": "Papel e Celulose",
+    }
+
+    for prefixo, setor in mapa_aproximado.items():
+        if ticker_limpo.startswith(prefixo):
+            return setor
+
+    return "Não identificado"
+
+
+def _gerar_auditoria_fundamentalista_base(contexto: Dict[str, Any]) -> List[Dict[str, str]]:
+    ticker = contexto["ticker"]
+    setor = _inferir_setor_por_ticker(ticker)
+    lucro = contexto["lucro_liquido_sustentavel"]
+    fcf = contexto["fluxo_caixa_livre"]
+    preco_atual = contexto["preco_atual"]
+    preco_teto = contexto["preco_teto"]
+    margem_seguranca = contexto["margem_seguranca"]
+
+    auditorias: List[Dict[str, str]] = []
+
+    if setor != "Não identificado":
+        auditorias.append(
+            {
+                "status": "Parcial",
+                "dimensao": "Ciclo setorial",
+                "leitura": (
+                    f"A Valoris inferiu que o ativo pode pertencer ao setor: {setor}. "
+                    "Essa inferência é aproximada e precisa ser confirmada, mas já ajuda a adaptar a leitura de risco."
+                ),
+            }
+        )
+    else:
+        auditorias.append(
+            {
+                "status": "Pendente",
+                "dimensao": "Ciclo setorial",
+                "leitura": (
+                    "A Valoris ainda não identificou o setor do ativo. Sem setor, a análise não consegue ajustar "
+                    "riscos de ciclo, regulação, commodities ou recorrência."
+                ),
+            }
+        )
+
+    if lucro > 0 and fcf > 0:
+        auditorias.append(
+            {
+                "status": "Favorável",
+                "dimensao": "Lucro vs caixa",
+                "leitura": (
+                    "Lucro sustentável e fluxo de caixa livre foram informados como positivos. Isso aumenta a robustez "
+                    "do valuation, pois o lucro contábil é parcialmente confirmado por geração de caixa."
+                ),
+            }
+        )
+    elif lucro > 0 and fcf <= 0:
+        auditorias.append(
+            {
+                "status": "Risco",
+                "dimensao": "Lucro vs caixa",
+                "leitura": (
+                    "Há lucro positivo, mas fluxo de caixa livre frágil. Isso pode indicar necessidade de investimento elevado, "
+                    "capital de giro pesado ou baixa conversão de lucro em caixa."
+                ),
+            }
+        )
+    elif lucro <= 0:
+        auditorias.append(
+            {
+                "status": "Risco",
+                "dimensao": "Lucro recorrente",
+                "leitura": (
+                    "O lucro sustentável informado está zerado ou negativo. A Valoris não consegue sustentar uma leitura robusta "
+                    "de valuation baseada em lucro."
+                ),
+            }
+        )
+
+    if preco_teto > 0 and preco_atual > preco_teto and margem_seguranca < 25:
+        auditorias.append(
+            {
+                "status": "Atenção",
+                "dimensao": "Preço e margem",
+                "leitura": (
+                    "O preço atual está acima do preço-teto e a margem de segurança não é alta. A decisão depende fortemente "
+                    "da qualidade das premissas e da tese."
+                ),
+            }
+        )
+    elif preco_teto > 0 and preco_atual <= preco_teto:
+        auditorias.append(
+            {
+                "status": "Favorável",
+                "dimensao": "Preço e margem",
+                "leitura": (
+                    "O preço atual está dentro da zona conservadora pelo modelo. Isso não elimina riscos, mas melhora "
+                    "a relação entre preço e margem de segurança."
+                ),
+            }
+        )
+
+    if setor == "Commodity":
+        auditorias.append(
+            {
+                "status": "Atenção",
+                "dimensao": "Risco de ciclo",
+                "leitura": (
+                    "Empresas de commodities podem parecer baratas no pico do ciclo. A Valoris recomenda usar lucro normalizado, "
+                    "não apenas o lucro do melhor ano."
+                ),
+            }
+        )
+
+    if setor in ["Banco", "Elétrica", "Saneamento"]:
+        auditorias.append(
+            {
+                "status": "Parcial",
+                "dimensao": "Regulação e setor",
+                "leitura": (
+                    f"O setor {setor} costuma exigir leitura regulatória e análise específica. A versão atual ainda não aplica "
+                    "um modelo setorial completo, mas já sinaliza que a régua não deve ser genérica."
+                ),
+            }
+        )
+
+    return auditorias
+
+
+def _obter_inputs_fundamentalistas_manuais(contexto: Dict[str, Any]) -> Dict[str, str]:
+    ticker = contexto["ticker"].lower().replace(".", "_").replace("-", "_")
+    setor_inferido = _inferir_setor_por_ticker(contexto["ticker"])
+
+    setores = [
+        "Não sei",
+        "Commodity",
+        "Banco",
+        "Elétrica",
+        "Varejo",
+        "Tecnologia",
+        "Industrial",
+        "Saneamento",
+        "Papel e Celulose",
+        "Consumo",
+        "Serviços",
+        "FII",
+        "Outro",
+    ]
+
+    if setor_inferido in setores:
+        indice_setor = setores.index(setor_inferido)
+    else:
+        indice_setor = 0
+
+    with st.expander("Adicionar confirmação manual ao Auditor Fundamentalista", expanded=False):
+        st.caption(
+            "A Valoris audita automaticamente o que consegue. Estes campos ajudam a refinar a leitura enquanto ainda não há integração automática com APIs e balanços."
+        )
+
+        col_1, col_2 = st.columns(2)
+
+        with col_1:
+            setor = st.selectbox(
+                "Setor do ativo",
+                setores,
+                index=indice_setor,
+                key=f"aud_fund_setor_{ticker}",
+            )
+
+            lucro_recorrente = st.selectbox(
+                "O lucro parece recorrente?",
+                ["Não sei", "Sim", "Parcialmente", "Não"],
+                key=f"aud_fund_lucro_recorrente_{ticker}",
+            )
+
+            dividendos_extraordinarios = st.selectbox(
+                "Houve dividendos extraordinários recentes?",
+                ["Não sei", "Não", "Sim", "Talvez"],
+                key=f"aud_fund_dividendos_extra_{ticker}",
+            )
+
+        with col_2:
+            divida = st.selectbox(
+                "Como está a dívida/alavancagem?",
+                ["Não sei", "Controlada", "Subindo moderadamente", "Subindo forte", "Crítica"],
+                key=f"aud_fund_divida_{ticker}",
+            )
+
+            margens = st.selectbox(
+                "Como estão as margens operacionais?",
+                ["Não sei", "Melhorando", "Estáveis", "Caindo moderadamente", "Caindo forte"],
+                key=f"aud_fund_margens_{ticker}",
+            )
+
+            tese = st.selectbox(
+                "Você entende a tese da empresa?",
+                ["Não sei", "Sim", "Parcialmente", "Não"],
+                key=f"aud_fund_tese_{ticker}",
+            )
+
+        ciclo = st.selectbox(
+            "O setor parece estar em ciclo favorável temporário?",
+            ["Não sei", "Não", "Sim", "Talvez"],
+            key=f"aud_fund_ciclo_{ticker}",
+        )
+
+    return {
+        "setor": setor,
+        "lucro_recorrente": lucro_recorrente,
+        "dividendos_extraordinarios": dividendos_extraordinarios,
+        "divida": divida,
+        "margens": margens,
+        "tese": tese,
+        "ciclo": ciclo,
+    }
+
+
+def _calcular_score_fundamentalista(
+    auditoria_base: List[Dict[str, str]],
+    inputs: Dict[str, str],
+) -> Dict[str, Any]:
+    score = 70
+    pontos_positivos: List[str] = []
+    pontos_de_atencao: List[str] = []
+
+    for item in auditoria_base:
+        status = item.get("status", "")
+
+        if status == "Favorável":
+            score += 5
+            pontos_positivos.append(item.get("dimensao", "Ponto favorável"))
+        elif status == "Parcial":
+            score -= 2
+            pontos_de_atencao.append(item.get("dimensao", "Ponto parcial"))
+        elif status == "Atenção":
+            score -= 8
+            pontos_de_atencao.append(item.get("dimensao", "Ponto de atenção"))
+        elif status == "Risco":
+            score -= 14
+            pontos_de_atencao.append(item.get("dimensao", "Risco"))
+
+    if inputs.get("lucro_recorrente") == "Sim":
+        score += 8
+        pontos_positivos.append("Lucro recorrente confirmado")
+    elif inputs.get("lucro_recorrente") == "Parcialmente":
+        score -= 4
+        pontos_de_atencao.append("Lucro parcialmente recorrente")
+    elif inputs.get("lucro_recorrente") == "Não":
+        score -= 18
+        pontos_de_atencao.append("Lucro não recorrente")
+
+    if inputs.get("dividendos_extraordinarios") == "Sim":
+        score -= 14
+        pontos_de_atencao.append("Dividendos extraordinários")
+    elif inputs.get("dividendos_extraordinarios") == "Talvez":
+        score -= 7
+        pontos_de_atencao.append("Possíveis dividendos extraordinários")
+    elif inputs.get("dividendos_extraordinarios") == "Não":
+        score += 4
+        pontos_positivos.append("Sem dividendos extraordinários aparentes")
+
+    if inputs.get("divida") == "Controlada":
+        score += 6
+        pontos_positivos.append("Dívida controlada")
+    elif inputs.get("divida") == "Subindo moderadamente":
+        score -= 7
+        pontos_de_atencao.append("Dívida em alta")
+    elif inputs.get("divida") == "Subindo forte":
+        score -= 13
+        pontos_de_atencao.append("Dívida subindo forte")
+    elif inputs.get("divida") == "Crítica":
+        score -= 20
+        pontos_de_atencao.append("Alavancagem crítica")
+
+    if inputs.get("margens") == "Melhorando":
+        score += 7
+        pontos_positivos.append("Margens melhorando")
+    elif inputs.get("margens") == "Estáveis":
+        score += 3
+        pontos_positivos.append("Margens estáveis")
+    elif inputs.get("margens") == "Caindo moderadamente":
+        score -= 8
+        pontos_de_atencao.append("Margens em queda")
+    elif inputs.get("margens") == "Caindo forte":
+        score -= 15
+        pontos_de_atencao.append("Margens em queda forte")
+
+    if inputs.get("ciclo") == "Sim":
+        score -= 12
+        pontos_de_atencao.append("Possível pico de ciclo")
+    elif inputs.get("ciclo") == "Talvez":
+        score -= 6
+        pontos_de_atencao.append("Ciclo setorial incerto")
+    elif inputs.get("ciclo") == "Não":
+        score += 3
+        pontos_positivos.append("Ciclo não parece inflado")
+
+    if inputs.get("tese") == "Sim":
+        score += 7
+        pontos_positivos.append("Tese compreendida")
+    elif inputs.get("tese") == "Parcialmente":
+        score -= 5
+        pontos_de_atencao.append("Tese parcialmente compreendida")
+    elif inputs.get("tese") == "Não":
+        score -= 18
+        pontos_de_atencao.append("Tese não compreendida")
+
+    campos_nao_sei = sum(1 for valor in inputs.values() if valor == "Não sei")
+    score -= campos_nao_sei * 3
+
+    score = max(0, min(100, score))
+
+    if score >= 80:
+        classificacao = "Fundamentos robustos"
+        leitura = (
+            "A análise fundamentalista parece bem sustentada pelos dados e confirmações atuais. "
+            "Ainda assim, revise eventos não recorrentes e riscos setoriais antes de uma decisão real."
+        )
+    elif score >= 60:
+        classificacao = "Fundamentos razoáveis"
+        leitura = (
+            "A tese tem pontos positivos, mas ainda depende de confirmação de alguns fatores fundamentais. "
+            "Use como triagem qualificada, não como decisão final automática."
+        )
+    elif score >= 40:
+        classificacao = "Fundamentos frágeis"
+        leitura = (
+            "Há sinais relevantes de fragilidade. O valuation pode estar tecnicamente correto, mas a qualidade "
+            "da decisão ainda precisa melhorar."
+        )
+    else:
+        classificacao = "Tese em risco"
+        leitura = (
+            "A análise fundamentalista está muito frágil. Antes de olhar preço-teto, revise qualidade do lucro, "
+            "caixa, dívida, margens, ciclo e tese."
+        )
+
+    return {
+        "score": score,
+        "classificacao": classificacao,
+        "leitura": leitura,
+        "pontos_positivos": pontos_positivos[:5],
+        "pontos_de_atencao": pontos_de_atencao[:7],
+    }
+
+
+def _renderizar_motor_auditoria_fundamentalista(
+    contexto: Dict[str, Any],
+    camada: str,
+) -> None:
+    st.markdown("### Motor de Auditoria Fundamentalista")
+
+    st.caption(
+        "Esta camada começa a auditar a qualidade dos fundamentos por trás do valuation. "
+        "Hoje ela combina leitura automática com confirmação manual opcional."
+    )
+
+    auditoria_base = _gerar_auditoria_fundamentalista_base(contexto)
+
+    if camada == "Leigo":
+        for item in auditoria_base[:3]:
+            status = item.get("status", "Parcial")
+            texto = f"**{status}: {item.get('dimensao', '')}**\n\n{item.get('leitura', '')}"
+
+            if status == "Favorável":
+                st.success(texto)
+            elif status == "Risco":
+                st.error(texto)
+            else:
+                st.warning(texto)
+
+        st.info(
+            "Na leitura simples, a Valoris mostra apenas os sinais principais. "
+            "Para refinar dívida, margens, dividendos e tese, use Intermediário ou Avançado."
+        )
+        return
+
+    st.markdown("#### Auditoria automática inicial")
+
+    for item in auditoria_base:
+        status = item.get("status", "Parcial")
+        texto = f"**{status}: {item.get('dimensao', '')}**\n\n{item.get('leitura', '')}"
+
+        if status == "Favorável":
+            st.success(texto)
+        elif status == "Risco":
+            st.error(texto)
+        elif status == "Atenção":
+            st.warning(texto)
+        else:
+            st.info(texto)
+
+    inputs = _obter_inputs_fundamentalistas_manuais(contexto)
+    score = _calcular_score_fundamentalista(auditoria_base, inputs)
+
+    st.markdown("#### Score de robustez fundamentalista")
+
+    col_1, col_2 = st.columns([1, 2])
+
+    with col_1:
+        st.metric("Robustez", f"{score['score']}/100")
+
+    with col_2:
+        if score["score"] >= 80:
+            st.success(f"**{score['classificacao']}**\n\n{score['leitura']}")
+        elif score["score"] >= 60:
+            st.warning(f"**{score['classificacao']}**\n\n{score['leitura']}")
+        elif score["score"] >= 40:
+            st.warning(f"**{score['classificacao']}**\n\n{score['leitura']}")
+        else:
+            st.error(f"**{score['classificacao']}**\n\n{score['leitura']}")
+
+    if score["pontos_positivos"]:
+        st.markdown("#### Pontos que fortalecem a análise")
+        for ponto in score["pontos_positivos"]:
+            st.success(f"**{ponto}**")
+
+    if score["pontos_de_atencao"]:
+        st.markdown("#### Pontos que enfraquecem ou exigem revisão")
+        for ponto in score["pontos_de_atencao"]:
+            st.warning(f"**{ponto}**")
+
+
+# ============================================================
+# Renderizações
+# ============================================================
+
+
 def _renderizar_item_auditoria(status: str, titulo: str, mensagem: str) -> None:
     texto = f"**{status}: {titulo}**\n\n{mensagem}"
 
@@ -982,7 +1463,7 @@ def renderizar_explicabilidade_valoris(
             Antes de olhar apenas para o número final, revise a lógica por trás da decisão.
 
             Um valuation pode parecer preciso, mas continuar frágil se estiver baseado em lucro não recorrente,
-            dividendo extraordinário, múltiplo otimista ou margem de segurança baixa.
+            dividendo extraordinário, múltiplo otimista, margem de segurança baixa ou tese mal compreendida.
             """
         )
 
@@ -992,6 +1473,10 @@ def renderizar_explicabilidade_valoris(
         st.divider()
 
         _renderizar_auditor_automatico_valoris(contexto, camada)
+
+        st.divider()
+
+        _renderizar_motor_auditoria_fundamentalista(contexto, camada)
 
         st.divider()
 
@@ -1013,6 +1498,10 @@ def renderizar_explicabilidade_valoris(
         st.divider()
 
         _renderizar_auditor_automatico_valoris(contexto, camada)
+
+        st.divider()
+
+        _renderizar_motor_auditoria_fundamentalista(contexto, camada)
 
         st.divider()
 
@@ -1042,6 +1531,10 @@ def renderizar_explicabilidade_valoris(
         st.divider()
 
         _renderizar_auditor_automatico_valoris(contexto, camada)
+
+        st.divider()
+
+        _renderizar_motor_auditoria_fundamentalista(contexto, camada)
 
         st.divider()
 
@@ -1110,6 +1603,19 @@ def executar_autoteste_explicabilidade_valoris() -> List[Dict[str, str]]:
     premissas = _gerar_premissas_chave(contexto)
     diagnosticos = _gerar_diagnostico_automatico_valoris(contexto)
     indice = _calcular_indice_confianca_valoris(contexto)
+    auditoria_fundamentalista = _gerar_auditoria_fundamentalista_base(contexto)
+    score_fundamentalista = _calcular_score_fundamentalista(
+        auditoria_base=auditoria_fundamentalista,
+        inputs={
+            "setor": "Industrial",
+            "lucro_recorrente": "Sim",
+            "dividendos_extraordinarios": "Não",
+            "divida": "Controlada",
+            "margens": "Estáveis",
+            "tese": "Sim",
+            "ciclo": "Não",
+        },
+    )
 
     return [
         {
@@ -1136,5 +1642,15 @@ def executar_autoteste_explicabilidade_valoris() -> List[Dict[str, str]]:
             "teste": "indice_confianca",
             "status": "OK" if 0 <= indice["score"] <= 100 else "FALHA",
             "detalhe": f"{indice['score']}/100",
+        },
+        {
+            "teste": "auditoria_fundamentalista",
+            "status": "OK" if len(auditoria_fundamentalista) >= 2 else "FALHA",
+            "detalhe": str(len(auditoria_fundamentalista)),
+        },
+        {
+            "teste": "score_fundamentalista",
+            "status": "OK" if 0 <= score_fundamentalista["score"] <= 100 else "FALHA",
+            "detalhe": f"{score_fundamentalista['score']}/100",
         },
     ]

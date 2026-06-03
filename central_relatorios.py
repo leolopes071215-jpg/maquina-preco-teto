@@ -3,7 +3,12 @@
 import streamlit as st
 from typing import Any, Dict
 
-from relatorio import gerar_relatorio_markdown, gerar_nome_arquivo_relatorio
+from relatorio import (
+    gerar_relatorio_markdown,
+    gerar_nome_arquivo_relatorio,
+    gerar_relatorio_valoris_premium_markdown,
+    gerar_nome_arquivo_relatorio_valoris_premium,
+)
 from decisao import gerar_bloco_markdown_decisao
 from relatorio_multiativos import (
     gerar_relatorio_multiativos_markdown,
@@ -12,13 +17,14 @@ from relatorio_multiativos import (
 
 
 # ============================================================
-# MÁQUINA DE PREÇO-TETO
-# v1.23 — Central de Relatórios
+# VALORIS
+# v3.8.37 — Central de Relatórios Premium
 # ------------------------------------------------------------
 # Esta tela centraliza os relatórios da plataforma:
-# 1. Relatório executivo simples
-# 2. Relatório com decisão
-# 3. Relatório premium multiativos
+# 1. Relatório Valoris Premium
+# 2. Relatório executivo simples
+# 3. Relatório com decisão
+# 4. Relatório premium multiativos
 # Não é recomendação de investimento.
 # ============================================================
 
@@ -193,6 +199,35 @@ def _card(label: str, value: str, note: str = "") -> None:
     )
 
 
+def _renderizar_box_relatorio(
+    badge: str,
+    titulo: str,
+    texto: str,
+    label_botao: str,
+    data: str,
+    file_name: str,
+    key: str,
+) -> None:
+    st.markdown(
+        f"""
+        <div class="rel-box">
+            <div class="rel-badge">{badge}</div>
+            <div class="rel-box-title">{titulo}</div>
+            <div class="rel-box-text">{texto}</div>
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
+
+    st.download_button(
+        label=label_botao,
+        data=data,
+        file_name=file_name,
+        mime="text/markdown",
+        key=key,
+    )
+
+
 def _gerar_relatorio_executivo_simples(
     entradas: Any,
     resultado: Dict[str, Any],
@@ -203,6 +238,26 @@ def _gerar_relatorio_executivo_simples(
     formatar_numero,
 ) -> str:
     return gerar_relatorio_markdown(
+        entradas=entradas,
+        resultado=resultado,
+        dados_empresa=dados_empresa,
+        simbolo_moeda=simbolo_moeda,
+        formatar_moeda=formatar_moeda,
+        formatar_percentual=formatar_percentual,
+        formatar_numero=formatar_numero,
+    )
+
+
+def _gerar_relatorio_valoris_premium(
+    entradas: Any,
+    resultado: Dict[str, Any],
+    dados_empresa: Dict[str, Any],
+    simbolo_moeda: str,
+    formatar_moeda,
+    formatar_percentual,
+    formatar_numero,
+) -> str:
+    return gerar_relatorio_valoris_premium_markdown(
         entradas=entradas,
         resultado=resultado,
         dados_empresa=dados_empresa,
@@ -244,6 +299,13 @@ def _gerar_relatorio_com_decisao(
 
 def _nome_relatorio_simples(entradas: Any) -> str:
     return gerar_nome_arquivo_relatorio(
+        empresa=entradas.empresa,
+        ticker=entradas.ticker,
+    )
+
+
+def _nome_relatorio_valoris_premium(entradas: Any) -> str:
+    return gerar_nome_arquivo_relatorio_valoris_premium(
         empresa=entradas.empresa,
         ticker=entradas.ticker,
     )
@@ -318,6 +380,16 @@ def renderizar_central_relatorios(
     valuation = _safe_get_dict("resultado_valuation")
     painel = _safe_get_dict("resultado_painel_multiativos")
 
+    relatorio_valoris_premium = _gerar_relatorio_valoris_premium(
+        entradas=entradas,
+        resultado=resultado,
+        dados_empresa=dados_empresa,
+        simbolo_moeda=simbolo_moeda,
+        formatar_moeda=formatar_moeda,
+        formatar_percentual=formatar_percentual,
+        formatar_numero=formatar_numero,
+    )
+
     relatorio_simples = _gerar_relatorio_executivo_simples(
         entradas=entradas,
         resultado=resultado,
@@ -348,6 +420,7 @@ def renderizar_central_relatorios(
         formatar_numero=formatar_numero,
     )
 
+    nome_valoris_premium = _nome_relatorio_valoris_premium(entradas)
     nome_simples = _nome_relatorio_simples(entradas)
     nome_decisao = _nome_relatorio_decisao(entradas)
     nome_multiativos = gerar_nome_arquivo_relatorio_multiativos(
@@ -359,11 +432,11 @@ def renderizar_central_relatorios(
         """
         <div class="rel-hero">
             <div class="rel-eyebrow">Entrega premium da análise</div>
-            <div class="rel-title">Central de Relatórios</div>
+            <div class="rel-title">Central de Relatórios Valoris</div>
             <div class="rel-subtitle">
-                Converta sua análise em documentos organizados. Escolha entre relatório executivo simples,
-                relatório com decisão ou relatório premium multiativos. O objetivo é transformar dados,
-                premissas e riscos em um material claro para revisão e acompanhamento.
+                Transforme valuation, premissas, riscos e auditoria de decisão em documentos claros.
+                A proposta do relatório premium é reduzir economês, mostrar o que a Valoris conseguiu verificar
+                e deixar explícito o que ainda precisa de revisão humana.
             </div>
         </div>
         """,
@@ -397,82 +470,72 @@ def renderizar_central_relatorios(
 
     if not painel:
         st.warning(
-            "Para gerar o relatório premium mais completo, abra primeiro o Painel Executivo. "
-            "Ele consolida os principais módulos da análise."
+            "Para gerar o relatório multiativos mais completo, abra primeiro o Painel Executivo. "
+            "O Relatório Valoris Premium abaixo já funciona com a análise atual."
         )
 
     st.divider()
 
-    st.markdown("### Escolha o tipo de relatório")
+    st.markdown("### Relatório recomendado")
+
+    _renderizar_box_relatorio(
+        badge="Valoris Premium",
+        titulo="Relatório Valoris Premium",
+        texto=(
+            "Melhor para usuário beta e primeiras validações. Traduz a análise para linguagem humana, "
+            "inclui diagnóstico do Auditor Valoris, score de confiança, pontos não verificados e conclusão educacional."
+        ),
+        label_botao="Baixar Relatório Valoris Premium (.md)",
+        data=relatorio_valoris_premium,
+        file_name=nome_valoris_premium,
+        key="central_download_relatorio_valoris_premium",
+    )
+
+    st.divider()
+
+    st.markdown("### Outros formatos")
 
     col_rel_1, col_rel_2, col_rel_3 = st.columns(3)
 
     with col_rel_1:
-        st.markdown(
-            """
-            <div class="rel-box">
-                <div class="rel-badge">Essencial</div>
-                <div class="rel-box-title">Relatório Executivo</div>
-                <div class="rel-box-text">
-                    Melhor para uma visão rápida do valuation: premissas, preço justo, preço-teto,
-                    status educacional, tese, riscos e fundamentos.
-                </div>
-            </div>
-            """,
-            unsafe_allow_html=True,
-        )
-
-        st.download_button(
-            label="Baixar relatório executivo (.md)",
+        _renderizar_box_relatorio(
+            badge="Essencial",
+            titulo="Relatório Executivo",
+            texto=(
+                "Melhor para uma visão rápida do valuation: premissas, preço justo, preço-teto, "
+                "status educacional, tese, riscos e fundamentos."
+            ),
+            label_botao="Baixar relatório executivo (.md)",
             data=relatorio_simples,
             file_name=nome_simples,
-            mime="text/markdown",
             key="central_download_relatorio_executivo",
         )
 
     with col_rel_2:
-        st.markdown(
-            """
-            <div class="rel-box">
-                <div class="rel-badge">Decisão</div>
-                <div class="rel-box-title">Relatório com Decisão</div>
-                <div class="rel-box-text">
-                    Melhor para revisar a leitura final da decisão educacional, combinando valuation,
-                    convicção da tese, cenários, alertas e ação sugerida.
-                </div>
-            </div>
-            """,
-            unsafe_allow_html=True,
-        )
-
-        st.download_button(
-            label="Baixar relatório com decisão (.md)",
+        _renderizar_box_relatorio(
+            badge="Decisão",
+            titulo="Relatório com Decisão",
+            texto=(
+                "Melhor para revisar a leitura final da decisão educacional, combinando valuation, "
+                "convicção da tese, cenários, alertas e ação sugerida."
+            ),
+            label_botao="Baixar relatório com decisão (.md)",
             data=relatorio_decisao,
             file_name=nome_decisao,
-            mime="text/markdown",
             key="central_download_relatorio_decisao",
         )
 
     with col_rel_3:
-        st.markdown(
-            """
-            <div class="rel-box">
-                <div class="rel-badge">Premium</div>
-                <div class="rel-box-title">Relatório Multiativos</div>
-                <div class="rel-box-text">
-                    Melhor para uma análise completa, consolidando valuation, painel executivo,
-                    decisão, tese, checklist, Ações Brasil, FIIs e Renda Fixa.
-                </div>
-            </div>
-            """,
-            unsafe_allow_html=True,
-        )
-
-        st.download_button(
-            label="Baixar relatório premium multiativos (.md)",
+        _renderizar_box_relatorio(
+            badge="Multiativos",
+            titulo="Relatório Multiativos",
+            texto=(
+                "Melhor para análise completa com valuation, painel executivo, decisão, tese, checklist, "
+                "Ações Brasil, FIIs e Renda Fixa."
+            ),
+            label_botao="Baixar relatório multiativos (.md)",
             data=relatorio_multiativos,
             file_name=nome_multiativos,
-            mime="text/markdown",
             key="central_download_relatorio_multiativos",
         )
 
@@ -482,11 +545,12 @@ def renderizar_central_relatorios(
 
     st.markdown(
         """
-        - **Relatório Executivo:** use quando quiser registrar apenas o valuation e as premissas principais.
+        - **Relatório Valoris Premium:** use como entrega principal para usuário beta. É mais didático, humano e alinhado ao Auditor Valoris.
+        - **Relatório Executivo:** use quando quiser registrar apenas valuation e premissas principais.
         - **Relatório com Decisão:** use quando já avaliou tese, cenários e quer uma leitura educacional de decisão.
-        - **Relatório Premium Multiativos:** use quando preencheu vários módulos e quer consolidar tudo em um documento mais completo.
+        - **Relatório Multiativos:** use quando preencheu vários módulos e quer consolidar tudo em um documento mais completo.
 
-        Para melhor resultado, siga a jornada: **Valuation → Tese & Convicção → Checklist → Painel Executivo → Relatórios → Watchlist**.
+        Para melhor resultado, siga a jornada: **Valuation → Auditor Valoris → Tese & Convicção → Checklist → Relatórios → Watchlist**.
         """
     )
 

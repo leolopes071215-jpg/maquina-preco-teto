@@ -5,10 +5,12 @@ from typing import Any, Dict, List, Optional
 
 import streamlit as st
 
+from explicabilidade_valoris import renderizar_explicabilidade_valoris
+
 
 # ============================================================
 # MÁQUINA DE PREÇO-TETO
-# v3.8.24 — Experiência Premium do Usuário Beta
+# v3.8.32 — Experiência Beta com Auditor Valoris
 # ------------------------------------------------------------
 # Este arquivo cria uma experiência simplificada e vendável
 # para o usuário comum.
@@ -22,16 +24,16 @@ import streamlit as st
 # ============================================================
 
 
-VERSAO_EXPERIENCIA_BETA = "3.8.24"
+VERSAO_EXPERIENCIA_BETA = "3.8.32"
 
 
 COPY_EXPERIENCIA_BETA = {
-    "headline": "Descubra seu preço-teto antes de investir.",
+    "headline": "Transforme análise em decisão.",
     "subheadline": (
-        "Transforme lucro, fluxo de caixa, múltiplos e margem de segurança "
-        "em uma decisão clara: comprar, observar ou aguardar."
+        "A Valoris estima valor, aplica margem de segurança e audita os principais "
+        "riscos que podem distorcer sua decisão antes da compra."
     ),
-    "promessa": "Menos impulso. Mais método. Mais clareza antes de comprar.",
+    "promessa": "Menos caixa-preta. Mais explicação. Mais proteção contra decisões ruins.",
     "disclaimer": (
         "Ferramenta educacional. Não representa recomendação de compra, venda "
         "ou manutenção de investimentos."
@@ -407,7 +409,7 @@ def gerar_markdown_experiencia_beta(snapshot: Dict[str, Any]) -> str:
         [f"| {linha['Ação']} | {linha['Motivo']} |" for linha in acoes]
     )
 
-    return f"""# Análise Beta — Máquina de Preço-Teto
+    return f"""# Análise Beta — Valoris
 
 Gerado em: {snapshot.get("data_snapshot")}
 
@@ -704,6 +706,16 @@ def renderizar_experiencia_usuario_beta(
     st.divider()
 
     _renderizar_alerta_status(snapshot)
+
+    st.divider()
+
+    renderizar_explicabilidade_valoris(
+        resultado_valuation=resultado_valuation,
+        entradas_valuation=entradas_valuation,
+        snapshot=snapshot,
+    )
+
+    st.divider()
 
     st.markdown("### Mapa simples da decisão")
 

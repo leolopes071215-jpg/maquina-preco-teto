@@ -7,26 +7,29 @@ import streamlit as st
 
 # ============================================================
 # VALORIS
-# v3.8.34 — Explicabilidade por camada + Auditor Valoris
+# v3.8.35 — Auditor Valoris Automático
 # ------------------------------------------------------------
-# Este módulo explica o cálculo e inicia o Auditor Valoris
-# sem depender de pandas ou bibliotecas pesadas.
+# Este módulo explica o cálculo e transforma o Auditor Valoris
+# em um diagnóstico automático da qualidade da decisão.
 #
 # Objetivo:
 # - reduzir sensação de caixa-preta
-# - explicar o cálculo para leigos, intermediários e avançados
-# - alertar sobre riscos de premissas ruins
-# - criar o diferencial da Valoris: auditar a decisão, não só calcular
+# - separar o que a Valoris consegue auditar sozinha do que ainda precisa de dados externos
+# - criar um índice simples de confiança da análise
+# - mostrar limitações com honestidade intelectual
+# - manter o módulo leve, sem pandas e sem dependências pesadas
 # ============================================================
 
 
-VERSAO_EXPLICABILIDADE_VALORIS = "3.8.34"
+VERSAO_EXPLICABILIDADE_VALORIS = "3.8.35"
 
 
 def _safe_str(valor: Any, default: str = "") -> str:
     if valor is None:
         return default
+
     texto = str(valor).strip()
+
     return texto if texto else default
 
 
@@ -39,6 +42,7 @@ def _safe_float(valor: Any, default: float = 0.0) -> float:
 
 def _formatar_moeda(valor: Any, simbolo: str = "R$") -> str:
     numero = _safe_float(valor)
+
     return f"{simbolo} {numero:,.2f}".replace(",", "X").replace(".", ",").replace("X", ".")
 
 
@@ -59,7 +63,6 @@ def _normalizar_status(status: Any) -> str:
         return "AGUARDE"
 
     return texto if texto else "N/D"
-
 
 
 def _normalizar_camada_visualizacao(camada: Any) -> str:
@@ -417,6 +420,401 @@ def _gerar_alertas_auditor(contexto: Dict[str, Any]) -> List[Dict[str, str]]:
     return alertas
 
 
+def _gerar_diagnostico_automatico_valoris(contexto: Dict[str, Any]) -> List[Dict[str, str]]:
+    diagnosticos: List[Dict[str, str]] = []
+
+    preco_atual = contexto["preco_atual"]
+    preco_teto = contexto["preco_teto"]
+    preco_justo = contexto["preco_justo"]
+    margem_seguranca = contexto["margem_seguranca"]
+    lucro = contexto["lucro_liquido_sustentavel"]
+    fcf = contexto["fluxo_caixa_livre"]
+    peso_eps = contexto["peso_eps"]
+    peso_fcf = contexto["peso_fcf"]
+    modelo = contexto["modelo_escolhido"]
+
+    if preco_atual > 0:
+        diagnosticos.append(
+            {
+                "status": "Verificado",
+                "titulo": "Preço atual considerado",
+                "mensagem": (
+                    "A Valoris conseguiu comparar o preço atual informado com o preço-teto "
+                    "e com o preço justo estimado."
+                ),
+            }
+        )
+    else:
+        diagnosticos.append(
+            {
+                "status": "Pendente",
+                "titulo": "Preço atual ausente ou inválido",
+                "mensagem": (
+                    "Sem preço atual confiável, a Valoris não consegue avaliar margem de segurança "
+                    "contra o mercado."
+                ),
+            }
+        )
+
+    if preco_teto > 0:
+        if preco_atual <= preco_teto:
+            diagnosticos.append(
+                {
+                    "status": "Verificado",
+                    "titulo": "Preço dentro do teto conservador",
+                    "mensagem": (
+                        "O preço atual está abaixo ou igual ao preço-teto calculado. Isso favorece "
+                        "a leitura de margem de segurança, desde que as premissas estejam corretas."
+                    ),
+                }
+            )
+        else:
+            diagnosticos.append(
+                {
+                    "status": "Atenção",
+                    "titulo": "Preço acima do teto conservador",
+                    "mensagem": (
+                        "O preço atual está acima do preço-teto. A empresa pode continuar sendo boa, "
+                        "mas o preço atual exige mais cautela."
+                    ),
+                }
+            )
+    else:
+        diagnosticos.append(
+            {
+                "status": "Pendente",
+                "titulo": "Preço-teto não calculado",
+                "mensagem": (
+                    "A Valoris não encontrou um preço-teto válido. Revise lucro, fluxo de caixa, "
+                    "múltiplos, pesos e margem de segurança."
+                ),
+            }
+        )
+
+    if preco_justo > 0:
+        if preco_atual <= preco_justo:
+            diagnosticos.append(
+                {
+                    "status": "Verificado",
+                    "titulo": "Preço abaixo do valor justo estimado",
+                    "mensagem": (
+                        "O preço atual está abaixo ou próximo do preço justo estimado. A análise ainda "
+                        "depende da margem de segurança e da qualidade das premissas."
+                    ),
+                }
+            )
+        else:
+            diagnosticos.append(
+                {
+                    "status": "Risco",
+                    "titulo": "Preço acima do valor justo estimado",
+                    "mensagem": (
+                        "O preço atual está acima do valor justo estimado. Isso pode indicar que o mercado "
+                        "já está precificando um cenário otimista."
+                    ),
+                }
+            )
+    else:
+        diagnosticos.append(
+            {
+                "status": "Pendente",
+                "titulo": "Preço justo não verificado",
+                "mensagem": (
+                    "Sem preço justo válido, a decisão perde uma referência importante de valor intrínseco."
+                ),
+            }
+        )
+
+    if margem_seguranca >= 30:
+        diagnosticos.append(
+            {
+                "status": "Verificado",
+                "titulo": "Margem de segurança conservadora",
+                "mensagem": (
+                    "A margem de segurança usada é alta o suficiente para proteger melhor contra erros "
+                    "de premissa."
+                ),
+            }
+        )
+    elif margem_seguranca >= 20:
+        diagnosticos.append(
+            {
+                "status": "Atenção",
+                "titulo": "Margem de segurança moderada",
+                "mensagem": (
+                    "A margem de segurança é razoável, mas ainda exige cuidado com premissas otimistas."
+                ),
+            }
+        )
+    else:
+        diagnosticos.append(
+            {
+                "status": "Risco",
+                "titulo": "Margem de segurança baixa",
+                "mensagem": (
+                    "A margem de segurança está baixa. Isso deixa pouco espaço para erro no valuation."
+                ),
+            }
+        )
+
+    if lucro > 0:
+        diagnosticos.append(
+            {
+                "status": "Verificado",
+                "titulo": "Lucro sustentável informado",
+                "mensagem": (
+                    "A Valoris recebeu um lucro sustentável positivo. Ainda assim, ela não consegue confirmar "
+                    "sozinha se esse lucro é recorrente sem dados históricos ou balanços."
+                ),
+            }
+        )
+    else:
+        diagnosticos.append(
+            {
+                "status": "Risco",
+                "titulo": "Lucro sustentável frágil",
+                "mensagem": (
+                    "O lucro sustentável informado está zerado ou negativo. Isso enfraquece modelos baseados "
+                    "em lucro por ação."
+                ),
+            }
+        )
+
+    if fcf > 0:
+        diagnosticos.append(
+            {
+                "status": "Verificado",
+                "titulo": "Fluxo de caixa livre positivo",
+                "mensagem": (
+                    "O fluxo de caixa livre informado é positivo. Isso fortalece a leitura de qualidade "
+                    "econômica, mas ainda precisa ser analisado no tempo."
+                ),
+            }
+        )
+    else:
+        diagnosticos.append(
+            {
+                "status": "Risco",
+                "titulo": "Fluxo de caixa livre frágil",
+                "mensagem": (
+                    "O fluxo de caixa livre está zerado ou negativo. Uma empresa pode ter lucro contábil "
+                    "e ainda assim não gerar caixa suficiente."
+                ),
+            }
+        )
+
+    if abs((peso_eps + peso_fcf) - 100) <= 0.01:
+        diagnosticos.append(
+            {
+                "status": "Verificado",
+                "titulo": "Pesos do modelo consistentes",
+                "mensagem": (
+                    "Os pesos de lucro e fluxo de caixa somam 100%, então a composição do preço justo "
+                    "está matematicamente coerente."
+                ),
+            }
+        )
+    else:
+        diagnosticos.append(
+            {
+                "status": "Atenção",
+                "titulo": "Pesos do modelo incoerentes",
+                "mensagem": (
+                    "Os pesos de lucro e fluxo de caixa não somam 100%. Isso pode distorcer o preço justo combinado."
+                ),
+            }
+        )
+
+    if "demonstra" in modelo.lower():
+        diagnosticos.append(
+            {
+                "status": "Pendente",
+                "titulo": "Análise em modo demonstração",
+                "mensagem": (
+                    "Esta análise usa dados fictícios. Ela serve para testar a plataforma, não para avaliar "
+                    "uma decisão real."
+                ),
+            }
+        )
+
+    return diagnosticos
+
+
+def _gerar_pontos_nao_verificados() -> List[Dict[str, str]]:
+    return [
+        {
+            "ponto": "Lucro não recorrente",
+            "motivo": (
+                "A Valoris ainda não lê automaticamente notas explicativas, balanços trimestrais "
+                "ou ajustes contábeis. Por isso, ela não consegue confirmar se o lucro veio de operação recorrente."
+            ),
+        },
+        {
+            "ponto": "Dividendos extraordinários",
+            "motivo": (
+                "Sem histórico automático de proventos, a Valoris ainda não identifica dividendos fora do padrão "
+                "que podem inflar uma análise baseada em yield."
+            ),
+        },
+        {
+            "ponto": "Dívida e alavancagem",
+            "motivo": (
+                "A versão atual não compara dívida líquida, EBITDA, cobertura de juros ou vencimentos futuros."
+            ),
+        },
+        {
+            "ponto": "Margens operacionais",
+            "motivo": (
+                "A Valoris ainda não verifica automaticamente se margem bruta, operacional ou líquida estão "
+                "em queda relevante."
+            ),
+        },
+        {
+            "ponto": "Ciclo setorial",
+            "motivo": (
+                "Empresas de commodities, bancos, varejo e setores cíclicos podem parecer baratas no pico do ciclo."
+            ),
+        },
+        {
+            "ponto": "Qualidade da tese",
+            "motivo": (
+                "A ferramenta organiza os números, mas a tese qualitativa ainda precisa ser validada pelo investidor."
+            ),
+        },
+    ]
+
+
+def _calcular_indice_confianca_valoris(contexto: Dict[str, Any]) -> Dict[str, Any]:
+    diagnosticos = _gerar_diagnostico_automatico_valoris(contexto)
+
+    score = 100
+
+    for item in diagnosticos:
+        status = item.get("status", "")
+
+        if status == "Atenção":
+            score -= 8
+        elif status == "Risco":
+            score -= 15
+        elif status == "Pendente":
+            score -= 10
+
+    # Penalidade estrutural: ainda não temos dados automáticos de balanços, dívida, dividendos e recorrência.
+    score -= 12
+
+    score = max(0, min(100, score))
+
+    if score >= 80:
+        classificacao = "Confiança alta"
+        leitura = (
+            "A análise possui boa consistência com os dados disponíveis. Ainda assim, revise pontos não verificados "
+            "antes de uma decisão real."
+        )
+    elif score >= 60:
+        classificacao = "Confiança moderada"
+        leitura = (
+            "A análise é útil como triagem, mas ainda depende de revisão manual sobre qualidade dos dados, "
+            "recorrência do lucro e riscos não capturados."
+        )
+    elif score >= 40:
+        classificacao = "Confiança baixa"
+        leitura = (
+            "A análise possui sinais de fragilidade. Use como ponto de partida, não como base final de decisão."
+        )
+    else:
+        classificacao = "Decisão frágil"
+        leitura = (
+            "A análise está muito exposta a falhas de premissa. Revise dados, modelo e tese antes de considerar "
+            "qualquer decisão."
+        )
+
+    return {
+        "score": score,
+        "classificacao": classificacao,
+        "leitura": leitura,
+        "diagnosticos": diagnosticos,
+    }
+
+
+def _renderizar_item_auditoria(status: str, titulo: str, mensagem: str) -> None:
+    texto = f"**{status}: {titulo}**\n\n{mensagem}"
+
+    if status == "Verificado":
+        st.success(texto)
+    elif status == "Atenção":
+        st.warning(texto)
+    elif status == "Risco":
+        st.error(texto)
+    else:
+        st.info(texto)
+
+
+def _renderizar_auditor_automatico_valoris(
+    contexto: Dict[str, Any],
+    camada: str = "Intermediário",
+) -> None:
+    indice = _calcular_indice_confianca_valoris(contexto)
+    score = indice["score"]
+
+    st.markdown("### Auditor automático da decisão")
+
+    st.caption(
+        "A Valoris separa o que ela já consegue verificar com os dados atuais do que ainda exige confirmação externa."
+    )
+
+    col_1, col_2 = st.columns([1, 2])
+
+    with col_1:
+        st.metric(
+            "Índice de confiança",
+            f"{score}/100",
+        )
+
+    with col_2:
+        if score >= 80:
+            st.success(f"**{indice['classificacao']}**\n\n{indice['leitura']}")
+        elif score >= 60:
+            st.warning(f"**{indice['classificacao']}**\n\n{indice['leitura']}")
+        elif score >= 40:
+            st.warning(f"**{indice['classificacao']}**\n\n{indice['leitura']}")
+        else:
+            st.error(f"**{indice['classificacao']}**\n\n{indice['leitura']}")
+
+    diagnosticos = indice["diagnosticos"]
+
+    if camada == "Leigo":
+        st.markdown("#### O que a Valoris conseguiu verificar")
+
+        for item in diagnosticos[:4]:
+            _renderizar_item_auditoria(
+                item.get("status", "Pendente"),
+                item.get("titulo", ""),
+                item.get("mensagem", ""),
+            )
+
+        st.info(
+            "Esta é uma leitura simplificada. Para ver tudo que foi verificado e o que ainda está pendente, "
+            "use a camada Intermediário ou Avançado."
+        )
+        return
+
+    st.markdown("#### Diagnóstico automático")
+
+    for item in diagnosticos:
+        _renderizar_item_auditoria(
+            item.get("status", "Pendente"),
+            item.get("titulo", ""),
+            item.get("mensagem", ""),
+        )
+
+    st.markdown("#### Pontos que a Valoris ainda não consegue provar sozinha")
+
+    for item in _gerar_pontos_nao_verificados():
+        with st.container(border=True):
+            st.markdown(f"**{item['ponto']}**")
+            st.caption(item["motivo"])
+
+
 def _renderizar_bloco_alerta(alerta: Dict[str, str]) -> None:
     nivel = alerta.get("nivel", "Atenção")
     titulo = alerta.get("titulo", "")
@@ -593,6 +991,10 @@ def renderizar_explicabilidade_valoris(
 
         st.divider()
 
+        _renderizar_auditor_automatico_valoris(contexto, camada)
+
+        st.divider()
+
         st.markdown("### Alertas principais")
 
         alertas = _gerar_alertas_auditor(contexto)
@@ -607,6 +1009,10 @@ def renderizar_explicabilidade_valoris(
 
     elif camada == "Intermediário":
         _renderizar_leigo(contexto)
+
+        st.divider()
+
+        _renderizar_auditor_automatico_valoris(contexto, camada)
 
         st.divider()
 
@@ -635,6 +1041,10 @@ def renderizar_explicabilidade_valoris(
 
         st.divider()
 
+        _renderizar_auditor_automatico_valoris(contexto, camada)
+
+        st.divider()
+
         _renderizar_intermediario(contexto)
 
         st.divider()
@@ -652,10 +1062,10 @@ def renderizar_explicabilidade_valoris(
 
         st.divider()
 
-        st.markdown("### Checklist de confiança antes de decidir")
+        st.markdown("### Checklist de confirmação do investidor")
 
         st.caption(
-            "Marque mentalmente os pontos abaixo. Se muitas respostas forem incertas, o valuation ainda não está maduro."
+            "A Valoris audita automaticamente o que consegue. Os itens abaixo são pontos que ainda exigem confirmação humana ou dados externos."
         )
 
         _renderizar_checklist_confianca()
@@ -698,6 +1108,8 @@ def executar_autoteste_explicabilidade_valoris() -> List[Dict[str, str]]:
     contexto = _montar_contexto(resultado, entradas, None)
     alertas = _gerar_alertas_auditor(contexto)
     premissas = _gerar_premissas_chave(contexto)
+    diagnosticos = _gerar_diagnostico_automatico_valoris(contexto)
+    indice = _calcular_indice_confianca_valoris(contexto)
 
     return [
         {
@@ -714,5 +1126,15 @@ def executar_autoteste_explicabilidade_valoris() -> List[Dict[str, str]]:
             "teste": "premissas_geradas",
             "status": "OK" if len(premissas) >= 3 else "FALHA",
             "detalhe": str(len(premissas)),
+        },
+        {
+            "teste": "diagnosticos_automaticos",
+            "status": "OK" if len(diagnosticos) >= 5 else "FALHA",
+            "detalhe": str(len(diagnosticos)),
+        },
+        {
+            "teste": "indice_confianca",
+            "status": "OK" if 0 <= indice["score"] <= 100 else "FALHA",
+            "detalhe": f"{indice['score']}/100",
         },
     ]

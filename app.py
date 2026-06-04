@@ -23,6 +23,7 @@ from trilha_educativa_valoris import renderizar_trilha_educativa_valoris, render
 from copiloto_valoris import renderizar_copiloto_valoris, renderizar_painel_copiloto_valoris
 from jornada_personalizada_valoris import renderizar_jornada_personalizada_valoris, renderizar_painel_jornada_personalizada_valoris
 from hub_ativacao_valoris import renderizar_hub_ativacao_valoris, renderizar_painel_hub_ativacao_valoris
+from conversao_fundador_valoris import renderizar_conversao_fundador_valoris, renderizar_painel_conversao_fundador_valoris
 from lancamento_beta import renderizar_lancamento_beta
 from convite_beta_publico import renderizar_convite_beta_publico
 from release_candidate import renderizar_release_candidate_fase1
@@ -126,6 +127,7 @@ ABAS_ORDEM_COMPLETA = [
     "Início",
     "Valuation",
     "Relatórios",
+    "Conversão",
     "Convite Beta",
     "Oferta Beta",
     "Feedback Beta",
@@ -179,6 +181,7 @@ ABAS_ORDEM_COMPLETA = [
     "Painel Copiloto",
     "Painel Jornada",
     "Painel Ativação",
+    "Painel Conversão",
     "UX",
     "Multiativos",
     "Ações Brasil",
@@ -328,7 +331,7 @@ def renderizar_hero(modo_exibicao: str, motor_valuation: str) -> None:
         )
 
         st.caption(
-            "Fluxo público sugerido: Landing Page → Ativação → Copiloto → Jornada → Demonstração → Trilha Valoris → Início → Valuation → Relatórios → Convite Beta → Oferta Beta."
+            "Fluxo público sugerido: Landing Page → Ativação → Copiloto → Jornada → Demonstração → Trilha Valoris → Início → Valuation → Relatórios → Conversão → Convite Beta → Oferta Beta."
         )
         return
 
@@ -1145,6 +1148,13 @@ try:
             elif nome_aba == "Lançamento":
                 renderizar_lancamento_beta()
 
+            elif nome_aba == "Conversão":
+                renderizar_conversao_fundador_valoris(
+                    modo_compacto=False,
+                    mostrar_cta=True,
+                    chave_contexto="aba_conversao",
+                )
+
             elif nome_aba == "Convite Beta":
                 renderizar_convite_beta_publico()
 
@@ -1255,6 +1265,9 @@ try:
 
             elif nome_aba == "Painel Ativação":
                 renderizar_painel_hub_ativacao_valoris()
+
+            elif nome_aba == "Painel Conversão":
+                renderizar_painel_conversao_fundador_valoris()
 
             elif nome_aba == "UX":
                 renderizar_auditoria_ux()

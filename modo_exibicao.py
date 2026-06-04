@@ -7,7 +7,7 @@ import streamlit as st
 
 # ============================================================
 # VALORIS
-# v3.8.49 — Hub de Ativação e Progresso Público
+# v3.8.50 — Conversão Ética e Oferta Fundador Personalizada
 # ------------------------------------------------------------
 # Este arquivo controla a experiência de navegação do app.
 #
@@ -42,6 +42,7 @@ ABAS_USUARIO_BETA = [
     "Início",
     "Valuation",
     "Relatórios",
+    "Conversão",
     "Convite Beta",
     "Oferta Beta",
     "Feedback Beta",
@@ -143,6 +144,7 @@ ABAS_FUNDADOR = [
     "Painel Copiloto",
     "Painel Jornada",
     "Painel Ativação",
+    "Painel Conversão",
     "UX",
     "Multiativos",
     "Ações Brasil",
@@ -264,7 +266,7 @@ def obter_resumo_modos() -> List[Dict[str, str]]:
             "Modo": MODO_USUARIO_BETA,
             "Quantidade de abas": str(len(ABAS_USUARIO_BETA)),
             "Uso ideal": "Teste rápido com usuários reais.",
-            "O que mostra": "Landing page, hub de ativação, copiloto diagnóstico, jornada personalizada, demonstração guiada, trilha educativa, início, valuation, relatórios, convite beta, oferta, feedback e educação.",
+            "O que mostra": "Landing page, hub de ativação, copiloto diagnóstico, jornada personalizada, demonstração guiada, trilha educativa, início, valuation, relatórios, conversão ética, convite beta, oferta, feedback e educação.",
         },
         {
             "Modo": MODO_INVESTIDOR_COMPLETO,

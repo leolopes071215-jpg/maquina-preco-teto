@@ -14,7 +14,7 @@ from typing import Iterable, List, Optional
 
 # ============================================================
 # VALORIS
-# v3.8.49 — Guardião de Release com módulos públicos
+# v3.8.50 — Guardião de Release com conversão ética
 # ------------------------------------------------------------
 # Este script ajuda a proteger o projeto antes de fechar versão.
 #
@@ -35,7 +35,7 @@ from typing import Iterable, List, Optional
 # ============================================================
 
 
-VERSAO_RELEASE_GUARD = "3.8.49"
+VERSAO_RELEASE_GUARD = "3.8.50"
 
 
 ARQUIVOS_ESSENCIAIS = [
@@ -51,6 +51,7 @@ ARQUIVOS_ESSENCIAIS = [
     "landing_page_beta.py",
     "convite_beta_publico.py",
     "hub_ativacao_valoris.py",
+    "conversao_fundador_valoris.py",
     "jornada_personalizada_valoris.py",
     "copiloto_valoris.py",
     "trilha_educativa_valoris.py",
@@ -74,6 +75,7 @@ CSV_LOCAIS_ESPERADOS_NO_GITIGNORE = [
     "historico.csv",
     "historico_analises.csv",
     "ativacao_valoris.csv",
+    "sinais_conversao_valoris.csv",
     "jornadas_personalizadas_valoris.csv",
     "diagnosticos_copiloto_valoris.csv",
     "progresso_trilha_valoris.csv",
@@ -361,6 +363,10 @@ def verificar_imports_criticos(raiz: Path) -> ResultadoChecagem:
         "hub_ativacao_valoris.py": [
             "renderizar_hub_ativacao_valoris",
             "renderizar_painel_hub_ativacao_valoris",
+        ],
+        "conversao_fundador_valoris.py": [
+            "renderizar_conversao_fundador_valoris",
+            "renderizar_painel_conversao_fundador_valoris",
         ],
     }
 

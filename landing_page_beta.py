@@ -11,12 +11,13 @@ from trilha_educativa_valoris import renderizar_trilha_educativa_valoris
 from copiloto_valoris import renderizar_copiloto_valoris
 from jornada_personalizada_valoris import renderizar_jornada_personalizada_valoris
 from hub_ativacao_valoris import renderizar_hub_ativacao_valoris
+from conversao_fundador_valoris import renderizar_conversao_fundador_valoris
 from analytics_publico_valoris import registrar_visualizacao_unica, registrar_evento_publico
 
 
 # ============================================================
 # VALORIS
-# v3.8.49 — Landing Page com Hub de Ativação
+# v3.8.50 — Landing Page com Conversão Ética
 # ------------------------------------------------------------
 # Esta tela apresenta a Valoris para usuários públicos.
 #
@@ -29,7 +30,7 @@ from analytics_publico_valoris import registrar_visualizacao_unica, registrar_ev
 # ============================================================
 
 
-VERSAO_LANDING_PAGE_BETA = "3.8.49"
+VERSAO_LANDING_PAGE_BETA = "3.8.50"
 
 
 COPY_LANDING = {
@@ -691,6 +692,14 @@ def renderizar_landing_page_beta() -> None:
 
     st.divider()
 
+    renderizar_conversao_fundador_valoris(
+        modo_compacto=True,
+        mostrar_cta=False,
+        chave_contexto="landing_page",
+    )
+
+    st.divider()
+
     _renderizar_faq()
 
     st.divider()
@@ -712,7 +721,7 @@ def executar_autoteste_landing_page_beta() -> List[Dict[str, str]]:
     return [
         {
             "teste": "versao_landing",
-            "status": "OK" if VERSAO_LANDING_PAGE_BETA == "3.8.49" else "FALHA",
+            "status": "OK" if VERSAO_LANDING_PAGE_BETA == "3.8.50" else "FALHA",
             "detalhe": VERSAO_LANDING_PAGE_BETA,
         },
         {

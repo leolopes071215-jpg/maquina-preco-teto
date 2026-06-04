@@ -10,7 +10,7 @@ from lista_espera_beta import renderizar_lista_espera_valoris
 
 # ============================================================
 # VALORIS
-# v3.8.41 — Convite Beta Público
+# v3.8.43 — Convite Beta Público Interativo
 # ------------------------------------------------------------
 # Esta tela cria uma página curta de convite para o beta.
 #
@@ -22,7 +22,7 @@ from lista_espera_beta import renderizar_lista_espera_valoris
 # ============================================================
 
 
-VERSAO_CONVITE_BETA_PUBLICO = "3.8.41"
+VERSAO_CONVITE_BETA_PUBLICO = "3.8.43"
 
 
 QUEM_DEVE_ENTRAR = [
@@ -173,6 +173,42 @@ def _renderizar_hero() -> None:
     )
 
 
+def _renderizar_teste_rapido_interesse() -> None:
+    st.markdown("### Teste rápido: a Valoris faz sentido para você?")
+
+    resposta = st.radio(
+        "Qual dessas situações mais combina com você?",
+        [
+            "Tenho medo de comprar ação cara",
+            "Quero entender melhor valuation",
+            "Já uso planilha e quero ganhar clareza",
+            "Procuro recomendação pronta",
+        ],
+        horizontal=False,
+        key="convite_teste_interesse_valoris",
+    )
+
+    if resposta == "Procuro recomendação pronta":
+        st.warning(
+            "Talvez a Valoris não seja para você neste momento. A plataforma é educacional e não entrega call de compra ou venda."
+        )
+        return
+
+    if resposta == "Tenho medo de comprar ação cara":
+        st.success(
+            "Faz sentido testar. A Valoris foi criada justamente para comparar preço atual, valor estimado e margem de segurança."
+        )
+    elif resposta == "Quero entender melhor valuation":
+        st.success(
+            "Faz sentido testar. A Valoris organiza valuation em uma jornada didática, com explicação por camadas."
+        )
+    else:
+        st.success(
+            "Faz sentido testar. A Valoris pode complementar sua planilha com relatório, auditoria e leitura mais clara da decisão."
+        )
+
+
+
 def _renderizar_listas_qualificacao() -> None:
     st.markdown("### Para quem esse beta faz sentido")
 
@@ -274,6 +310,10 @@ def renderizar_convite_beta_publico() -> None:
 
     _renderizar_hero()
 
+    _renderizar_teste_rapido_interesse()
+
+    st.divider()
+
     _renderizar_promessa()
 
     st.divider()
@@ -302,7 +342,7 @@ def executar_autoteste_convite_beta_publico() -> List[Dict[str, str]]:
     return [
         {
             "teste": "versao_convite",
-            "status": "OK" if VERSAO_CONVITE_BETA_PUBLICO == "3.8.41" else "FALHA",
+            "status": "OK" if VERSAO_CONVITE_BETA_PUBLICO == "3.8.43" else "FALHA",
             "detalhe": VERSAO_CONVITE_BETA_PUBLICO,
         },
         {

@@ -111,26 +111,27 @@ aplicar_estilo()
 
 
 ABAS_ORDEM_COMPLETA = [
+    "Landing Page",
+    "Início",
+    "Valuation",
+    "Relatórios",
+    "Convite Beta",
+    "Oferta Beta",
+    "Feedback Beta",
+    "Educação",
     "Produto",
     "Navegação",
     "Onboarding",
-    "Início",
     "Painel Executivo",
-    "Valuation",
     "Simulador",
     "Tese & Convicção",
     "Checklist",
     "Watchlist",
-    "Relatórios",
-    "Feedback Beta",
     "Beta Fechado",
-    "Oferta Beta",
     "Negócio",
     "Marketing",
     "Conteúdo",
-    "Landing Page",
     "Lançamento",
-    "Convite Beta",
     "Release",
     "Aprendizado Beta",
     "Rodadas Beta",
@@ -172,7 +173,6 @@ ABAS_ORDEM_COMPLETA = [
     "Tese qualitativa",
     "Premissas",
     "Histórico",
-    "Educação",
 ]
 
 
@@ -220,63 +220,92 @@ def obter_rotulo_motor_executado(resultado: dict, motor_valuation: str) -> str:
 
 def renderizar_hero(modo_exibicao: str, motor_valuation: str) -> None:
     if modo_exibicao == MODO_USUARIO_BETA:
-        st.markdown("# VALORIS")
-
         st.markdown(
             """
-            ### Plataforma de Valuation e Decisão de Investimentos
+            <style>
+                .public-gateway {
+                    padding: clamp(1rem, 2.8vw, 1.65rem);
+                    border-radius: 28px;
+                    border: 1px solid rgba(255, 255, 255, 0.09);
+                    background:
+                        radial-gradient(circle at top left, rgba(214, 181, 109, 0.22), transparent 30%),
+                        radial-gradient(circle at bottom right, rgba(36, 128, 91, 0.22), transparent 34%),
+                        linear-gradient(135deg, rgba(8, 15, 27, 0.99), rgba(5, 9, 18, 0.99));
+                    box-shadow: 0 18px 52px rgba(0, 0, 0, 0.28);
+                    margin-bottom: 0.8rem;
+                }
 
-            ## Descubra quanto vale um ativo antes de investir.
+                .public-gateway-eyebrow {
+                    color: #d6b56d;
+                    font-size: 0.73rem;
+                    letter-spacing: 0.14em;
+                    text-transform: uppercase;
+                    font-weight: 850;
+                    margin-bottom: 0.35rem;
+                }
 
-            O mercado recompensa boas empresas.  
-            Mas o patrimônio é construído por quem entende a diferença entre **preço** e **valor**.
+                .public-gateway-title {
+                    color: #f4f7fb;
+                    font-size: clamp(1.7rem, 5vw, 2.7rem);
+                    font-weight: 940;
+                    line-height: 1.02;
+                    letter-spacing: -0.055em;
+                    margin-bottom: 0.5rem;
+                }
 
-            A maioria dos investidores procura a próxima ação vencedora.  
-            Poucos param para responder uma pergunta mais importante:
+                .public-gateway-text {
+                    color: rgba(244, 247, 251, 0.74);
+                    font-size: 0.96rem;
+                    line-height: 1.52;
+                    max-width: 980px;
+                }
 
-            **Quanto ela realmente vale?**
+                .public-gateway-pills {
+                    display: flex;
+                    gap: 0.5rem;
+                    flex-wrap: wrap;
+                    margin-top: 0.85rem;
+                }
 
-            O Valoris transforma essa pergunta em um processo.
+                .public-gateway-pill {
+                    display: inline-block;
+                    padding: 0.32rem 0.62rem;
+                    border-radius: 999px;
+                    color: #d6b56d;
+                    border: 1px solid rgba(214, 181, 109, 0.22);
+                    background: rgba(214, 181, 109, 0.08);
+                    font-size: 0.76rem;
+                    font-weight: 780;
+                }
 
-            Você organiza premissas.  
-            Constrói uma tese.  
-            Estima valor intrínseco.  
-            Aplica margem de segurança.  
-            E só então toma uma decisão.
+                @media (max-width: 520px) {
+                    .public-gateway {
+                        border-radius: 20px;
+                    }
+                }
+            </style>
 
-            Porque investir não é prever o futuro.  
-            É tomar boas decisões repetidamente — com método, clareza e disciplina.
-            """
+            <div class="public-gateway">
+                <div class="public-gateway-eyebrow">Valoris • Porta de entrada pública</div>
+                <div class="public-gateway-title">Audite sua decisão antes de investir.</div>
+                <div class="public-gateway-text">
+                    Comece pela Landing Page para entender a proposta. Depois explore a demonstração,
+                    revise o valuation, baixe o relatório e entre na lista beta se fizer sentido.
+                </div>
+                <div class="public-gateway-pills">
+                    <span class="public-gateway-pill">Landing</span>
+                    <span class="public-gateway-pill">Demonstração guiada</span>
+                    <span class="public-gateway-pill">Relatório</span>
+                    <span class="public-gateway-pill">Lista beta</span>
+                </div>
+            </div>
+            """,
+            unsafe_allow_html=True,
         )
 
         st.caption(
-            "Valor Intrínseco • Valuation • Análise Fundamentalista • Margem de Segurança • Convicção • Decisão"
+            "Fluxo público sugerido: Landing Page → Início → Valuation → Relatórios → Convite Beta → Oferta Beta."
         )
-
-        col_home_1, col_home_2, col_home_3, col_home_4 = st.columns(4)
-
-        with col_home_1:
-            st.metric("Método", "Valuation")
-
-        with col_home_2:
-            st.metric("Foco", "Margem de segurança")
-
-        with col_home_3:
-            st.metric("Experiência", "Valoris")
-
-        with col_home_4:
-            st.metric("Uso", "Educacional")
-
-        st.info(
-            "Comece pela análise ao lado: escolha uma empresa, revise as premissas e observe se o preço atual oferece margem de segurança."
-        )
-
-        st.warning(
-            "O Valoris é uma plataforma educacional. Não representa recomendação de compra, venda ou manutenção de investimentos. "
-            "Os resultados dependem diretamente das premissas utilizadas."
-        )
-
-        st.divider()
         return
 
     st.markdown("# VALORIS")
@@ -693,20 +722,26 @@ renderizar_hero(
     motor_valuation=motor_valuation,
 )
 
-st.subheader(f"Análise de valuation: {empresa} ({ticker.upper()})")
-
-if modo_demonstracao:
-    st.warning(
-        "Modo Demonstração: os dados desta análise são fictícios. Use apenas para conhecer o funcionamento da plataforma."
-    )
-elif nova_analise_manual:
+if modo_exibicao == MODO_USUARIO_BETA:
     st.info(
-        "Nova Análise Manual: substitua os dados padrão por informações reais antes de interpretar o status educacional."
+        "Esta é a porta pública da Valoris. A análise já fica preparada nos bastidores para alimentar a demonstração, "
+        "o relatório e a experiência beta, mas a jornada começa pela proposta de valor."
     )
 else:
-    st.info(
-        "Empresa da base: revise todas as premissas antes de considerar qualquer conclusão educacional."
-    )
+    st.subheader(f"Análise de valuation: {empresa} ({ticker.upper()})")
+
+    if modo_demonstracao:
+        st.warning(
+            "Modo Demonstração: os dados desta análise são fictícios. Use apenas para conhecer o funcionamento da plataforma."
+        )
+    elif nova_analise_manual:
+        st.info(
+            "Nova Análise Manual: substitua os dados padrão por informações reais antes de interpretar o status educacional."
+        )
+    else:
+        st.info(
+            "Empresa da base: revise todas as premissas antes de considerar qualquer conclusão educacional."
+        )
 
 try:
     entradas = EntradasValuation(
@@ -787,29 +822,44 @@ try:
         "id_log_motor": resultado.get("id_log_motor", ""),
     }
 
-    renderizar_painel_decisao(
-        preco_atual=preco_atual,
-        resultado=resultado,
-        simbolo_moeda=simbolo_moeda,
-        motor_valuation=motor_valuation,
-    )
+    if modo_exibicao == MODO_USUARIO_BETA:
+        with st.expander("Ver painel técnico da análise demonstrativa", expanded=False):
+            renderizar_painel_decisao(
+                preco_atual=preco_atual,
+                resultado=resultado,
+                simbolo_moeda=simbolo_moeda,
+                motor_valuation=motor_valuation,
+            )
 
-    st.divider()
+            st.caption(
+                "Este painel técnico fica recolhido no modo público para não atrapalhar a jornada de conversão."
+            )
 
-    col_salvar, col_info = st.columns([1, 3])
-
-    with col_salvar:
-        if st.button("Salvar análise"):
-            salvar_analise(entradas, resultado)
-            st.success("Análise salva com sucesso.")
-
-    with col_info:
-        st.caption(
-            "O histórico registra as premissas usadas no momento do cálculo. "
-            "Isso ajuda a comparar mudanças de valuation ao longo do tempo."
+        st.divider()
+    else:
+        renderizar_painel_decisao(
+            preco_atual=preco_atual,
+            resultado=resultado,
+            simbolo_moeda=simbolo_moeda,
+            motor_valuation=motor_valuation,
         )
 
-    st.divider()
+        st.divider()
+
+        col_salvar, col_info = st.columns([1, 3])
+
+        with col_salvar:
+            if st.button("Salvar análise"):
+                salvar_analise(entradas, resultado)
+                st.success("Análise salva com sucesso.")
+
+        with col_info:
+            st.caption(
+                "O histórico registra as premissas usadas no momento do cálculo. "
+                "Isso ajuda a comparar mudanças de valuation ao longo do tempo."
+            )
+
+        st.divider()
 
     abas_permitidas = obter_abas_por_modo(modo_exibicao)
 

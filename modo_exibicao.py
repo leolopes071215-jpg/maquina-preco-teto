@@ -7,7 +7,7 @@ import streamlit as st
 
 # ============================================================
 # VALORIS
-# v3.8.29 — Proteção da Experiência Pública
+# v3.8.43 — Porta de Entrada Pública da Valoris
 # ------------------------------------------------------------
 # Este arquivo controla a experiência de navegação do app.
 #
@@ -33,12 +33,14 @@ MODOS_EXIBICAO = [
 
 
 ABAS_USUARIO_BETA = [
+    "Landing Page",
     "Início",
     "Valuation",
-    "Checklist",
     "Relatórios",
-    "Feedback Beta",
+    "Convite Beta",
     "Oferta Beta",
+    "Feedback Beta",
+    "Educação",
 ]
 
 
@@ -139,8 +141,8 @@ DESCRICAO_MODOS = {
     MODO_USUARIO_BETA: {
         "titulo": "Modo Usuário Beta",
         "descricao": (
-            "Experiência enxuta para teste real. Mostra apenas o essencial: análise, "
-            "preço-teto, checklist, relatório, feedback e oferta."
+            "Experiência pública de conversão. Começa pela landing page, apresenta a proposta, "
+            "conduz para demonstração, relatório, convite beta, oferta e feedback."
         ),
         "ideal_para": "Usuários convidados, primeiros beta testers e pessoas sem contexto prévio.",
         "foco": "Clareza, valor rápido e feedback real.",
@@ -242,7 +244,7 @@ def obter_resumo_modos() -> List[Dict[str, str]]:
             "Modo": MODO_USUARIO_BETA,
             "Quantidade de abas": str(len(ABAS_USUARIO_BETA)),
             "Uso ideal": "Teste rápido com usuários reais.",
-            "O que mostra": "Início, valuation, checklist, relatório, feedback e oferta.",
+            "O que mostra": "Landing page, início guiado, valuation, relatórios, convite beta, oferta, feedback e educação.",
         },
         {
             "Modo": MODO_INVESTIDOR_COMPLETO,
@@ -338,7 +340,7 @@ def renderizar_controle_modo_exibicao() -> str:
     st.caption(descricao["descricao"])
 
     if modo == MODO_USUARIO_BETA:
-        st.success("Interface enxuta para teste beta.")
+        st.success("Porta de entrada pública: landing, demonstração, relatório, convite e oferta beta.")
     elif modo == MODO_INVESTIDOR_COMPLETO:
         st.info("Interface completa para análise e acompanhamento.")
     else:

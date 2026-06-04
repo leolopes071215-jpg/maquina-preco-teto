@@ -10,7 +10,7 @@ from lista_espera_beta import renderizar_lista_espera_valoris
 
 # ============================================================
 # VALORIS
-# v3.8.41 — Landing Page Pública de Conversão
+# v3.8.43 — Landing Page Imersiva de Conversão
 # ------------------------------------------------------------
 # Esta tela apresenta a Valoris para usuários públicos.
 #
@@ -23,7 +23,7 @@ from lista_espera_beta import renderizar_lista_espera_valoris
 # ============================================================
 
 
-VERSAO_LANDING_PAGE_BETA = "3.8.41"
+VERSAO_LANDING_PAGE_BETA = "3.8.43"
 
 
 COPY_LANDING = {
@@ -177,6 +177,36 @@ FAQ_LANDING = [
         ),
     },
 ]
+
+
+JORNADAS_INTERATIVAS = {
+    "Iniciante": {
+        "titulo": "Você precisa de clareza antes de complexidade.",
+        "texto": (
+            "A Valoris deve traduzir a análise para uma leitura simples: preço atual, preço-teto, "
+            "zona de decisão e próximos passos sem economês."
+        ),
+        "foco": "Entender se o preço exige oportunidade, atenção ou paciência.",
+        "progresso": 34,
+    },
+    "Intermediário": {
+        "titulo": "Você precisa auditar premissas.",
+        "texto": (
+            "A Valoris deve mostrar se o número está sustentado por lucro, caixa, margem de segurança "
+            "e riscos que podem distorcer a tese."
+        ),
+        "foco": "Comparar valuation, relatório, checklist e Auditor Valoris.",
+        "progresso": 67,
+    },
+    "Avançado": {
+        "titulo": "Você precisa de controle e transparência.",
+        "texto": (
+            "A Valoris deve abrir premissas, pesos, múltiplos, limites do modelo e pontos ainda não verificados."
+        ),
+        "foco": "Estressar cenários, revisar tese e preparar automação futura por ticker.",
+        "progresso": 92,
+    },
+}
 
 
 def _injetar_css_landing() -> None:
@@ -335,6 +365,48 @@ def _injetar_css_landing() -> None:
                 margin-top: 1rem;
             }
 
+
+            .lp-interactive-panel {
+                padding: 1.05rem 1.08rem;
+                border-radius: 24px;
+                border: 1px solid rgba(214, 181, 109, 0.16);
+                background:
+                    radial-gradient(circle at top left, rgba(214, 181, 109, 0.10), transparent 34%),
+                    rgba(255, 255, 255, 0.035);
+                box-shadow: 0 12px 34px rgba(0, 0, 0, 0.18);
+                margin: 1rem 0;
+            }
+
+            .lp-interactive-title {
+                color: #f4f7fb;
+                font-size: 1.18rem;
+                font-weight: 880;
+                letter-spacing: -0.03em;
+                margin-bottom: 0.38rem;
+            }
+
+            .lp-interactive-text {
+                color: rgba(244, 247, 251, 0.72);
+                font-size: 0.92rem;
+                line-height: 1.52;
+                margin-bottom: 0.75rem;
+            }
+
+            .lp-progress-wrap {
+                width: 100%;
+                height: 10px;
+                border-radius: 999px;
+                background: rgba(148, 163, 184, 0.16);
+                overflow: hidden;
+                margin-top: 0.55rem;
+            }
+
+            .lp-progress-fill {
+                height: 100%;
+                border-radius: 999px;
+                background: linear-gradient(90deg, #d6b56d, #24805b);
+            }
+
             @media (max-width: 900px) {
                 .lp-grid-3,
                 .lp-grid-2 {
@@ -368,6 +440,39 @@ def _renderizar_hero() -> None:
         """,
         unsafe_allow_html=True,
     )
+
+
+def _renderizar_jornada_interativa() -> None:
+    st.markdown('<div class="lp-section-title">Escolha como você quer enxergar a Valoris</div>', unsafe_allow_html=True)
+    st.markdown(
+        '<div class="lp-section-subtitle">A experiência precisa se adaptar ao nível do investidor, não obrigar todo mundo a encarar a mesma complexidade.</div>',
+        unsafe_allow_html=True,
+    )
+
+    perfil = st.radio(
+        "Qual perfil mais parece com você hoje?",
+        ["Iniciante", "Intermediário", "Avançado"],
+        horizontal=True,
+        key="landing_perfil_interativo_valoris",
+    )
+
+    jornada = JORNADAS_INTERATIVAS[perfil]
+
+    st.markdown(
+        f"""
+        <div class="lp-interactive-panel">
+            <div class="lp-card-kicker">Modo {perfil}</div>
+            <div class="lp-interactive-title">{jornada["titulo"]}</div>
+            <div class="lp-interactive-text">{jornada["texto"]}</div>
+            <div class="lp-card-text"><strong>Foco da experiência:</strong> {jornada["foco"]}</div>
+            <div class="lp-progress-wrap">
+                <div class="lp-progress-fill" style="width: {jornada["progresso"]}%;"></div>
+            </div>
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
+
 
 
 def _renderizar_secao_dores() -> None:
@@ -504,6 +609,10 @@ def renderizar_landing_page_beta() -> None:
 
     _renderizar_hero()
 
+    _renderizar_jornada_interativa()
+
+    st.divider()
+
     _renderizar_secao_dores()
 
     st.divider()
@@ -541,7 +650,7 @@ def executar_autoteste_landing_page_beta() -> List[Dict[str, str]]:
     return [
         {
             "teste": "versao_landing",
-            "status": "OK" if VERSAO_LANDING_PAGE_BETA == "3.8.41" else "FALHA",
+            "status": "OK" if VERSAO_LANDING_PAGE_BETA == "3.8.43" else "FALHA",
             "detalhe": VERSAO_LANDING_PAGE_BETA,
         },
         {

@@ -7,7 +7,7 @@ import streamlit as st
 
 # ============================================================
 # VALORIS
-# v3.8.53 — Central de Fundadores e Onboarding Beta
+# v3.8.54 — Motor de Maturidade do Produto
 # ------------------------------------------------------------
 # Este arquivo controla a experiência de navegação do app.
 #
@@ -148,6 +148,7 @@ ABAS_FUNDADOR = [
     "Growth",
     "Validação Manual",
     "Fundadores",
+    "Maturidade",
     "UX",
     "Multiativos",
     "Ações Brasil",

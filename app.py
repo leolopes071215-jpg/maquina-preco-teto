@@ -27,6 +27,7 @@ from conversao_fundador_valoris import renderizar_conversao_fundador_valoris, re
 from laboratorio_growth_valoris import renderizar_laboratorio_growth_valoris
 from validacao_manual_valoris import renderizar_validacao_manual_valoris
 from central_fundadores_valoris import renderizar_central_fundadores_valoris
+from maturidade_produto_valoris import renderizar_maturidade_produto_valoris
 from lancamento_beta import renderizar_lancamento_beta
 from convite_beta_publico import renderizar_convite_beta_publico
 from release_candidate import renderizar_release_candidate_fase1
@@ -188,6 +189,7 @@ ABAS_ORDEM_COMPLETA = [
     "Growth",
     "Validação Manual",
     "Fundadores",
+    "Maturidade",
     "UX",
     "Multiativos",
     "Ações Brasil",
@@ -1283,6 +1285,9 @@ try:
 
             elif nome_aba == "Fundadores":
                 renderizar_central_fundadores_valoris()
+
+            elif nome_aba == "Maturidade":
+                renderizar_maturidade_produto_valoris()
 
             elif nome_aba == "UX":
                 renderizar_auditoria_ux()

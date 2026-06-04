@@ -16,7 +16,7 @@ from lista_espera_beta import renderizar_lista_espera_valoris
 
 # ============================================================
 # VALORIS
-# v3.8.46 — Trilha Educativa e Missões de Decisão
+# v3.8.54.1 — Trilha Educativa com chaves únicas
 # ------------------------------------------------------------
 # Este módulo cria uma experiência inspirada em produtos
 # product-led modernos: o usuário aprende fazendo.
@@ -30,7 +30,7 @@ from lista_espera_beta import renderizar_lista_espera_valoris
 # ============================================================
 
 
-VERSAO_TRILHA_EDUCATIVA_VALORIS = "3.8.46"
+VERSAO_TRILHA_EDUCATIVA_VALORIS = "3.8.54.1"
 
 CAMINHO_PROGRESSO_TRILHA = Path("progresso_trilha_valoris.csv")
 
@@ -398,12 +398,12 @@ def _classificar_pontuacao(pontos: int, total: int) -> Dict[str, str]:
     }
 
 
-def _renderizar_perfil() -> str:
+def _renderizar_perfil(chave_contexto: str) -> str:
     perfil = st.radio(
         "Qual trilha combina mais com você?",
         list(PERFIS_TRILHA.keys()),
         horizontal=True,
-        key="trilha_perfil_valoris",
+        key=f"trilha_perfil_valoris_{chave_contexto}",
     )
 
     dados = PERFIS_TRILHA[perfil]
@@ -423,7 +423,7 @@ def _renderizar_perfil() -> str:
     return perfil
 
 
-def _renderizar_missoes(perfil: str) -> Dict[str, Any]:
+def _renderizar_missoes(perfil: str, chave_contexto: str) -> Dict[str, Any]:
     st.markdown("### Missões rápidas")
 
     pontos = 0
@@ -437,7 +437,7 @@ def _renderizar_missoes(perfil: str) -> Dict[str, Any]:
             resposta = st.radio(
                 "Escolha uma resposta",
                 missao["opcoes"],
-                key=f"trilha_{missao['id']}_{perfil}",
+                key=f"trilha_{missao['id']}_{perfil}_{chave_contexto}",
                 label_visibility="collapsed",
             )
 
@@ -496,7 +496,7 @@ def _renderizar_missoes(perfil: str) -> Dict[str, Any]:
     }
 
 
-def _renderizar_proximas_acoes(resultado: Dict[str, Any]) -> None:
+def _renderizar_proximas_acoes(resultado: Dict[str, Any], chave_contexto: str) -> None:
     st.markdown("### Próximas ações recomendadas")
 
     acoes = [
@@ -527,7 +527,7 @@ Esta trilha é educacional. Não representa recomendação de investimento.
         data=markdown,
         file_name="resultado_trilha_valoris.md",
         mime="text/markdown",
-        key="download_resultado_trilha_valoris",
+        key=f"download_resultado_trilha_valoris_{chave_contexto}",
     )
 
 
@@ -559,9 +559,12 @@ def renderizar_trilha_educativa_valoris(
 
     _renderizar_cards_metodo()
 
-    perfil = _renderizar_perfil()
+    perfil = _renderizar_perfil(chave_contexto=chave_contexto)
 
-    resultado = _renderizar_missoes(perfil)
+    resultado = _renderizar_missoes(
+        perfil=perfil,
+        chave_contexto=chave_contexto,
+    )
 
     registrar_evento_publico(
         evento="trilha_educativa_concluida",
@@ -583,7 +586,10 @@ def renderizar_trilha_educativa_valoris(
 
     st.divider()
 
-    _renderizar_proximas_acoes(resultado)
+    _renderizar_proximas_acoes(
+        resultado=resultado,
+        chave_contexto=chave_contexto,
+    )
 
     if mostrar_cta:
         st.divider()
@@ -664,7 +670,7 @@ def executar_autoteste_trilha_educativa_valoris() -> List[Dict[str, str]]:
     return [
         {
             "teste": "versao_trilha",
-            "status": "OK" if VERSAO_TRILHA_EDUCATIVA_VALORIS == "3.8.46" else "FALHA",
+            "status": "OK" if VERSAO_TRILHA_EDUCATIVA_VALORIS == "3.8.54.1" else "FALHA",
             "detalhe": VERSAO_TRILHA_EDUCATIVA_VALORIS,
         },
         {

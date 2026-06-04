@@ -5,11 +5,12 @@ from typing import Any, Dict, List
 import streamlit as st
 
 from lista_espera_beta import renderizar_lista_espera_valoris
+from analytics_publico_valoris import registrar_visualizacao_unica, registrar_evento_publico
 
 
 # ============================================================
 # VALORIS
-# v3.8.44 — Demonstração Guiada Imersiva
+# v3.8.45 — Demonstração Guiada com Analytics
 # ------------------------------------------------------------
 # Esta tela permite que o usuário sinta a Valoris funcionando
 # em uma experiência didática, visual e guiada.
@@ -23,7 +24,7 @@ from lista_espera_beta import renderizar_lista_espera_valoris
 # ============================================================
 
 
-VERSAO_DEMO_GUIADA_VALORIS = "3.8.44"
+VERSAO_DEMO_GUIADA_VALORIS = "3.8.45"
 
 
 DEMO_ATIVO = {
@@ -362,6 +363,16 @@ def _renderizar_seletor_contexto(chave_contexto: str) -> Dict[str, str]:
         unsafe_allow_html=True,
     )
 
+    registrar_evento_publico(
+        evento="demo_interacao",
+        origem="demo_guiada",
+        contexto=chave_contexto,
+        perfil=perfil,
+        etapa=etapa,
+        ticker=DEMO_ATIVO["ticker"],
+        detalhe=f"Interação na demo: perfil={perfil}; etapa={etapa}",
+    )
+
     return {
         "perfil": perfil,
         "etapa": etapa,
@@ -515,13 +526,20 @@ A análise é útil como triagem, mas ainda precisa de confirmação de tese e f
 Aviso: exemplo fictício e educacional.
 """
 
-    st.download_button(
+    if st.download_button(
         "Baixar exemplo de relatório demo",
         data=markdown_demo,
         file_name="relatorio_demo_valoris.md",
         mime="text/markdown",
         key="download_relatorio_demo_valoris",
-    )
+    ):
+        registrar_evento_publico(
+            evento="relatorio_demo_baixado",
+            origem="demo_guiada",
+            contexto="relatorio_demo",
+            ticker=DEMO_ATIVO["ticker"],
+            detalhe="Usuário baixou o relatório demo.",
+        )
 
 
 def _renderizar_etapa_proximo_passo(mostrar_cta: bool, chave_contexto: str) -> None:
@@ -585,6 +603,14 @@ def renderizar_demo_guiada_valoris(
     mostrar_cta=False evita repetir formulário de lead quando a landing já possui CTA.
     chave_contexto evita chaves duplicadas quando a demo aparece em mais de uma aba.
     """
+    registrar_visualizacao_unica(
+        chave=f"demo_guiada_{chave_contexto}",
+        evento="demo_visualizada",
+        origem="demo_guiada",
+        contexto=chave_contexto,
+        detalhe="Demonstração guiada visualizada.",
+    )
+
     _injetar_css_demo()
 
     if not modo_compacto:
@@ -629,7 +655,7 @@ def executar_autoteste_demo_guiada_valoris() -> List[Dict[str, str]]:
     return [
         {
             "teste": "versao_demo",
-            "status": "OK" if VERSAO_DEMO_GUIADA_VALORIS == "3.8.44" else "FALHA",
+            "status": "OK" if VERSAO_DEMO_GUIADA_VALORIS == "3.8.45" else "FALHA",
             "detalhe": VERSAO_DEMO_GUIADA_VALORIS,
         },
         {

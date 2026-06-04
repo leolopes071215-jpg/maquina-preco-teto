@@ -7,7 +7,7 @@ import streamlit as st
 
 # ============================================================
 # VALORIS
-# v3.8.44 — Demonstração Guiada Imersiva
+# v3.8.45 — Analytics Público e Funil de Conversão
 # ------------------------------------------------------------
 # Este arquivo controla a experiência de navegação do app.
 #
@@ -126,6 +126,7 @@ ABAS_FUNDADOR = [
     "Estratégia Produto",
     "Deploy Público",
     "Dados",
+    "Analytics Público",
     "UX",
     "Multiativos",
     "Ações Brasil",

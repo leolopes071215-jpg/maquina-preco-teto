@@ -51,6 +51,7 @@ from painel_decisao_core import renderizar_painel_decisao_core
 from painel_promocao_core import renderizar_painel_promocao_core
 from produto_estrategico import renderizar_produto_estrategico
 from deploy_publico import renderizar_deploy_publico
+from analytics_publico_valoris import renderizar_painel_analytics_publico, registrar_visualizacao_unica
 from experiencia_beta import renderizar_experiencia_usuario_beta
 from persistencia_dados import renderizar_central_persistencia_dados
 from auditoria_ux import renderizar_auditoria_ux
@@ -165,6 +166,7 @@ ABAS_ORDEM_COMPLETA = [
     "Estratégia Produto",
     "Deploy Público",
     "Dados",
+    "Analytics Público",
     "UX",
     "Multiativos",
     "Ações Brasil",
@@ -222,6 +224,14 @@ def obter_rotulo_motor_executado(resultado: dict, motor_valuation: str) -> str:
 
 def renderizar_hero(modo_exibicao: str, motor_valuation: str) -> None:
     if modo_exibicao == MODO_USUARIO_BETA:
+        registrar_visualizacao_unica(
+            chave="porta_publica_app",
+            evento="landing_visualizada",
+            origem="app_hero_publico",
+            contexto="porta_publica",
+            detalhe="Hero público da Valoris visualizado.",
+        )
+
         st.markdown(
             """
             <style>
@@ -1190,6 +1200,9 @@ try:
 
             elif nome_aba == "Dados":
                 renderizar_central_persistencia_dados()
+
+            elif nome_aba == "Analytics Público":
+                renderizar_painel_analytics_publico()
 
             elif nome_aba == "UX":
                 renderizar_auditoria_ux()

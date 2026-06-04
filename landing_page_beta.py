@@ -7,11 +7,12 @@ import streamlit as st
 
 from lista_espera_beta import renderizar_lista_espera_valoris
 from demo_guiada_valoris import renderizar_demo_guiada_valoris
+from analytics_publico_valoris import registrar_visualizacao_unica, registrar_evento_publico
 
 
 # ============================================================
 # VALORIS
-# v3.8.44 — Landing Page com Demonstração Guiada
+# v3.8.45 — Landing Page com Analytics Público
 # ------------------------------------------------------------
 # Esta tela apresenta a Valoris para usuários públicos.
 #
@@ -24,7 +25,7 @@ from demo_guiada_valoris import renderizar_demo_guiada_valoris
 # ============================================================
 
 
-VERSAO_LANDING_PAGE_BETA = "3.8.44"
+VERSAO_LANDING_PAGE_BETA = "3.8.45"
 
 
 COPY_LANDING = {
@@ -459,6 +460,14 @@ def _renderizar_jornada_interativa() -> None:
 
     jornada = JORNADAS_INTERATIVAS[perfil]
 
+    registrar_evento_publico(
+        evento="demo_interacao",
+        origem="landing_page",
+        contexto="perfil_interativo",
+        perfil=perfil,
+        detalhe=f"Perfil selecionado na landing: {perfil}",
+    )
+
     st.markdown(
         f"""
         <div class="lp-interactive-panel">
@@ -606,6 +615,14 @@ def renderizar_landing_page_beta() -> None:
     """
     Renderiza a landing page pública de conversão da Valoris.
     """
+    registrar_visualizacao_unica(
+        chave="landing_page_beta",
+        evento="landing_visualizada",
+        origem="landing_page",
+        contexto="renderizacao",
+        detalhe="Landing page pública visualizada.",
+    )
+
     _injetar_css_landing()
 
     _renderizar_hero()
@@ -659,7 +676,7 @@ def executar_autoteste_landing_page_beta() -> List[Dict[str, str]]:
     return [
         {
             "teste": "versao_landing",
-            "status": "OK" if VERSAO_LANDING_PAGE_BETA == "3.8.44" else "FALHA",
+            "status": "OK" if VERSAO_LANDING_PAGE_BETA == "3.8.45" else "FALHA",
             "detalhe": VERSAO_LANDING_PAGE_BETA,
         },
         {

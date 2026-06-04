@@ -7,7 +7,7 @@ import streamlit as st
 
 # ============================================================
 # VALORIS
-# v3.8.47 — Copiloto Valoris e Diagnóstico Personalizado
+# v3.8.48 — Jornada Personalizada Pós-Diagnóstico
 # ------------------------------------------------------------
 # Este arquivo controla a experiência de navegação do app.
 #
@@ -35,6 +35,7 @@ MODOS_EXIBICAO = [
 ABAS_USUARIO_BETA = [
     "Landing Page",
     "Copiloto",
+    "Jornada",
     "Demonstração",
     "Trilha Valoris",
     "Início",
@@ -52,6 +53,7 @@ ABAS_INVESTIDOR_COMPLETO = [
     "Navegação",
     "Onboarding",
     "Copiloto",
+    "Jornada",
     "Demonstração",
     "Trilha Valoris",
     "Início",
@@ -83,6 +85,7 @@ ABAS_FUNDADOR = [
     "Onboarding",
     "Landing Page",
     "Copiloto",
+    "Jornada",
     "Demonstração",
     "Trilha Valoris",
     "Início",
@@ -135,6 +138,7 @@ ABAS_FUNDADOR = [
     "Analytics Público",
     "Painel Trilha",
     "Painel Copiloto",
+    "Painel Jornada",
     "UX",
     "Multiativos",
     "Ações Brasil",
@@ -256,7 +260,7 @@ def obter_resumo_modos() -> List[Dict[str, str]]:
             "Modo": MODO_USUARIO_BETA,
             "Quantidade de abas": str(len(ABAS_USUARIO_BETA)),
             "Uso ideal": "Teste rápido com usuários reais.",
-            "O que mostra": "Landing page, copiloto diagnóstico, demonstração guiada, trilha educativa, início, valuation, relatórios, convite beta, oferta, feedback e educação.",
+            "O que mostra": "Landing page, copiloto diagnóstico, jornada personalizada, demonstração guiada, trilha educativa, início, valuation, relatórios, convite beta, oferta, feedback e educação.",
         },
         {
             "Modo": MODO_INVESTIDOR_COMPLETO,

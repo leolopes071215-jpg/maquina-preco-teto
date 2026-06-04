@@ -21,6 +21,7 @@ from landing_page_beta import renderizar_landing_page_beta
 from demo_guiada_valoris import renderizar_demo_guiada_valoris
 from trilha_educativa_valoris import renderizar_trilha_educativa_valoris, renderizar_painel_trilha_educativa_valoris
 from copiloto_valoris import renderizar_copiloto_valoris, renderizar_painel_copiloto_valoris
+from jornada_personalizada_valoris import renderizar_jornada_personalizada_valoris, renderizar_painel_jornada_personalizada_valoris
 from lancamento_beta import renderizar_lancamento_beta
 from convite_beta_publico import renderizar_convite_beta_publico
 from release_candidate import renderizar_release_candidate_fase1
@@ -117,6 +118,7 @@ aplicar_estilo()
 ABAS_ORDEM_COMPLETA = [
     "Landing Page",
     "Copiloto",
+    "Jornada",
     "Demonstração",
     "Trilha Valoris",
     "Início",
@@ -173,6 +175,7 @@ ABAS_ORDEM_COMPLETA = [
     "Analytics Público",
     "Painel Trilha",
     "Painel Copiloto",
+    "Painel Jornada",
     "UX",
     "Multiativos",
     "Ações Brasil",
@@ -322,7 +325,7 @@ def renderizar_hero(modo_exibicao: str, motor_valuation: str) -> None:
         )
 
         st.caption(
-            "Fluxo público sugerido: Landing Page → Copiloto → Demonstração → Trilha Valoris → Início → Valuation → Relatórios → Convite Beta → Oferta Beta."
+            "Fluxo público sugerido: Landing Page → Copiloto → Jornada → Demonstração → Trilha Valoris → Início → Valuation → Relatórios → Convite Beta → Oferta Beta."
         )
         return
 
@@ -1108,6 +1111,13 @@ try:
                     chave_contexto="aba_copiloto",
                 )
 
+            elif nome_aba == "Jornada":
+                renderizar_jornada_personalizada_valoris(
+                    modo_compacto=False,
+                    mostrar_cta=True,
+                    chave_contexto="aba_jornada",
+                )
+
             elif nome_aba == "Demonstração":
                 renderizar_demo_guiada_valoris(
                     modo_compacto=False,
@@ -1229,6 +1239,9 @@ try:
 
             elif nome_aba == "Painel Copiloto":
                 renderizar_painel_copiloto_valoris()
+
+            elif nome_aba == "Painel Jornada":
+                renderizar_painel_jornada_personalizada_valoris()
 
             elif nome_aba == "UX":
                 renderizar_auditoria_ux()

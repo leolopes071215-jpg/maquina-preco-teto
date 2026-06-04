@@ -25,6 +25,8 @@ from jornada_personalizada_valoris import renderizar_jornada_personalizada_valor
 from hub_ativacao_valoris import renderizar_hub_ativacao_valoris, renderizar_painel_hub_ativacao_valoris
 from conversao_fundador_valoris import renderizar_conversao_fundador_valoris, renderizar_painel_conversao_fundador_valoris
 from laboratorio_growth_valoris import renderizar_laboratorio_growth_valoris
+from validacao_manual_valoris import renderizar_validacao_manual_valoris
+from central_fundadores_valoris import renderizar_central_fundadores_valoris
 from lancamento_beta import renderizar_lancamento_beta
 from convite_beta_publico import renderizar_convite_beta_publico
 from release_candidate import renderizar_release_candidate_fase1
@@ -184,6 +186,8 @@ ABAS_ORDEM_COMPLETA = [
     "Painel Ativação",
     "Painel Conversão",
     "Growth",
+    "Validação Manual",
+    "Fundadores",
     "UX",
     "Multiativos",
     "Ações Brasil",
@@ -1273,6 +1277,12 @@ try:
 
             elif nome_aba == "Growth":
                 renderizar_laboratorio_growth_valoris()
+
+            elif nome_aba == "Validação Manual":
+                renderizar_validacao_manual_valoris()
+
+            elif nome_aba == "Fundadores":
+                renderizar_central_fundadores_valoris()
 
             elif nome_aba == "UX":
                 renderizar_auditoria_ux()

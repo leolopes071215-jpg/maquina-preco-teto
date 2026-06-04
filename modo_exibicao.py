@@ -7,7 +7,7 @@ import streamlit as st
 
 # ============================================================
 # VALORIS
-# v3.8.51 — Laboratório de Growth e Experimentos
+# v3.8.53 — Central de Fundadores e Onboarding Beta
 # ------------------------------------------------------------
 # Este arquivo controla a experiência de navegação do app.
 #
@@ -146,6 +146,8 @@ ABAS_FUNDADOR = [
     "Painel Ativação",
     "Painel Conversão",
     "Growth",
+    "Validação Manual",
+    "Fundadores",
     "UX",
     "Multiativos",
     "Ações Brasil",

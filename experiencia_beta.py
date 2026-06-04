@@ -6,11 +6,12 @@ from typing import Any, Dict, List, Optional
 import streamlit as st
 
 from explicabilidade_valoris import renderizar_explicabilidade_valoris
+from lista_espera_beta import renderizar_lista_espera_valoris
 
 
 # ============================================================
 # MÁQUINA DE PREÇO-TETO
-# v3.8.38 — Experiência Mobile-First Premium
+# v3.8.39 — Experiência Beta com Lista de Espera
 # ------------------------------------------------------------
 # Este arquivo cria uma experiência simplificada e vendável
 # para o usuário comum.
@@ -24,7 +25,7 @@ from explicabilidade_valoris import renderizar_explicabilidade_valoris
 # ============================================================
 
 
-VERSAO_EXPERIENCIA_BETA = "3.8.38"
+VERSAO_EXPERIENCIA_BETA = "3.8.39"
 
 
 COPY_EXPERIENCIA_BETA = {
@@ -1068,6 +1069,10 @@ def renderizar_experiencia_usuario_beta(
         st.divider()
 
         _renderizar_relatorio_beta(snapshot)
+
+    st.divider()
+
+    renderizar_lista_espera_valoris(modo_admin=False)
 
     st.markdown(
         f"""

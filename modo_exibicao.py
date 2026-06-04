@@ -7,7 +7,7 @@ import streamlit as st
 
 # ============================================================
 # VALORIS
-# v3.8.54 — Motor de Maturidade do Produto
+# v3.8.55 — Blueprint de Arquitetura e Transição Técnica
 # ------------------------------------------------------------
 # Este arquivo controla a experiência de navegação do app.
 #
@@ -149,6 +149,7 @@ ABAS_FUNDADOR = [
     "Validação Manual",
     "Fundadores",
     "Maturidade",
+    "Arquitetura",
     "UX",
     "Multiativos",
     "Ações Brasil",

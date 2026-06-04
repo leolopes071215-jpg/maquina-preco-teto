@@ -28,6 +28,7 @@ from laboratorio_growth_valoris import renderizar_laboratorio_growth_valoris
 from validacao_manual_valoris import renderizar_validacao_manual_valoris
 from central_fundadores_valoris import renderizar_central_fundadores_valoris
 from maturidade_produto_valoris import renderizar_maturidade_produto_valoris
+from arquitetura_transicao_valoris import renderizar_arquitetura_transicao_valoris
 from lancamento_beta import renderizar_lancamento_beta
 from convite_beta_publico import renderizar_convite_beta_publico
 from release_candidate import renderizar_release_candidate_fase1
@@ -1288,6 +1289,9 @@ try:
 
             elif nome_aba == "Maturidade":
                 renderizar_maturidade_produto_valoris()
+
+            elif nome_aba == "Arquitetura":
+                renderizar_arquitetura_transicao_valoris()
 
             elif nome_aba == "UX":
                 renderizar_auditoria_ux()

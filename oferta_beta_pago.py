@@ -10,19 +10,22 @@ import streamlit as st
 
 
 # ============================================================
-# MÁQUINA DE PREÇO-TETO
-# v2.6 — Oferta Beta Paga e Proposta Comercial Manual
+# VALORIS
+# v3.8.40 — Oferta Beta Paga e Teste Manual
 # ------------------------------------------------------------
-# Esta tela transforma validação comercial em oferta testável.
+# Esta tela transforma a oferta Beta Fundador em um experimento
+# comercial controlado.
 #
 # Objetivo:
-# - estruturar uma oferta beta paga simples
-# - testar preço, promessa e entrega antes de criar checkout
-# - gerar mensagens comerciais manuais
-# - comparar versões de oferta
-# - evitar vender algo confuso ou amplo demais
+# - cadastrar versões de oferta
+# - calcular score comercial
+# - gerar mensagem manual de venda
+# - decidir se a oferta está pronta para testar
+# - evitar checkout antes de validação real
 # ============================================================
 
+
+VERSAO_OFERTA_BETA_PAGO = "3.8.40"
 
 CAMINHO_OFERTAS_BETA_PAGO = Path("ofertas_beta_pago.csv")
 
@@ -57,34 +60,33 @@ CAMPOS_OFERTA = [
 
 
 PUBLICOS_ALVO = [
+    "Pessoas da lista beta",
+    "Usuários que disseram que pagariam",
     "Investidor iniciante",
     "Investidor intermediário",
     "Investidor avançado",
     "Estudante interessado em investimentos",
     "Criador de conteúdo financeiro",
-    "Pessoas da lista beta",
-    "Usuários que disseram que pagariam",
     "Público misto",
 ]
 
 
 TIPOS_PLANO = [
-    "Beta pago mensal",
-    "Beta pago trimestral",
     "Acesso fundador",
+    "Beta pago mensal",
     "Pagamento único beta",
     "Plano básico",
     "Plano premium",
-    "Mentoria + ferramenta",
+    "Relatório premium avulso",
     "Outro",
 ]
 
 
 PERIODICIDADES = [
+    "Pagamento único",
     "Mensal",
     "Trimestral",
     "Anual",
-    "Pagamento único",
     "Ainda não definido",
 ]
 
@@ -101,15 +103,15 @@ STATUS_OFERTA = [
 
 
 PROXIMAS_ACOES = [
+    "Testar com 5 leads",
+    "Enviar proposta manual",
     "Melhorar promessa",
     "Melhorar entrega",
     "Reduzir preço",
     "Aumentar preço",
-    "Testar com 5 leads",
-    "Enviar proposta manual",
     "Criar página simples",
     "Criar checkout depois",
-    "Aguardar mais pré-venda",
+    "Aguardar mais lista de espera",
 ]
 
 
@@ -117,7 +119,7 @@ def _garantir_arquivo_ofertas() -> None:
     if CAMINHO_OFERTAS_BETA_PAGO.exists():
         return
 
-    with open(CAMINHO_OFERTAS_BETA_PAGO, "w", newline="", encoding="utf-8") as arquivo:
+    with CAMINHO_OFERTAS_BETA_PAGO.open("w", newline="", encoding="utf-8") as arquivo:
         escritor = csv.DictWriter(arquivo, fieldnames=CAMPOS_OFERTA)
         escritor.writeheader()
 
@@ -125,25 +127,18 @@ def _garantir_arquivo_ofertas() -> None:
 def carregar_ofertas_beta_pago() -> List[Dict[str, str]]:
     _garantir_arquivo_ofertas()
 
-    with open(CAMINHO_OFERTAS_BETA_PAGO, "r", newline="", encoding="utf-8") as arquivo:
+    with CAMINHO_OFERTAS_BETA_PAGO.open("r", newline="", encoding="utf-8") as arquivo:
         leitor = csv.DictReader(arquivo)
-        registros = []
-
-        for linha in leitor:
-            registro = {campo: linha.get(campo, "") for campo in CAMPOS_OFERTA}
-            registros.append(registro)
-
-        return registros
+        return [{campo: linha.get(campo, "") for campo in CAMPOS_OFERTA} for linha in leitor]
 
 
 def salvar_ofertas_beta_pago(registros: List[Dict[str, Any]]) -> None:
-    with open(CAMINHO_OFERTAS_BETA_PAGO, "w", newline="", encoding="utf-8") as arquivo:
+    with CAMINHO_OFERTAS_BETA_PAGO.open("w", newline="", encoding="utf-8") as arquivo:
         escritor = csv.DictWriter(arquivo, fieldnames=CAMPOS_OFERTA)
         escritor.writeheader()
 
         for registro in registros:
-            linha = {campo: registro.get(campo, "") for campo in CAMPOS_OFERTA}
-            escritor.writerow(linha)
+            escritor.writerow({campo: registro.get(campo, "") for campo in CAMPOS_OFERTA})
 
 
 def _safe_float(valor: Any, default: float = 0.0) -> float:
@@ -173,12 +168,6 @@ def calcular_score_oferta(
     simplicidade: int,
     risco_preco: int,
 ) -> int:
-    """
-    Score de força comercial da oferta.
-
-    Maior clareza, dor, valor, credibilidade e simplicidade aumentam o score.
-    Maior risco de preço reduz o score.
-    """
     score = (
         clareza_promessa * 2.2
         + forca_dor * 2.0
@@ -282,54 +271,67 @@ def _ordenar_ofertas(registros: List[Dict[str, str]]) -> List[Dict[str, str]]:
 
 
 def _media_score(registros: List[Dict[str, str]]) -> float:
-    scores = []
+    scores = [_safe_float(registro.get("score_oferta")) for registro in registros]
+    scores = [score for score in scores if score > 0]
 
-    for registro in registros:
-        score = _safe_float(registro.get("score_oferta"))
-
-        if score > 0:
-            scores.append(score)
-
-    if len(scores) == 0:
+    if not scores:
         return 0.0
 
     return sum(scores) / len(scores)
 
 
 def _preco_medio(registros: List[Dict[str, str]]) -> float:
-    precos = []
+    precos = [_safe_float(registro.get("preco")) for registro in registros]
+    precos = [preco for preco in precos if preco > 0]
 
-    for registro in registros:
-        preco = _safe_float(registro.get("preco"))
-
-        if preco > 0:
-            precos.append(preco)
-
-    if len(precos) == 0:
+    if not precos:
         return 0.0
 
     return sum(precos) / len(precos)
 
 
-def _mais_frequente(registros: List[Dict[str, str]], campo: str) -> str:
-    contagem: Dict[str, int] = {}
+def _gerar_mensagem_oferta(registro: Dict[str, str]) -> str:
+    nome_oferta = registro.get("nome_oferta", "Valoris Beta Fundador")
+    promessa = registro.get("promessa_principal", "")
+    entrega = registro.get("entrega_principal", "")
+    bonus = registro.get("bonus", "")
+    garantia = registro.get("garantia_beta", "")
+    preco = _fmt_moeda(_safe_float(registro.get("preco")))
+    periodicidade = registro.get("periodicidade", "")
+    limite = registro.get("limite_vagas", "")
 
-    for registro in registros:
-        valor = registro.get(campo, "").strip()
+    return f"""Olá! Estou abrindo uma versão beta paga da Valoris.
 
-        if valor == "":
-            continue
+Oferta: {nome_oferta}
 
-        contagem[valor] = contagem.get(valor, 0) + 1
+A ideia é simples:
+{promessa}
 
-    if len(contagem) == 0:
-        return "N/D"
+O que está incluído:
+{entrega}
 
-    return max(contagem, key=contagem.get)
+Bônus/apoio:
+{bonus}
+
+Condição beta:
+{garantia}
+
+Preço testado:
+{preco} — {periodicidade}
+
+{limite}
+
+Importante: a Valoris é educacional. Não é recomendação de investimento e não promete rentabilidade.
+
+Faz sentido para você participar dessa versão beta?"""
 
 
-def _contar_status(registros: List[Dict[str, str]], status: str) -> int:
-    return len([registro for registro in registros if registro.get("status_oferta") == status])
+def _gerar_mensagem_melhor_oferta(registros: List[Dict[str, str]]) -> str:
+    if not registros:
+        return "Nenhuma oferta cadastrada ainda."
+
+    melhor = _ordenar_ofertas(registros)[0]
+    return _gerar_mensagem_oferta(melhor)
 
 
 def _gerar_tabela_ofertas(registros: List[Dict[str, str]]) -> List[Dict[str, str]]:
@@ -353,106 +355,29 @@ def _gerar_tabela_ofertas(registros: List[Dict[str, str]]) -> List[Dict[str, str
     return tabela
 
 
-def _gerar_tabela_detalhada(registros: List[Dict[str, str]]) -> List[Dict[str, str]]:
-    tabela = []
-
-    for registro in _ordenar_ofertas(registros):
-        tabela.append(
-            {
-                "Oferta": registro.get("nome_oferta", ""),
-                "Promessa": registro.get("promessa_principal", ""),
-                "Entrega": registro.get("entrega_principal", ""),
-                "Bônus": registro.get("bonus", ""),
-                "Garantia beta": registro.get("garantia_beta", ""),
-                "Objeção resolvida": registro.get("objecao_resolvida", ""),
-                "Credibilidade": registro.get("prova_credibilidade", ""),
-                "Limite/vagas": registro.get("limite_vagas", ""),
-            }
-        )
-
-    return tabela
-
-
-def _gerar_mensagem_oferta(registro: Dict[str, str]) -> str:
-    nome_oferta = registro.get("nome_oferta", "Oferta Beta")
-    promessa = registro.get("promessa_principal", "")
-    entrega = registro.get("entrega_principal", "")
-    bonus = registro.get("bonus", "")
-    garantia = registro.get("garantia_beta", "")
-    preco = _fmt_moeda(_safe_float(registro.get("preco")))
-    periodicidade = registro.get("periodicidade", "")
-    limite = registro.get("limite_vagas", "")
-
-    return f"""Olá! Estou abrindo uma versão beta paga da Máquina de Preço-Teto.
-
-A ideia é simples: {promessa}
-
-O que está incluído:
-{entrega}
-
-Bônus/apoio:
-{bonus}
-
-Condição beta:
-{garantia}
-
-Preço testado:
-{preco} — {periodicidade}
-
-{limite}
-
-Não é recomendação de investimento. É uma ferramenta educacional para organizar análise, preço-teto, tese, riscos e relatório.
-
-Faz sentido para você participar dessa versão beta?"""
-
-
-def _gerar_mensagem_melhor_oferta(registros: List[Dict[str, str]]) -> str:
-    if len(registros) == 0:
-        return "Nenhuma oferta cadastrada ainda."
-
-    melhor = _ordenar_ofertas(registros)[0]
-    return _gerar_mensagem_oferta(melhor)
-
-
 def _gerar_insights_oferta(registros: List[Dict[str, str]]) -> List[str]:
-    if len(registros) == 0:
+    if not registros:
         return [
             "Ainda não existe oferta beta paga cadastrada.",
             "Crie uma oferta simples antes de pensar em checkout, assinatura ou automação.",
-            "A primeira oferta deve ser manual, clara e limitada.",
+            "A primeira oferta deve ser manual, clara, limitada e honesta.",
         ]
 
-    insights = []
-
-    total = len(registros)
-    media_score = _media_score(registros)
-    preco_medio = _preco_medio(registros)
     melhor = _ordenar_ofertas(registros)[0]
     melhor_score = _safe_int(melhor.get("score_oferta"))
     melhor_nome = melhor.get("nome_oferta", "N/D")
-    prontas = _contar_status(registros, "Pronta para testar")
-    em_teste = _contar_status(registros, "Em teste manual")
-    publico_mais_comum = _mais_frequente(registros, "publico_alvo")
 
-    insights.append(f"Você tem {total} versão(ões) de oferta cadastradas.")
-    insights.append(f"Score médio das ofertas: {media_score:.1f}/100.")
-    insights.append(f"Preço médio testado: {_fmt_moeda(preco_medio)}.")
-    insights.append(f"Melhor oferta atual: {melhor_nome} com score {melhor_score}/100.")
-
-    if prontas > 0:
-        insights.append(f"Existem {prontas} oferta(s) prontas para teste manual.")
-
-    if em_teste > 0:
-        insights.append(f"Existem {em_teste} oferta(s) em teste manual. Registre as respostas na Pré-venda Beta.")
+    insights = [
+        f"Você tem {len(registros)} versão(ões) de oferta cadastradas.",
+        f"Score médio das ofertas: {_media_score(registros):.1f}/100.",
+        f"Preço médio testado: {_fmt_moeda(_preco_medio(registros))}.",
+        f"Melhor oferta atual: {melhor_nome} com score {melhor_score}/100.",
+    ]
 
     if melhor_score >= 70:
-        insights.append("Já existe uma oferta boa o suficiente para testar com poucos leads.")
-
-    if melhor_score < 55:
-        insights.append("A melhor oferta ainda parece fraca. Melhore promessa, entrega e credibilidade antes de vender.")
-
-    if publico_mais_comum != "N/D":
-        insights.append(f"O público mais trabalhado nas ofertas é: {publico_mais_comum}.")
+        insights.append("Já existe uma oferta boa o suficiente para testar manualmente com poucos leads.")
+    else:
+        insights.append("A melhor oferta ainda precisa melhorar antes de ser enviada para muitos leads.")
 
     insights.append("A oferta deve vender uma transformação específica, não uma lista infinita de funções.")
 
@@ -460,7 +385,7 @@ def _gerar_insights_oferta(registros: List[Dict[str, str]]) -> List[str]:
 
 
 def _gerar_decisoes_oferta(registros: List[Dict[str, str]]) -> List[Dict[str, str]]:
-    if len(registros) == 0:
+    if not registros:
         return [
             {
                 "Decisão": "Criar primeira oferta beta paga",
@@ -470,131 +395,47 @@ def _gerar_decisoes_oferta(registros: List[Dict[str, str]]) -> List[Dict[str, st
             }
         ]
 
-    decisoes = []
     melhor = _ordenar_ofertas(registros)[0]
     melhor_score = _safe_int(melhor.get("score_oferta"))
     nome = melhor.get("nome_oferta", "oferta principal")
 
     if melhor_score >= 85:
-        decisoes.append(
+        return [
             {
-                "Decisão": "Testar oferta imediatamente",
+                "Decisão": "Testar imediatamente",
                 "Critério": "Oferta com score muito forte.",
                 "Ação": f"Enviar a oferta '{nome}' para 5 leads qualificados.",
                 "Prioridade": "Muito alta",
             }
-        )
-    elif melhor_score >= 70:
-        decisoes.append(
+        ]
+
+    if melhor_score >= 70:
+        return [
             {
-                "Decisão": "Testar oferta manualmente",
+                "Decisão": "Testar manualmente",
                 "Critério": "Oferta boa para teste.",
                 "Ação": f"Enviar a oferta '{nome}' para poucos leads e registrar respostas.",
                 "Prioridade": "Alta",
             }
-        )
-    elif melhor_score >= 55:
-        decisoes.append(
+        ]
+
+    if melhor_score >= 55:
+        return [
             {
                 "Decisão": "Ajustar antes de vender",
                 "Critério": "Oferta promissora, mas ainda com pontos fracos.",
                 "Ação": "Melhorar clareza, credibilidade ou condição beta antes do teste.",
                 "Prioridade": "Alta",
             }
-        )
-    else:
-        decisoes.append(
-            {
-                "Decisão": "Não vender ainda",
-                "Critério": "Oferta fraca ou confusa.",
-                "Ação": "Voltar para Pré-venda Beta e entender melhor objeções.",
-                "Prioridade": "Muito alta",
-            }
-        )
+        ]
 
-    risco_preco_medio = 0.0
-    valores_risco = []
-
-    for registro in registros:
-        risco = _safe_float(registro.get("risco_preco"))
-        if risco > 0:
-            valores_risco.append(risco)
-
-    if len(valores_risco) > 0:
-        risco_preco_medio = sum(valores_risco) / len(valores_risco)
-
-    if risco_preco_medio >= 7:
-        decisoes.append(
-            {
-                "Decisão": "Revisar preço ou ancoragem",
-                "Critério": "Risco de preço médio alto.",
-                "Ação": "Testar preço menor, bônus melhor ou comparação de valor.",
-                "Prioridade": "Média",
-            }
-        )
-
-    return decisoes
-
-
-def _gerar_checklist_oferta() -> List[Dict[str, str]]:
     return [
         {
-            "Item": "Promessa clara",
-            "Critério": "A pessoa entende em uma frase o que ganha.",
-        },
-        {
-            "Item": "Entrega objetiva",
-            "Critério": "A oferta não parece ampla ou vaga demais.",
-        },
-        {
-            "Item": "Preço visível",
-            "Critério": "O lead sabe quanto custa.",
-        },
-        {
-            "Item": "Condição beta honesta",
-            "Critério": "A pessoa entende que ainda é uma versão em validação.",
-        },
-        {
-            "Item": "Objeção endereçada",
-            "Critério": "A oferta responde uma barreira real da pré-venda.",
-        },
-        {
-            "Item": "Sem promessa de rentabilidade",
-            "Critério": "A comunicação deixa claro que é educacional.",
-        },
-        {
-            "Item": "Próximo passo simples",
-            "Critério": "A pessoa sabe como responder ou entrar.",
-        },
-    ]
-
-
-def _gerar_modelos_oferta() -> List[Dict[str, str]]:
-    return [
-        {
-            "Modelo": "Beta pago simbólico",
-            "Preço sugerido": "R$ 9 a R$ 19/mês",
-            "Promessa": "Ajudar o usuário a organizar suas primeiras análises com método.",
-            "Uso ideal": "Quando ainda há baixa confiança, mas existe interesse.",
-        },
-        {
-            "Modelo": "Plano básico",
-            "Preço sugerido": "R$ 19 a R$ 29/mês",
-            "Promessa": "Organizar valuation, tese, riscos e relatório em um fluxo simples.",
-            "Uso ideal": "Quando usuários já entendem valor e usariam mensalmente.",
-        },
-        {
-            "Modelo": "Plano premium beta",
-            "Preço sugerido": "R$ 39 a R$ 79/mês",
-            "Promessa": "Apoiar análises mais completas com relatório, watchlist e acompanhamento.",
-            "Uso ideal": "Quando há mais confiança e perfil intermediário/avançado.",
-        },
-        {
-            "Modelo": "Acesso fundador",
-            "Preço sugerido": "Pagamento único",
-            "Promessa": "Entrar cedo, ajudar a construir e manter condição especial.",
-            "Uso ideal": "Quando há proximidade, confiança e desejo de participar do projeto.",
-        },
+            "Decisão": "Não vender ainda",
+            "Critério": "Oferta fraca ou confusa.",
+            "Ação": "Voltar para a lista de espera e entender melhor objeções.",
+            "Prioridade": "Muito alta",
+        }
     ]
 
 
@@ -615,7 +456,7 @@ def _gerar_markdown_oferta(registros: List[Dict[str, str]]) -> str:
         ]
     )
 
-    return f"""# Oferta Beta Paga — Máquina de Preço-Teto
+    return f"""# Oferta Beta Paga — Valoris
 
 Gerado em: {datetime.now().strftime("%d/%m/%Y %H:%M")}
 
@@ -623,8 +464,7 @@ Gerado em: {datetime.now().strftime("%d/%m/%Y %H:%M")}
 
 Total de ofertas: {len(registros)}  
 Score médio: {_media_score(registros):.1f}/100  
-Preço médio: {_fmt_moeda(_preco_medio(registros))}  
-Público mais frequente: {_mais_frequente(registros, "publico_alvo")}
+Preço médio: {_fmt_moeda(_preco_medio(registros))}
 
 ## Ofertas cadastradas
 
@@ -652,109 +492,45 @@ Teste a oferta manualmente antes de criar checkout, assinatura ou automação.
 """
 
 
-def _injetar_css_oferta() -> None:
+def _injetar_css_oferta_pago() -> None:
     st.markdown(
         """
         <style>
             .ofp-hero {
-                padding: 1.75rem 1.8rem;
+                padding: clamp(1.25rem, 3vw, 1.9rem);
                 border-radius: 30px;
                 border: 1px solid rgba(255, 255, 255, 0.09);
                 background:
-                    radial-gradient(circle at top left, rgba(214, 181, 109, 0.25), transparent 30%),
-                    radial-gradient(circle at bottom right, rgba(74, 144, 226, 0.22), transparent 34%),
-                    linear-gradient(135deg, rgba(8, 15, 27, 0.99), rgba(5, 9, 18, 0.99));
-                box-shadow: 0 18px 55px rgba(0, 0, 0, 0.34);
-                margin-bottom: 1.25rem;
+                    radial-gradient(circle at top left, rgba(214, 181, 109, 0.22), transparent 30%),
+                    radial-gradient(circle at bottom right, rgba(74, 144, 226, 0.20), transparent 34%),
+                    linear-gradient(135deg, rgba(8, 15, 27, 0.98), rgba(5, 9, 18, 0.98));
+                box-shadow: 0 18px 55px rgba(0, 0, 0, 0.30);
+                margin-bottom: 1rem;
             }
 
             .ofp-eyebrow {
                 color: #d6b56d;
-                font-size: 0.78rem;
-                letter-spacing: 0.13em;
+                font-size: 0.74rem;
+                letter-spacing: 0.14em;
                 text-transform: uppercase;
                 font-weight: 850;
-                margin-bottom: 0.35rem;
+                margin-bottom: 0.38rem;
             }
 
             .ofp-title {
                 color: #f4f7fb;
-                font-size: 2.1rem;
-                font-weight: 900;
-                margin-bottom: 0.45rem;
-                line-height: 1.14;
+                font-size: clamp(1.65rem, 4vw, 2.25rem);
+                font-weight: 920;
+                margin-bottom: 0.55rem;
+                line-height: 1.08;
+                letter-spacing: -0.045em;
             }
 
             .ofp-subtitle {
                 color: rgba(244, 247, 251, 0.76);
-                font-size: 1rem;
-                line-height: 1.62;
-                max-width: 1080px;
-            }
-
-            .ofp-card {
-                padding: 1.1rem 1.15rem;
-                border-radius: 22px;
-                border: 1px solid rgba(255, 255, 255, 0.08);
-                background: rgba(255, 255, 255, 0.035);
-                box-shadow: 0 10px 35px rgba(0, 0, 0, 0.18);
-                height: 100%;
-            }
-
-            .ofp-card-label {
-                color: rgba(244, 247, 251, 0.58);
-                font-size: 0.76rem;
-                text-transform: uppercase;
-                letter-spacing: 0.08em;
-                font-weight: 800;
-                margin-bottom: 0.35rem;
-            }
-
-            .ofp-card-value {
-                color: #f4f7fb;
-                font-size: 1.22rem;
-                font-weight: 850;
-                margin-bottom: 0.25rem;
-            }
-
-            .ofp-card-note {
-                color: rgba(244, 247, 251, 0.68);
-                font-size: 0.87rem;
-                line-height: 1.47;
-            }
-
-            .ofp-highlight {
-                padding: 0.95rem 1rem;
-                border-radius: 16px;
-                border-left: 4px solid #d6b56d;
-                background: rgba(214, 181, 109, 0.08);
-                color: rgba(244, 247, 251, 0.82);
-                font-size: 0.92rem;
-                line-height: 1.55;
-                margin-bottom: 0.7rem;
-            }
-
-            .ofp-copy {
-                padding: 1rem 1.05rem;
-                border-radius: 18px;
-                background: rgba(255, 255, 255, 0.04);
-                border: 1px solid rgba(255, 255, 255, 0.08);
-                color: rgba(244, 247, 251, 0.82);
-                font-size: 0.92rem;
-                line-height: 1.58;
-                white-space: pre-wrap;
-                margin-bottom: 0.85rem;
-            }
-
-            .ofp-disclaimer {
-                padding: 0.95rem 1rem;
-                border-radius: 16px;
-                background: rgba(74, 144, 226, 0.08);
-                border: 1px solid rgba(74, 144, 226, 0.18);
-                color: rgba(244, 247, 251, 0.78);
-                font-size: 0.9rem;
-                line-height: 1.55;
-                margin-top: 1.1rem;
+                font-size: 0.98rem;
+                line-height: 1.56;
+                max-width: 980px;
             }
         </style>
         """,
@@ -762,126 +538,36 @@ def _injetar_css_oferta() -> None:
     )
 
 
-def _card(label: str, value: str, note: str = "") -> None:
-    st.markdown(
-        f"""
-        <div class="ofp-card">
-            <div class="ofp-card-label">{label}</div>
-            <div class="ofp-card-value">{value}</div>
-            <div class="ofp-card-note">{note}</div>
-        </div>
-        """,
-        unsafe_allow_html=True,
-    )
-
-
-def _copy_box(texto: str) -> None:
-    st.markdown(
-        f"""
-        <div class="ofp-copy">{texto}</div>
-        """,
-        unsafe_allow_html=True,
-    )
-
-
-def renderizar_oferta_beta_pago() -> None:
-    """
-    Renderiza a central de oferta beta paga.
-    """
-    _injetar_css_oferta()
-
-    registros = carregar_ofertas_beta_pago()
-
-    total = len(registros)
-    media_score = _media_score(registros)
-    preco_medio = _preco_medio(registros)
-    melhor_oferta = "N/D"
-
-    if total > 0:
-        melhor_oferta = _ordenar_ofertas(registros)[0].get("nome_oferta", "N/D")
-
-    st.session_state["resultado_oferta_beta_pago"] = {
-        "total_ofertas": total,
-        "media_score": media_score,
-        "preco_medio": preco_medio,
-        "melhor_oferta": melhor_oferta,
-    }
-
-    st.markdown(
-        """
-        <div class="ofp-hero">
-            <div class="ofp-eyebrow">Fase 2.6 — Oferta beta paga</div>
-            <div class="ofp-title">Oferta Beta Paga e Proposta Comercial Manual</div>
-            <div class="ofp-subtitle">
-                Estruture uma oferta simples, limitada e testável antes de criar checkout.
-                O objetivo é validar promessa, preço e entrega com conversas reais.
-            </div>
-        </div>
-        """,
-        unsafe_allow_html=True,
-    )
-
-    st.markdown(
-        """
-        <div class="ofp-highlight">
-            A oferta beta paga não precisa ser perfeita. Ela precisa ser clara, honesta,
-            manualmente vendável e conectada a uma dor real.
-        </div>
-        """,
-        unsafe_allow_html=True,
-    )
-
-    st.markdown("### Diagnóstico das ofertas")
-
-    col_1, col_2, col_3, col_4 = st.columns(4)
+def _renderizar_metricas(registros: List[Dict[str, str]]) -> None:
+    col_1, col_2, col_3 = st.columns(3)
 
     with col_1:
-        st.metric("Ofertas cadastradas", total)
+        st.metric("Ofertas", len(registros))
 
     with col_2:
-        st.metric("Score médio", f"{media_score:.1f}/100")
+        st.metric("Score médio", f"{_media_score(registros):.1f}/100")
 
     with col_3:
-        st.metric("Preço médio", _fmt_moeda(preco_medio))
+        st.metric("Preço médio", _fmt_moeda(_preco_medio(registros)))
 
-    with col_4:
-        st.metric("Melhor oferta", melhor_oferta)
 
-    st.divider()
-
-    st.markdown("### Insights automáticos")
-
-    for insight in _gerar_insights_oferta(registros):
-        st.markdown(f"- {insight}")
-
-    st.divider()
-
-    st.markdown("### Decisões recomendadas")
-
-    st.dataframe(
-        _gerar_decisoes_oferta(registros),
-        use_container_width=True,
-        hide_index=True,
-    )
-
-    st.divider()
-
-    st.markdown("### Criar oferta beta paga")
+def _renderizar_formulario_oferta() -> None:
+    st.markdown("### Criar ou testar uma oferta")
 
     with st.form("form_oferta_beta_pago"):
-        col_form_1, col_form_2 = st.columns(2)
+        col_1, col_2 = st.columns(2)
 
-        with col_form_1:
+        with col_1:
             nome_oferta = st.text_input(
                 "Nome da oferta",
-                value="Acesso Fundador — Máquina de Preço-Teto",
-                key="ofp_nome",
+                value="Valoris Beta Fundador",
+                key="ofp_nome_oferta",
             )
 
             publico_alvo = st.selectbox(
                 "Público-alvo",
                 PUBLICOS_ALVO,
-                key="ofp_publico",
+                key="ofp_publico_alvo",
             )
 
             tipo_plano = st.selectbox(
@@ -891,11 +577,10 @@ def renderizar_oferta_beta_pago() -> None:
             )
 
             preco = st.number_input(
-                "Preço",
+                "Preço testado",
                 min_value=0.0,
-                max_value=10000.0,
-                value=29.0,
-                step=1.0,
+                value=97.0,
+                step=10.0,
                 key="ofp_preco",
             )
 
@@ -905,10 +590,11 @@ def renderizar_oferta_beta_pago() -> None:
                 key="ofp_periodicidade",
             )
 
-        with col_form_2:
+        with col_2:
             status_oferta = st.selectbox(
                 "Status da oferta",
                 STATUS_OFERTA,
+                index=1,
                 key="ofp_status",
             )
 
@@ -919,21 +605,23 @@ def renderizar_oferta_beta_pago() -> None:
             )
 
             limite_vagas = st.text_input(
-                "Limite/vagas/condição",
-                value="Vagas limitadas para os primeiros usuários beta.",
-                key="ofp_limite",
+                "Limite/vagas",
+                value="Primeiras 10 vagas beta.",
+                key="ofp_limite_vagas",
             )
 
-            prova_credibilidade = st.text_area(
+            prova_credibilidade = st.text_input(
                 "Prova de credibilidade",
-                value="Ferramenta educacional em construção, com valuation, margem de segurança, tese, riscos e relatório.",
-                height=100,
-                key="ofp_credibilidade_txt",
+                value="Produto já está online, com feedback real e relatório premium.",
+                key="ofp_prova",
             )
 
         promessa_principal = st.text_area(
             "Promessa principal",
-            value="Ajudar você a analisar ações com mais método, disciplina e clareza, evitando comprar no impulso.",
+            value=(
+                "Ajudar investidores a auditar decisões antes de comprar ações, com valuation, "
+                "margem de segurança, relatório e revisão de riscos."
+            ),
             height=90,
             key="ofp_promessa",
         )
@@ -941,12 +629,11 @@ def renderizar_oferta_beta_pago() -> None:
         entrega_principal = st.text_area(
             "Entrega principal",
             value=(
-                "- Acesso à Máquina de Preço-Teto\n"
-                "- Fluxo de valuation educacional\n"
-                "- Relatórios em Markdown\n"
-                "- Checklist de erros\n"
-                "- Watchlist e acompanhamento\n"
-                "- Participação no beta com melhorias constantes"
+                "- acesso à plataforma beta;\n"
+                "- Auditor Valoris;\n"
+                "- Relatório Valoris Premium;\n"
+                "- camadas leigo, intermediário e avançado;\n"
+                "- participação nas melhorias do produto."
             ),
             height=120,
             key="ofp_entrega",
@@ -954,100 +641,45 @@ def renderizar_oferta_beta_pago() -> None:
 
         bonus = st.text_area(
             "Bônus/apoio",
-            value=(
-                "- Canal direto para feedback\n"
-                "- Possibilidade de influenciar o roadmap\n"
-                "- Condição especial de usuário fundador"
-            ),
-            height=100,
+            value="Canal direto para enviar feedback e sugerir melhorias prioritárias.",
+            height=80,
             key="ofp_bonus",
         )
 
         garantia_beta = st.text_area(
-            "Garantia ou condição beta",
+            "Condição/garantia beta",
             value=(
-                "Essa é uma versão beta. O objetivo é testar e melhorar junto com os primeiros usuários. "
-                "A ferramenta é educacional e não faz recomendação de investimento."
+                "Produto em evolução. O usuário entende que está entrando cedo e ajudando a construir. "
+                "Se não fizer sentido após testar, a oferta pode ser pausada ou ajustada manualmente."
             ),
-            height=90,
+            height=95,
             key="ofp_garantia",
         )
 
         objecao_resolvida = st.text_area(
-            "Objeção principal que a oferta resolve",
-            value="Ajuda quem se sente perdido ao analisar ações e quer organizar premissas, riscos e preço-teto.",
-            height=90,
+            "Objeção resolvida",
+            value=(
+                "Não é uma promessa de lucro: é uma ferramenta para organizar raciocínio, premissas e riscos."
+            ),
+            height=80,
             key="ofp_objecao",
         )
 
-        st.markdown("#### Avaliação da força da oferta")
+        st.markdown("#### Score comercial da oferta")
 
-        col_score_1, col_score_2, col_score_3 = st.columns(3)
+        col_s1, col_s2, col_s3 = st.columns(3)
 
-        with col_score_1:
-            clareza_promessa = st.slider(
-                "Clareza da promessa",
-                1,
-                10,
-                8,
-                key="ofp_clareza",
-            )
+        with col_s1:
+            clareza_promessa = st.slider("Clareza da promessa", 1, 10, 8, key="ofp_clareza")
+            forca_dor = st.slider("Força da dor", 1, 10, 8, key="ofp_dor")
 
-            forca_dor = st.slider(
-                "Força da dor",
-                1,
-                10,
-                7,
-                key="ofp_dor",
-            )
+        with col_s2:
+            valor_percebido = st.slider("Valor percebido", 1, 10, 8, key="ofp_valor")
+            credibilidade = st.slider("Credibilidade", 1, 10, 7, key="ofp_credibilidade")
 
-        with col_score_2:
-            valor_percebido = st.slider(
-                "Valor percebido",
-                1,
-                10,
-                7,
-                key="ofp_valor",
-            )
-
-            credibilidade = st.slider(
-                "Credibilidade",
-                1,
-                10,
-                7,
-                key="ofp_credibilidade",
-            )
-
-        with col_score_3:
-            simplicidade = st.slider(
-                "Simplicidade",
-                1,
-                10,
-                7,
-                key="ofp_simplicidade",
-            )
-
-            risco_preco = st.slider(
-                "Risco de preço",
-                1,
-                10,
-                4,
-                help="Quanto maior, mais chance do preço travar a venda.",
-                key="ofp_risco_preco",
-            )
-
-        score_preview = calcular_score_oferta(
-            clareza_promessa=clareza_promessa,
-            forca_dor=forca_dor,
-            valor_percebido=valor_percebido,
-            credibilidade=credibilidade,
-            simplicidade=simplicidade,
-            risco_preco=risco_preco,
-        )
-
-        st.info(
-            f"Score da oferta: **{score_preview}/100** — {classificar_oferta(score_preview)}"
-        )
+        with col_s3:
+            simplicidade = st.slider("Simplicidade", 1, 10, 8, key="ofp_simplicidade")
+            risco_preco = st.slider("Risco de preço", 1, 10, 4, key="ofp_risco")
 
         observacoes = st.text_area(
             "Observações",
@@ -1056,138 +688,153 @@ def renderizar_oferta_beta_pago() -> None:
             key="ofp_observacoes",
         )
 
-        enviar = st.form_submit_button("Salvar oferta beta paga")
+        enviado = st.form_submit_button("Salvar oferta beta paga")
 
-        if enviar:
-            if nome_oferta.strip() == "":
-                st.error("Preencha o nome da oferta.")
-            elif promessa_principal.strip() == "":
-                st.error("Preencha a promessa principal.")
-            elif entrega_principal.strip() == "":
-                st.error("Preencha a entrega principal.")
-            else:
-                adicionar_oferta_beta_pago(
-                    nome_oferta=nome_oferta,
-                    publico_alvo=publico_alvo,
-                    tipo_plano=tipo_plano,
-                    preco=preco,
-                    periodicidade=periodicidade,
-                    promessa_principal=promessa_principal,
-                    entrega_principal=entrega_principal,
-                    bonus=bonus,
-                    garantia_beta=garantia_beta,
-                    objecao_resolvida=objecao_resolvida,
-                    prova_credibilidade=prova_credibilidade,
-                    limite_vagas=limite_vagas,
-                    clareza_promessa=clareza_promessa,
-                    forca_dor=forca_dor,
-                    valor_percebido=valor_percebido,
-                    credibilidade=credibilidade,
-                    simplicidade=simplicidade,
-                    risco_preco=risco_preco,
-                    status_oferta=status_oferta,
-                    proxima_acao=proxima_acao,
-                    observacoes=observacoes,
-                )
+        if enviado:
+            adicionar_oferta_beta_pago(
+                nome_oferta=nome_oferta,
+                publico_alvo=publico_alvo,
+                tipo_plano=tipo_plano,
+                preco=preco,
+                periodicidade=periodicidade,
+                promessa_principal=promessa_principal,
+                entrega_principal=entrega_principal,
+                bonus=bonus,
+                garantia_beta=garantia_beta,
+                objecao_resolvida=objecao_resolvida,
+                prova_credibilidade=prova_credibilidade,
+                limite_vagas=limite_vagas,
+                clareza_promessa=clareza_promessa,
+                forca_dor=forca_dor,
+                valor_percebido=valor_percebido,
+                credibilidade=credibilidade,
+                simplicidade=simplicidade,
+                risco_preco=risco_preco,
+                status_oferta=status_oferta,
+                proxima_acao=proxima_acao,
+                observacoes=observacoes,
+            )
 
-                st.success("Oferta beta paga registrada com sucesso.")
-                st.rerun()
+            st.success("Oferta cadastrada com sucesso.")
+            st.rerun()
+
+
+def renderizar_oferta_beta_pago() -> None:
+    """
+    Renderiza a página de oferta beta paga.
+    """
+    _injetar_css_oferta_pago()
+
+    registros = carregar_ofertas_beta_pago()
+
+    st.markdown(
+        f"""
+        <div class="ofp-hero">
+            <div class="ofp-eyebrow">Valoris • v{VERSAO_OFERTA_BETA_PAGO}</div>
+            <div class="ofp-title">Oferta Beta Paga</div>
+            <div class="ofp-subtitle">
+                Estruture a primeira oferta monetizável antes de criar checkout. O objetivo é testar
+                promessa, preço, entrega e objeções com poucos leads qualificados.
+            </div>
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
+
+    _renderizar_metricas(registros)
+
+    st.divider()
+
+    for insight in _gerar_insights_oferta(registros):
+        st.info(insight)
+
+    st.divider()
+
+    st.markdown("### Decisão recomendada")
+
+    for decisao in _gerar_decisoes_oferta(registros):
+        with st.container(border=True):
+            st.markdown(f"**{decisao['Decisão']}**")
+            st.caption(f"Critério: {decisao['Critério']}")
+            st.markdown(f"**Ação:** {decisao['Ação']}")
+            st.markdown(f"**Prioridade:** {decisao['Prioridade']}")
+
+    st.divider()
+
+    _renderizar_formulario_oferta()
 
     st.divider()
 
     st.markdown("### Ofertas cadastradas")
 
-    registros = carregar_ofertas_beta_pago()
-
-    if len(registros) == 0:
-        st.info("Nenhuma oferta beta paga cadastrada ainda.")
+    if not registros:
+        st.info("Nenhuma oferta cadastrada ainda.")
     else:
-        st.dataframe(
-            _gerar_tabela_ofertas(registros),
-            use_container_width=True,
-            hide_index=True,
-        )
-
-        st.divider()
-
-        st.markdown("### Detalhamento das ofertas")
-
-        st.dataframe(
-            _gerar_tabela_detalhada(registros),
-            use_container_width=True,
-            hide_index=True,
-        )
-
-        st.divider()
-
-        st.markdown("### Mensagem pronta da melhor oferta")
-
-        _copy_box(_gerar_mensagem_melhor_oferta(registros))
-
-    st.divider()
-
-    st.markdown("### Checklist de oferta beta paga")
-
-    st.dataframe(
-        _gerar_checklist_oferta(),
-        use_container_width=True,
-        hide_index=True,
-    )
-
-    st.divider()
-
-    st.markdown("### Modelos de oferta para testar")
-
-    st.dataframe(
-        _gerar_modelos_oferta(),
-        use_container_width=True,
-        hide_index=True,
-    )
-
-    st.divider()
-
-    if len(registros) > 0:
-        col_download, col_limpar = st.columns(2)
-
-        with col_download:
-            with open(CAMINHO_OFERTAS_BETA_PAGO, "rb") as arquivo:
-                st.download_button(
-                    label="Baixar ofertas beta paga em CSV",
-                    data=arquivo,
-                    file_name="ofertas_beta_pago.csv",
-                    mime="text/csv",
-                    key="download_ofertas_beta_pago_csv",
+        for item in _gerar_tabela_ofertas(registros):
+            with st.container(border=True):
+                st.markdown(f"**{item['Oferta']}** — {item['Classificação']}")
+                st.caption(
+                    f"Score: {item['Score']} • Público: {item['Público']} • Plano: {item['Plano']} • Preço: {item['Preço']}"
                 )
+                st.markdown(f"**Status:** {item['Status']}")
+                st.markdown(f"**Próxima ação:** {item['Próxima ação']}")
 
-            st.download_button(
-                label="Baixar relatório de oferta beta paga (.md)",
-                data=_gerar_markdown_oferta(registros),
-                file_name="relatorio_oferta_beta_pago.md",
-                mime="text/markdown",
-                key="download_oferta_beta_pago_md",
-            )
+    st.divider()
 
-        with col_limpar:
-            confirmar = st.checkbox(
-                "Confirmar limpeza das ofertas beta paga",
-                value=False,
-                key="ofp_confirmar_limpeza",
-            )
+    st.markdown("### Mensagem da melhor oferta")
 
-            if st.button("Limpar ofertas beta paga", key="ofp_limpar"):
-                if confirmar:
-                    limpar_ofertas_beta_pago()
-                    st.success("Ofertas limpas com sucesso.")
-                    st.rerun()
-                else:
-                    st.warning("Marque a confirmação antes de limpar.")
-
-    st.markdown(
-        """
-        <div class="ofp-disclaimer">
-            <strong>Regra comercial:</strong> teste a oferta manualmente com poucos leads antes de criar checkout.
-            Se ninguém aceita no manual, automatizar só vai acelerar uma oferta fraca.
-        </div>
-        """,
-        unsafe_allow_html=True,
+    st.text_area(
+        "Copie e envie manualmente",
+        value=_gerar_mensagem_melhor_oferta(registros),
+        height=300,
+        key="ofp_mensagem_melhor_oferta",
     )
+
+    st.download_button(
+        label="Baixar relatório de ofertas (.md)",
+        data=_gerar_markdown_oferta(registros),
+        file_name="oferta_beta_paga_valoris.md",
+        mime="text/markdown",
+        key="ofp_download_markdown",
+    )
+
+    st.download_button(
+        label="Baixar ofertas cadastradas (.csv)",
+        data=CAMINHO_OFERTAS_BETA_PAGO.read_text(encoding="utf-8") if CAMINHO_OFERTAS_BETA_PAGO.exists() else "",
+        file_name="ofertas_beta_pago.csv",
+        mime="text/csv",
+        key="ofp_download_csv",
+    )
+
+    st.warning(
+        "Não crie checkout ainda. Primeiro teste manualmente com poucos leads e registre respostas reais."
+    )
+
+
+def executar_autoteste_oferta_beta_pago() -> List[Dict[str, str]]:
+    score = calcular_score_oferta(
+        clareza_promessa=8,
+        forca_dor=8,
+        valor_percebido=8,
+        credibilidade=7,
+        simplicidade=8,
+        risco_preco=4,
+    )
+
+    return [
+        {
+            "teste": "score_oferta",
+            "status": "OK" if 0 <= score <= 100 else "FALHA",
+            "detalhe": str(score),
+        },
+        {
+            "teste": "classificacao",
+            "status": "OK" if classificar_oferta(score) != "" else "FALHA",
+            "detalhe": classificar_oferta(score),
+        },
+        {
+            "teste": "campos_oferta",
+            "status": "OK" if "score_oferta" in CAMPOS_OFERTA else "FALHA",
+            "detalhe": str(len(CAMPOS_OFERTA)),
+        },
+    ]

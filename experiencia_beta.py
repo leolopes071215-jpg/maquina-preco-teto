@@ -1072,7 +1072,7 @@ def renderizar_experiencia_usuario_beta(
 
     st.divider()
 
-    renderizar_lista_espera_valoris(modo_admin=False)
+    renderizar_lista_espera_valoris(modo_admin=False, chave_contexto="experiencia_beta")
 
     st.markdown(
         f"""

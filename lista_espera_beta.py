@@ -11,7 +11,7 @@ import streamlit as st
 
 # ============================================================
 # VALORIS
-# v3.8.39 — Lista de Espera e Captura de Leads
+# v3.8.40.2 — Lista de Espera com chaves únicas
 # ------------------------------------------------------------
 # Este módulo cria uma captura simples de leads para o beta.
 #
@@ -29,7 +29,7 @@ import streamlit as st
 # ============================================================
 
 
-VERSAO_LISTA_ESPERA_BETA = "3.8.39"
+VERSAO_LISTA_ESPERA_BETA = "3.8.40.2"
 
 CAMINHO_LISTA_ESPERA = Path("lista_espera_beta.csv")
 
@@ -296,11 +296,16 @@ def _renderizar_css_lista_espera() -> None:
     )
 
 
-def renderizar_lista_espera_valoris(modo_admin: bool = False) -> None:
+def renderizar_lista_espera_valoris(modo_admin: bool = False, chave_contexto: str = "publico") -> None:
     """
     Renderiza a captura pública de leads da Valoris.
+
+    chave_contexto evita erro de chaves duplicadas quando a mesma tela
+    aparece em mais de uma aba do Streamlit no mesmo carregamento.
     """
     _renderizar_css_lista_espera()
+
+    contexto = _limpar_texto(chave_contexto).lower().replace(" ", "_") or "publico"
 
     st.markdown(
         """
@@ -319,34 +324,34 @@ def renderizar_lista_espera_valoris(modo_admin: bool = False) -> None:
         unsafe_allow_html=True,
     )
 
-    with st.form("form_lista_espera_valoris", clear_on_submit=True):
+    with st.form(f"form_lista_espera_valoris_{contexto}", clear_on_submit=True):
         col_nome, col_contato = st.columns(2)
 
         with col_nome:
             nome = st.text_input(
                 "Nome",
                 placeholder="Seu nome",
-                key="lista_espera_nome",
+                key=f"lista_espera_nome_{contexto}",
             )
 
         with col_contato:
             contato = st.text_input(
                 "E-mail ou WhatsApp",
                 placeholder="exemplo@email.com ou WhatsApp",
-                key="lista_espera_contato",
+                key=f"lista_espera_contato_{contexto}",
             )
 
         perfil = st.selectbox(
             "Qual é seu perfil como investidor?",
             PERFIS_INVESTIDOR,
-            key="lista_espera_perfil",
+            key=f"lista_espera_perfil_{contexto}",
         )
 
         principal_dor = st.text_area(
             "Qual sua maior dificuldade ao analisar ações hoje?",
             placeholder="Ex: não sei se estou pagando caro, não entendo balanços, não confio nas premissas...",
             height=90,
-            key="lista_espera_principal_dor",
+            key=f"lista_espera_principal_dor_{contexto}",
         )
 
         col_plano, col_preco = st.columns(2)
@@ -355,28 +360,28 @@ def renderizar_lista_espera_valoris(modo_admin: bool = False) -> None:
             plano_interesse = st.selectbox(
                 "Qual formato faria mais sentido para você?",
                 PLANOS_INTERESSE,
-                key="lista_espera_plano",
+                key=f"lista_espera_plano_{contexto}",
             )
 
         with col_preco:
             preco_aceitavel = st.selectbox(
                 "Quanto você aceitaria pagar se a ferramenta entregasse valor real?",
                 PRECOS_ACEITAVEIS,
-                key="lista_espera_preco",
+                key=f"lista_espera_preco_{contexto}",
             )
 
         pagaria_agora = st.radio(
             "Você pagaria por uma ferramenta assim hoje?",
             PAGARIA_AGORA,
             horizontal=False,
-            key="lista_espera_pagaria_agora",
+            key=f"lista_espera_pagaria_agora_{contexto}",
         )
 
         comentario = st.text_area(
             "Comentário opcional",
             placeholder="O que faria você confiar e usar a Valoris com frequência?",
             height=80,
-            key="lista_espera_comentario",
+            key=f"lista_espera_comentario_{contexto}",
         )
 
         enviado = st.form_submit_button("Entrar na lista beta")
@@ -404,10 +409,11 @@ def renderizar_lista_espera_valoris(modo_admin: bool = False) -> None:
 
     if modo_admin:
         st.divider()
-        renderizar_painel_lista_espera_valoris()
+        renderizar_painel_lista_espera_valoris(chave_contexto=contexto)
 
 
-def renderizar_painel_lista_espera_valoris() -> None:
+def renderizar_painel_lista_espera_valoris(chave_contexto: str = "admin") -> None:
+    contexto = _limpar_texto(chave_contexto).lower().replace(" ", "_") or "admin"
     leads = carregar_leads_lista_espera()
     metricas = _calcular_metricas_lista_espera(leads)
 
@@ -449,7 +455,7 @@ def renderizar_painel_lista_espera_valoris() -> None:
         data=gerar_csv_lista_espera(),
         file_name="lista_espera_beta.csv",
         mime="text/csv",
-        key="download_lista_espera_beta",
+        key=f"download_lista_espera_beta_{contexto}",
     )
 
 

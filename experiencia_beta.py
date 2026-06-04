@@ -10,7 +10,7 @@ from explicabilidade_valoris import renderizar_explicabilidade_valoris
 
 # ============================================================
 # MÁQUINA DE PREÇO-TETO
-# v3.8.34 — Camadas de Profundidade
+# v3.8.38 — Experiência Mobile-First Premium
 # ------------------------------------------------------------
 # Este arquivo cria uma experiência simplificada e vendável
 # para o usuário comum.
@@ -24,16 +24,16 @@ from explicabilidade_valoris import renderizar_explicabilidade_valoris
 # ============================================================
 
 
-VERSAO_EXPERIENCIA_BETA = "3.8.34"
+VERSAO_EXPERIENCIA_BETA = "3.8.38"
 
 
 COPY_EXPERIENCIA_BETA = {
-    "headline": "Transforme análise em decisão.",
+    "headline": "Audite sua decisão antes de investir.",
     "subheadline": (
-        "A Valoris estima valor, aplica margem de segurança e audita os principais "
-        "riscos que podem distorcer sua decisão antes da compra."
+        "Valuation, margem de segurança e riscos fundamentais em uma leitura clara, "
+        "didática e preparada para diferentes níveis de investidor."
     ),
-    "promessa": "Escolha a profundidade da análise: leitura simples, revisão intermediária ou premissas avançadas.",
+    "promessa": "A Valoris não entrega só um número: ela mostra o que sustenta, enfraquece ou limita a decisão.",
     "disclaimer": (
         "Ferramenta educacional. Não representa recomendação de compra, venda "
         "ou manutenção de investimentos."
@@ -515,98 +515,193 @@ def _injetar_css_experiencia_beta() -> None:
         """
         <style>
             .xb-hero {
-                padding: 2rem 2rem;
-                border-radius: 32px;
+                padding: clamp(1.25rem, 3vw, 2rem);
+                border-radius: 30px;
                 border: 1px solid rgba(255, 255, 255, 0.09);
                 background:
-                    radial-gradient(circle at top left, rgba(214, 181, 109, 0.24), transparent 30%),
-                    radial-gradient(circle at bottom right, rgba(36, 128, 91, 0.26), transparent 34%),
+                    radial-gradient(circle at top left, rgba(214, 181, 109, 0.20), transparent 30%),
+                    radial-gradient(circle at bottom right, rgba(36, 128, 91, 0.22), transparent 34%),
                     linear-gradient(135deg, rgba(8, 15, 27, 0.99), rgba(5, 9, 18, 0.99));
-                box-shadow: 0 18px 55px rgba(0, 0, 0, 0.34);
-                margin-bottom: 1.2rem;
+                box-shadow: 0 18px 55px rgba(0, 0, 0, 0.30);
+                margin-bottom: 1rem;
             }
 
             .xb-eyebrow {
                 color: #d6b56d;
-                font-size: 0.78rem;
-                letter-spacing: 0.13em;
+                font-size: 0.74rem;
+                letter-spacing: 0.14em;
                 text-transform: uppercase;
                 font-weight: 850;
-                margin-bottom: 0.35rem;
+                margin-bottom: 0.38rem;
             }
 
             .xb-title {
                 color: #f4f7fb;
-                font-size: 2.2rem;
-                font-weight: 900;
+                font-size: clamp(1.75rem, 5vw, 2.45rem);
+                font-weight: 920;
                 margin-bottom: 0.55rem;
-                line-height: 1.12;
+                line-height: 1.08;
+                letter-spacing: -0.045em;
             }
 
             .xb-subtitle {
                 color: rgba(244, 247, 251, 0.76);
-                font-size: 1rem;
-                line-height: 1.62;
-                max-width: 1050px;
+                font-size: clamp(0.94rem, 2.2vw, 1.03rem);
+                line-height: 1.56;
+                max-width: 980px;
             }
 
             .xb-card {
-                padding: 1.12rem 1.18rem;
-                border-radius: 22px;
+                padding: 1rem 1.05rem;
+                border-radius: 21px;
                 border: 1px solid rgba(255, 255, 255, 0.08);
-                background: rgba(255, 255, 255, 0.035);
-                box-shadow: 0 10px 35px rgba(0, 0, 0, 0.18);
+                background:
+                    radial-gradient(circle at top right, rgba(214, 181, 109, 0.07), transparent 30%),
+                    rgba(255, 255, 255, 0.034);
+                box-shadow: 0 10px 30px rgba(0, 0, 0, 0.17);
                 height: 100%;
             }
 
             .xb-card-label {
                 color: rgba(244, 247, 251, 0.58);
-                font-size: 0.76rem;
+                font-size: 0.72rem;
                 text-transform: uppercase;
-                letter-spacing: 0.08em;
-                font-weight: 800;
-                margin-bottom: 0.35rem;
+                letter-spacing: 0.085em;
+                font-weight: 820;
+                margin-bottom: 0.32rem;
             }
 
             .xb-card-value {
                 color: #f4f7fb;
-                font-size: 1.22rem;
+                font-size: clamp(1.04rem, 2.2vw, 1.28rem);
+                font-weight: 870;
+                margin-bottom: 0.25rem;
+                letter-spacing: -0.025em;
+            }
+
+            .xb-card-note {
+                color: rgba(244, 247, 251, 0.66);
+                font-size: 0.84rem;
+                line-height: 1.44;
+            }
+
+            .xb-highlight {
+                padding: 0.88rem 0.95rem;
+                border-radius: 18px;
+                border-left: 4px solid #d6b56d;
+                background: rgba(214, 181, 109, 0.08);
+                color: rgba(244, 247, 251, 0.82);
+                font-size: 0.90rem;
+                line-height: 1.50;
+                margin-bottom: 0.65rem;
+            }
+
+            .xb-decision-strip {
+                padding: 1.05rem 1.1rem;
+                border-radius: 24px;
+                border: 1px solid rgba(255, 255, 255, 0.09);
+                background:
+                    linear-gradient(135deg, rgba(15, 23, 42, 0.95), rgba(30, 41, 59, 0.64));
+                box-shadow: 0 14px 42px rgba(0, 0, 0, 0.24);
+                margin: 0.85rem 0 0.95rem 0;
+            }
+
+            .xb-decision-kicker {
+                color: #d6b56d;
+                font-size: 0.72rem;
+                letter-spacing: 0.12em;
+                text-transform: uppercase;
+                font-weight: 850;
+                margin-bottom: 0.32rem;
+            }
+
+            .xb-decision-title {
+                color: #f4f7fb;
+                font-size: clamp(1.22rem, 3.4vw, 1.70rem);
+                font-weight: 900;
+                line-height: 1.15;
+                margin-bottom: 0.36rem;
+            }
+
+            .xb-decision-text {
+                color: rgba(244, 247, 251, 0.72);
+                font-size: 0.93rem;
+                line-height: 1.50;
+            }
+
+            .xb-mini-row {
+                display: grid;
+                grid-template-columns: repeat(4, minmax(0, 1fr));
+                gap: 0.75rem;
+                margin: 0.85rem 0 0.95rem 0;
+            }
+
+            .xb-section-label {
+                color: rgba(244, 247, 251, 0.62);
+                font-size: 0.76rem;
+                letter-spacing: 0.10em;
+                text-transform: uppercase;
                 font-weight: 850;
                 margin-bottom: 0.25rem;
             }
 
-            .xb-card-note {
-                color: rgba(244, 247, 251, 0.68);
-                font-size: 0.87rem;
-                line-height: 1.47;
-            }
-
-            .xb-highlight {
-                padding: 0.95rem 1rem;
-                border-radius: 16px;
-                border-left: 4px solid #d6b56d;
-                background: rgba(214, 181, 109, 0.08);
-                color: rgba(244, 247, 251, 0.82);
-                font-size: 0.92rem;
-                line-height: 1.55;
-                margin-bottom: 0.7rem;
-            }
-
             .xb-disclaimer {
-                padding: 0.95rem 1rem;
+                padding: 0.9rem 0.95rem;
                 border-radius: 16px;
                 background: rgba(74, 144, 226, 0.08);
                 border: 1px solid rgba(74, 144, 226, 0.18);
                 color: rgba(244, 247, 251, 0.78);
-                font-size: 0.9rem;
-                line-height: 1.55;
-                margin-top: 1.1rem;
+                font-size: 0.88rem;
+                line-height: 1.50;
+                margin-top: 1rem;
+            }
+
+            @media (max-width: 900px) {
+                .xb-mini-row {
+                    grid-template-columns: repeat(2, minmax(0, 1fr));
+                    gap: 0.65rem;
+                }
+
+                .xb-hero {
+                    border-radius: 24px;
+                    margin-bottom: 0.85rem;
+                }
+
+                .xb-card {
+                    border-radius: 18px;
+                    padding: 0.92rem 0.95rem;
+                }
+            }
+
+            @media (max-width: 520px) {
+                .xb-mini-row {
+                    grid-template-columns: 1fr;
+                    gap: 0.56rem;
+                }
+
+                .xb-hero {
+                    padding: 1.12rem 1rem;
+                    border-radius: 22px;
+                }
+
+                .xb-highlight,
+                .xb-decision-strip,
+                .xb-disclaimer {
+                    border-radius: 16px;
+                }
+
+                .xb-decision-strip {
+                    padding: 0.95rem;
+                }
+
+                .xb-card-note {
+                    font-size: 0.81rem;
+                }
             }
         </style>
         """,
         unsafe_allow_html=True,
     )
-
 
 def _card(label: str, value: str, note: str = "") -> None:
     st.markdown(
@@ -631,6 +726,73 @@ def _renderizar_alerta_status(snapshot: Dict[str, Any]) -> None:
         st.error(mensagem)
     else:
         st.warning(mensagem)
+
+
+def _obter_frase_decisao(snapshot: Dict[str, Any]) -> str:
+    status = _normalizar_status(snapshot.get("status", ""))
+
+    if status == "COMPRA":
+        return (
+            "Existe margem para continuar a análise, mas a Valoris ainda recomenda revisar tese, "
+            "qualidade dos dados e riscos fundamentais antes de qualquer decisão."
+        )
+
+    if status == "NEUTRO":
+        return (
+            "O ativo merece acompanhamento. A decisão mais racional pode ser observar, testar premissas "
+            "mais conservadoras e esperar uma assimetria melhor."
+        )
+
+    if status == "AGUARDE":
+        return (
+            "O preço atual exige paciência. A Valoris sugere evitar impulso, definir um preço de alerta "
+            "e reavaliar quando houver novos dados ou melhor margem."
+        )
+
+    return "Revise os dados antes de interpretar a análise."
+
+
+def _renderizar_decision_strip(snapshot: Dict[str, Any]) -> None:
+    st.markdown(
+        f"""
+        <div class="xb-decision-strip">
+            <div class="xb-decision-kicker">Leitura principal da Valoris</div>
+            <div class="xb-decision-title">{snapshot.get("leitura_titulo", "Resultado")}</div>
+            <div class="xb-decision-text">{_obter_frase_decisao(snapshot)}</div>
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
+
+
+def _renderizar_cards_resumo_mobile_first(snapshot: Dict[str, Any], simbolo: str) -> None:
+    st.markdown(
+        f"""
+        <div class="xb-mini-row">
+            <div class="xb-card">
+                <div class="xb-card-label">Preço atual</div>
+                <div class="xb-card-value">{_formatar_moeda(snapshot.get("preco_atual", 0), simbolo)}</div>
+                <div class="xb-card-note">Referência usada contra teto e valor justo.</div>
+            </div>
+            <div class="xb-card">
+                <div class="xb-card-label">Preço-teto</div>
+                <div class="xb-card-value">{_formatar_moeda(snapshot.get("preco_teto", 0), simbolo)}</div>
+                <div class="xb-card-note">Entrada conservadora com margem.</div>
+            </div>
+            <div class="xb-card">
+                <div class="xb-card-label">Preço justo</div>
+                <div class="xb-card-value">{_formatar_moeda(snapshot.get("preco_justo", 0), simbolo)}</div>
+                <div class="xb-card-note">Valor estimado antes do desconto.</div>
+            </div>
+            <div class="xb-card">
+                <div class="xb-card-label">Zona</div>
+                <div class="xb-card-value">{snapshot.get("leitura_titulo", "")}</div>
+                <div class="xb-card-note">Tradução humana do status.</div>
+            </div>
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
 
 
 
@@ -796,7 +958,7 @@ def renderizar_experiencia_usuario_beta(
     st.markdown(
         f"""
         <div class="xb-hero">
-            <div class="xb-eyebrow">v{VERSAO_EXPERIENCIA_BETA} — Experiência beta</div>
+            <div class="xb-eyebrow">Valoris • v{VERSAO_EXPERIENCIA_BETA}</div>
             <div class="xb-title">{COPY_EXPERIENCIA_BETA["headline"]}</div>
             <div class="xb-subtitle">
                 {COPY_EXPERIENCIA_BETA["subheadline"]}
@@ -815,41 +977,11 @@ def renderizar_experiencia_usuario_beta(
         unsafe_allow_html=True,
     )
 
-    st.markdown(f"### Análise rápida: {snapshot['empresa']} ({snapshot['ticker']})")
+    st.markdown(f"### {snapshot['empresa']} ({snapshot['ticker']})")
 
-    col_1, col_2, col_3, col_4 = st.columns(4)
+    _renderizar_decision_strip(snapshot)
 
-    with col_1:
-        _card(
-            "Preço atual",
-            _formatar_moeda(snapshot.get("preco_atual", 0), simbolo),
-            "Preço usado na análise.",
-        )
-
-    with col_2:
-        _card(
-            "Preço-teto",
-            _formatar_moeda(snapshot.get("preco_teto", 0), simbolo),
-            "Preço máximo conservador pelo modelo.",
-        )
-
-    with col_3:
-        _card(
-            "Preço justo",
-            _formatar_moeda(snapshot.get("preco_justo", 0), simbolo),
-            "Estimativa antes da margem de segurança.",
-        )
-
-    with col_4:
-        _card(
-            "Zona",
-            str(snapshot.get("leitura_titulo", "")),
-            "Tradução humana do status do modelo.",
-        )
-
-    st.divider()
-
-    _renderizar_alerta_status(snapshot)
+    _renderizar_cards_resumo_mobile_first(snapshot, simbolo)
 
     st.divider()
 
@@ -904,7 +1036,8 @@ def renderizar_experiencia_usuario_beta(
 
         st.divider()
 
-        _renderizar_checklist_beta()
+        with st.expander("Checklist antes de decidir", expanded=False):
+            _renderizar_checklist_beta()
 
     else:
         _renderizar_mapa_simples_decisao(snapshot)
@@ -924,11 +1057,13 @@ def renderizar_experiencia_usuario_beta(
 
         st.divider()
 
-        _renderizar_checklist_beta()
+        with st.expander("Checklist antes de decidir", expanded=True):
+            _renderizar_checklist_beta()
 
         st.divider()
 
-        _renderizar_resumo_beta(snapshot)
+        with st.expander("Resumo técnico da análise", expanded=False):
+            _renderizar_resumo_beta(snapshot)
 
         st.divider()
 

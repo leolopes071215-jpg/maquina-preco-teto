@@ -1,6 +1,10 @@
 import streamlit as st
 
 
+# VALORIS
+# v3.8.38 — Estilo premium mobile-first
+
+
 def aplicar_estilo():
     st.markdown(
         """
@@ -319,6 +323,154 @@ def aplicar_estilo():
                 padding: 0.95rem;
             }
         }
+        
+
+        /* =====================================================
+           VALORIS v3.8.38 — Mobile-first premium refinements
+           ===================================================== */
+
+        div[data-testid="stVerticalBlock"] {
+            gap: 0.85rem;
+        }
+
+        div[data-testid="stHorizontalBlock"] {
+            gap: 0.95rem;
+        }
+
+        .stMarkdown {
+            overflow-wrap: anywhere;
+        }
+
+        button[kind="secondary"],
+        button[kind="primary"] {
+            min-height: 2.55rem;
+        }
+
+        div[data-testid="stRadio"] > div {
+            gap: 0.45rem;
+        }
+
+        div[data-testid="stRadio"] label {
+            background: rgba(15, 23, 42, 0.70);
+            border: 1px solid rgba(148, 163, 184, 0.15);
+            border-radius: 999px;
+            padding: 0.35rem 0.65rem;
+            transition: all 0.18s ease-in-out;
+        }
+
+        div[data-testid="stRadio"] label:hover {
+            background: rgba(30, 41, 59, 0.92);
+            border-color: rgba(148, 163, 184, 0.32);
+        }
+
+        details {
+            border-radius: 18px !important;
+            border: 1px solid rgba(148, 163, 184, 0.14) !important;
+            background: rgba(15, 23, 42, 0.58) !important;
+        }
+
+        details summary {
+            color: var(--text-main) !important;
+            font-weight: 780 !important;
+        }
+
+        @media (max-width: 900px) {
+            .block-container {
+                padding-top: 0.85rem;
+                padding-left: 0.82rem;
+                padding-right: 0.82rem;
+                padding-bottom: 2.6rem;
+            }
+
+            h1 {
+                font-size: 2rem !important;
+                letter-spacing: -0.05em !important;
+            }
+
+            h2 {
+                font-size: 1.42rem !important;
+            }
+
+            h3 {
+                font-size: 1.16rem !important;
+            }
+
+            p, li, label, span {
+                font-size: 0.94rem;
+                line-height: 1.48;
+            }
+
+            div[data-testid="stMetric"] {
+                border-radius: 16px;
+                padding: 0.82rem 0.86rem;
+                box-shadow: 0 10px 24px rgba(0, 0, 0, 0.18);
+            }
+
+            div[data-testid="stMetricValue"] {
+                font-size: 1.12rem !important;
+            }
+
+            div[data-testid="stAlert"] {
+                border-radius: 15px !important;
+            }
+
+            .stButton > button,
+            .stDownloadButton > button {
+                width: 100%;
+                min-height: 2.8rem;
+            }
+
+            div[data-testid="stTabs"] button[data-baseweb="tab"] {
+                padding: 0.42rem 0.62rem;
+                margin-right: 0.15rem;
+                font-size: 0.84rem;
+            }
+
+            section[data-testid="stSidebar"] {
+                border-right: none;
+            }
+        }
+
+        @media (max-width: 520px) {
+            .block-container {
+                padding-left: 0.72rem;
+                padding-right: 0.72rem;
+            }
+
+            h1 {
+                font-size: 1.82rem !important;
+            }
+
+            h2 {
+                font-size: 1.30rem !important;
+            }
+
+            h3 {
+                font-size: 1.08rem !important;
+            }
+
+            div[data-testid="stMetric"] {
+                margin-bottom: 0.35rem;
+            }
+
+            div[data-testid="stRadio"] > div {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            div[data-testid="stRadio"] label {
+                width: 100%;
+                justify-content: center;
+                border-radius: 16px;
+                padding: 0.55rem 0.70rem;
+            }
+
+            hr {
+                margin-top: 1rem;
+                margin-bottom: 1rem;
+            }
+        }
+
         </style>
         """,
         unsafe_allow_html=True,

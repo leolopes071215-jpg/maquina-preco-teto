@@ -6,11 +6,12 @@ from typing import Any, Dict, List
 import streamlit as st
 
 from lista_espera_beta import renderizar_lista_espera_valoris
+from demo_guiada_valoris import renderizar_demo_guiada_valoris
 
 
 # ============================================================
 # VALORIS
-# v3.8.43 — Landing Page Imersiva de Conversão
+# v3.8.44 — Landing Page com Demonstração Guiada
 # ------------------------------------------------------------
 # Esta tela apresenta a Valoris para usuários públicos.
 #
@@ -23,7 +24,7 @@ from lista_espera_beta import renderizar_lista_espera_valoris
 # ============================================================
 
 
-VERSAO_LANDING_PAGE_BETA = "3.8.43"
+VERSAO_LANDING_PAGE_BETA = "3.8.44"
 
 
 COPY_LANDING = {
@@ -613,6 +614,14 @@ def renderizar_landing_page_beta() -> None:
 
     st.divider()
 
+    renderizar_demo_guiada_valoris(
+        modo_compacto=True,
+        mostrar_cta=False,
+        chave_contexto="landing_page",
+    )
+
+    st.divider()
+
     _renderizar_secao_dores()
 
     st.divider()
@@ -650,7 +659,7 @@ def executar_autoteste_landing_page_beta() -> List[Dict[str, str]]:
     return [
         {
             "teste": "versao_landing",
-            "status": "OK" if VERSAO_LANDING_PAGE_BETA == "3.8.43" else "FALHA",
+            "status": "OK" if VERSAO_LANDING_PAGE_BETA == "3.8.44" else "FALHA",
             "detalhe": VERSAO_LANDING_PAGE_BETA,
         },
         {

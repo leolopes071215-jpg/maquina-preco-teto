@@ -7,7 +7,7 @@ import streamlit as st
 
 # ============================================================
 # VALORIS
-# v3.8.43 — Porta de Entrada Pública da Valoris
+# v3.8.44 — Demonstração Guiada Imersiva
 # ------------------------------------------------------------
 # Este arquivo controla a experiência de navegação do app.
 #
@@ -34,6 +34,7 @@ MODOS_EXIBICAO = [
 
 ABAS_USUARIO_BETA = [
     "Landing Page",
+    "Demonstração",
     "Início",
     "Valuation",
     "Relatórios",
@@ -48,6 +49,7 @@ ABAS_INVESTIDOR_COMPLETO = [
     "Produto",
     "Navegação",
     "Onboarding",
+    "Demonstração",
     "Início",
     "Painel Executivo",
     "Valuation",
@@ -75,6 +77,8 @@ ABAS_FUNDADOR = [
     "Produto",
     "Navegação",
     "Onboarding",
+    "Landing Page",
+    "Demonstração",
     "Início",
     "Painel Executivo",
     "Valuation",
@@ -89,7 +93,6 @@ ABAS_FUNDADOR = [
     "Negócio",
     "Marketing",
     "Conteúdo",
-    "Landing Page",
     "Lançamento",
     "Convite Beta",
     "Release",
@@ -141,7 +144,7 @@ DESCRICAO_MODOS = {
     MODO_USUARIO_BETA: {
         "titulo": "Modo Usuário Beta",
         "descricao": (
-            "Experiência pública de conversão. Começa pela landing page, apresenta a proposta, "
+            "Experiência pública de conversão. Começa pela landing page, passa por uma demonstração guiada, apresenta a proposta, "
             "conduz para demonstração, relatório, convite beta, oferta e feedback."
         ),
         "ideal_para": "Usuários convidados, primeiros beta testers e pessoas sem contexto prévio.",
@@ -244,7 +247,7 @@ def obter_resumo_modos() -> List[Dict[str, str]]:
             "Modo": MODO_USUARIO_BETA,
             "Quantidade de abas": str(len(ABAS_USUARIO_BETA)),
             "Uso ideal": "Teste rápido com usuários reais.",
-            "O que mostra": "Landing page, início guiado, valuation, relatórios, convite beta, oferta, feedback e educação.",
+            "O que mostra": "Landing page, demonstração guiada, início, valuation, relatórios, convite beta, oferta, feedback e educação.",
         },
         {
             "Modo": MODO_INVESTIDOR_COMPLETO,

@@ -7,7 +7,7 @@ import streamlit as st
 
 # ============================================================
 # VALORIS
-# v3.8.50 — Conversão Ética e Oferta Fundador Personalizada
+# v3.8.51 — Laboratório de Growth e Experimentos
 # ------------------------------------------------------------
 # Este arquivo controla a experiência de navegação do app.
 #
@@ -145,6 +145,7 @@ ABAS_FUNDADOR = [
     "Painel Jornada",
     "Painel Ativação",
     "Painel Conversão",
+    "Growth",
     "UX",
     "Multiativos",
     "Ações Brasil",

@@ -7,7 +7,7 @@ import streamlit as st
 
 # ============================================================
 # VALORIS
-# v3.8.45 — Analytics Público e Funil de Conversão
+# v3.8.46 — Trilha Educativa e Missões de Decisão
 # ------------------------------------------------------------
 # Este arquivo controla a experiência de navegação do app.
 #
@@ -35,6 +35,7 @@ MODOS_EXIBICAO = [
 ABAS_USUARIO_BETA = [
     "Landing Page",
     "Demonstração",
+    "Trilha Valoris",
     "Início",
     "Valuation",
     "Relatórios",
@@ -50,6 +51,7 @@ ABAS_INVESTIDOR_COMPLETO = [
     "Navegação",
     "Onboarding",
     "Demonstração",
+    "Trilha Valoris",
     "Início",
     "Painel Executivo",
     "Valuation",
@@ -79,6 +81,7 @@ ABAS_FUNDADOR = [
     "Onboarding",
     "Landing Page",
     "Demonstração",
+    "Trilha Valoris",
     "Início",
     "Painel Executivo",
     "Valuation",
@@ -127,6 +130,7 @@ ABAS_FUNDADOR = [
     "Deploy Público",
     "Dados",
     "Analytics Público",
+    "Painel Trilha",
     "UX",
     "Multiativos",
     "Ações Brasil",
@@ -248,7 +252,7 @@ def obter_resumo_modos() -> List[Dict[str, str]]:
             "Modo": MODO_USUARIO_BETA,
             "Quantidade de abas": str(len(ABAS_USUARIO_BETA)),
             "Uso ideal": "Teste rápido com usuários reais.",
-            "O que mostra": "Landing page, demonstração guiada, início, valuation, relatórios, convite beta, oferta, feedback e educação.",
+            "O que mostra": "Landing page, demonstração guiada, trilha educativa, início, valuation, relatórios, convite beta, oferta, feedback e educação.",
         },
         {
             "Modo": MODO_INVESTIDOR_COMPLETO,

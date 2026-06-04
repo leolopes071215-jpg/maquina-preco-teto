@@ -19,6 +19,7 @@ from marketing import renderizar_central_marketing
 from conteudo_marketing import renderizar_central_conteudo
 from landing_page_beta import renderizar_landing_page_beta
 from demo_guiada_valoris import renderizar_demo_guiada_valoris
+from trilha_educativa_valoris import renderizar_trilha_educativa_valoris, renderizar_painel_trilha_educativa_valoris
 from lancamento_beta import renderizar_lancamento_beta
 from convite_beta_publico import renderizar_convite_beta_publico
 from release_candidate import renderizar_release_candidate_fase1
@@ -115,6 +116,7 @@ aplicar_estilo()
 ABAS_ORDEM_COMPLETA = [
     "Landing Page",
     "Demonstração",
+    "Trilha Valoris",
     "Início",
     "Valuation",
     "Relatórios",
@@ -167,6 +169,7 @@ ABAS_ORDEM_COMPLETA = [
     "Deploy Público",
     "Dados",
     "Analytics Público",
+    "Painel Trilha",
     "UX",
     "Multiativos",
     "Ações Brasil",
@@ -316,7 +319,7 @@ def renderizar_hero(modo_exibicao: str, motor_valuation: str) -> None:
         )
 
         st.caption(
-            "Fluxo público sugerido: Landing Page → Demonstração → Início → Valuation → Relatórios → Convite Beta → Oferta Beta."
+            "Fluxo público sugerido: Landing Page → Demonstração → Trilha Valoris → Início → Valuation → Relatórios → Convite Beta → Oferta Beta."
         )
         return
 
@@ -1102,6 +1105,13 @@ try:
                     chave_contexto="aba_demonstracao",
                 )
 
+            elif nome_aba == "Trilha Valoris":
+                renderizar_trilha_educativa_valoris(
+                    modo_compacto=False,
+                    mostrar_cta=True,
+                    chave_contexto="aba_trilha_valoris",
+                )
+
             elif nome_aba == "Lançamento":
                 renderizar_lancamento_beta()
 
@@ -1203,6 +1213,9 @@ try:
 
             elif nome_aba == "Analytics Público":
                 renderizar_painel_analytics_publico()
+
+            elif nome_aba == "Painel Trilha":
+                renderizar_painel_trilha_educativa_valoris()
 
             elif nome_aba == "UX":
                 renderizar_auditoria_ux()

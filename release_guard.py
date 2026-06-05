@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import argparse
+import ast
 import os
 import py_compile
 import subprocess
@@ -14,7 +15,7 @@ from typing import Iterable, List, Optional
 
 # ============================================================
 # VALORIS
-# v3.8.63 — Guardião de Release com smoke tests da API
+# v3.8.64.1 — Guardião com validação de abas renderizáveis
 # ------------------------------------------------------------
 # Este script ajuda a proteger o projeto antes de fechar versão.
 #
@@ -35,7 +36,7 @@ from typing import Iterable, List, Optional
 # ============================================================
 
 
-VERSAO_RELEASE_GUARD = "3.8.63"
+VERSAO_RELEASE_GUARD = "3.8.64.1"
 
 
 ARQUIVOS_ESSENCIAIS = [
@@ -64,6 +65,7 @@ ARQUIVOS_ESSENCIAIS = [
     "api_contratos_valoris.py",
     "api_scaffold_valoris.py",
     "api_smoke_tests_valoris.py",
+    "api_repository_bridge_valoris.py",
     "validacao_manual_valoris.py",
     "jornada_personalizada_valoris.py",
     "copiloto_valoris.py",
@@ -102,6 +104,7 @@ CSV_LOCAIS_ESPERADOS_NO_GITIGNORE = [
     "valoris_fastapi_blueprint.py",
     "api_valoris/",
     "scripts_api_valoris/",
+    "manifesto_api_bridge_valoris.json",
     "manifesto_api_smoke_valoris.json",
     "manifesto_api_scaffold_valoris.json",
     "openapi_valoris_rascunho.json",
@@ -114,6 +117,7 @@ CSV_LOCAIS_ESPERADOS_NO_GITIGNORE = [
     "decisoes_api_valoris.csv",
     "decisoes_api_scaffold_valoris.csv",
     "decisoes_api_smoke_valoris.csv",
+    "decisoes_api_bridge_valoris.csv",
     "decisoes_repositorios_valoris.csv",
     "decisoes_sqlite_valoris.csv",
     "decisoes_gateway_dados_valoris.csv",
@@ -382,6 +386,67 @@ def verificar_estado_git() -> ResultadoChecagem:
     )
 
 
+
+def _extrair_lista_literal_python(caminho: Path, nome_variavel: str) -> List[str]:
+    try:
+        arvore = ast.parse(caminho.read_text(encoding="utf-8"))
+    except Exception:
+        return []
+
+    for no in arvore.body:
+        if not isinstance(no, ast.Assign):
+            continue
+
+        for alvo in no.targets:
+            if isinstance(alvo, ast.Name) and alvo.id == nome_variavel:
+                try:
+                    valor = ast.literal_eval(no.value)
+                except Exception:
+                    return []
+
+                if isinstance(valor, list):
+                    return [str(item) for item in valor]
+
+    return []
+
+
+def verificar_abas_fundador_renderizaveis(raiz: Path) -> ResultadoChecagem:
+    caminho_app = raiz / "app.py"
+    caminho_modo = raiz / "modo_exibicao.py"
+
+    detalhes: List[str] = []
+
+    abas_ordem = _extrair_lista_literal_python(caminho_app, "ABAS_ORDEM_COMPLETA")
+    abas_fundador = _extrair_lista_literal_python(caminho_modo, "ABAS_FUNDADOR")
+
+    if not abas_ordem:
+        return ResultadoChecagem(
+            nome="Abas renderizáveis",
+            ok=False,
+            detalhes=["Não foi possível ler ABAS_ORDEM_COMPLETA em app.py."],
+        )
+
+    if not abas_fundador:
+        return ResultadoChecagem(
+            nome="Abas renderizáveis",
+            ok=False,
+            detalhes=["Não foi possível ler ABAS_FUNDADOR em modo_exibicao.py."],
+        )
+
+    ausentes = [aba for aba in abas_fundador if aba not in abas_ordem]
+
+    if ausentes:
+        detalhes.append("Abas do modo fundador ausentes em ABAS_ORDEM_COMPLETA:")
+        detalhes.extend([f"- {aba}" for aba in ausentes])
+    else:
+        detalhes.append("Todas as abas do modo fundador estão na ordem global de renderização.")
+
+    return ResultadoChecagem(
+        nome="Abas renderizáveis",
+        ok=len(ausentes) == 0,
+        detalhes=detalhes,
+    )
+
 def verificar_imports_criticos(raiz: Path) -> ResultadoChecagem:
     imports_criticos = {
         "lista_espera_beta.py": [
@@ -449,6 +514,9 @@ def verificar_imports_criticos(raiz: Path) -> ResultadoChecagem:
         "api_smoke_tests_valoris.py": [
             "renderizar_api_smoke_tests_valoris",
         ],
+        "api_repository_bridge_valoris.py": [
+            "renderizar_api_repository_bridge_valoris",
+        ],
     }
 
     problemas = []
@@ -498,6 +566,7 @@ def executar_guardiao_release(strict: bool = False) -> int:
 
     checagens = [
         verificar_arquivos_essenciais(raiz),
+        verificar_abas_fundador_renderizaveis(raiz),
         verificar_imports_criticos(raiz),
         verificar_compilacao_python(raiz),
         verificar_arquivos_temporarios(raiz),

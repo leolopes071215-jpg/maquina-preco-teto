@@ -7,7 +7,7 @@ import streamlit as st
 
 # ============================================================
 # VALORIS
-# v3.8.63 — Smoke Tests da API Local
+# v3.8.64.1 — Correção de exibição das abas técnicas
 # ------------------------------------------------------------
 # Este arquivo controla a experiência de navegação do app.
 #
@@ -158,6 +158,7 @@ ABAS_FUNDADOR = [
     "API",
     "API Scaffold",
     "API Smoke",
+    "API Bridge",
     "UX",
     "Multiativos",
     "Ações Brasil",

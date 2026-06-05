@@ -7,7 +7,7 @@ import streamlit as st
 
 # ============================================================
 # VALORIS
-# v3.8.59 — Repositórios de Dados e Adapter Strategy
+# v3.8.60 — Preparação PostgreSQL/Supabase
 # ------------------------------------------------------------
 # Este arquivo controla a experiência de navegação do app.
 #
@@ -154,6 +154,7 @@ ABAS_FUNDADOR = [
     "Gateway Dados",
     "SQLite Piloto",
     "Repositórios",
+    "PostgreSQL",
     "UX",
     "Multiativos",
     "Ações Brasil",

@@ -7,7 +7,7 @@ import streamlit as st
 
 # ============================================================
 # VALORIS
-# v3.8.57 — Gateway de Dados e Contratos de Tabelas
+# v3.8.58 — Piloto SQLite e Repositório Local
 # ------------------------------------------------------------
 # Este arquivo controla a experiência de navegação do app.
 #
@@ -152,6 +152,7 @@ ABAS_FUNDADOR = [
     "Arquitetura",
     "Camada Dados",
     "Gateway Dados",
+    "SQLite Piloto",
     "UX",
     "Multiativos",
     "Ações Brasil",

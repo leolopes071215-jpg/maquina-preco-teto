@@ -7,7 +7,7 @@ import streamlit as st
 
 # ============================================================
 # VALORIS
-# v3.8.61 — Blueprint FastAPI e Contratos de Endpoints
+# v3.8.63 — Smoke Tests da API Local
 # ------------------------------------------------------------
 # Este arquivo controla a experiência de navegação do app.
 #
@@ -156,6 +156,8 @@ ABAS_FUNDADOR = [
     "Repositórios",
     "PostgreSQL",
     "API",
+    "API Scaffold",
+    "API Smoke",
     "UX",
     "Multiativos",
     "Ações Brasil",

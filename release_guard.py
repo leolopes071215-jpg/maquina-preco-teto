@@ -14,7 +14,7 @@ from typing import Iterable, List, Optional
 
 # ============================================================
 # VALORIS
-# v3.8.61 — Guardião de Release com contratos de API
+# v3.8.63 — Guardião de Release com smoke tests da API
 # ------------------------------------------------------------
 # Este script ajuda a proteger o projeto antes de fechar versão.
 #
@@ -35,7 +35,7 @@ from typing import Iterable, List, Optional
 # ============================================================
 
 
-VERSAO_RELEASE_GUARD = "3.8.61"
+VERSAO_RELEASE_GUARD = "3.8.63"
 
 
 ARQUIVOS_ESSENCIAIS = [
@@ -62,6 +62,8 @@ ARQUIVOS_ESSENCIAIS = [
     "repositorios_valoris.py",
     "postgres_supabase_valoris.py",
     "api_contratos_valoris.py",
+    "api_scaffold_valoris.py",
+    "api_smoke_tests_valoris.py",
     "validacao_manual_valoris.py",
     "jornada_personalizada_valoris.py",
     "copiloto_valoris.py",
@@ -98,6 +100,10 @@ CSV_LOCAIS_ESPERADOS_NO_GITIGNORE = [
     "manifesto_repositorios_valoris.json",
     "valoris_schema_postgres_supabase.sql",
     "valoris_fastapi_blueprint.py",
+    "api_valoris/",
+    "scripts_api_valoris/",
+    "manifesto_api_smoke_valoris.json",
+    "manifesto_api_scaffold_valoris.json",
     "openapi_valoris_rascunho.json",
     "manifesto_api_valoris.json",
     ".env.example.valoris",
@@ -106,6 +112,8 @@ CSV_LOCAIS_ESPERADOS_NO_GITIGNORE = [
     "logs_repositorios_valoris.csv",
     "decisoes_postgres_supabase_valoris.csv",
     "decisoes_api_valoris.csv",
+    "decisoes_api_scaffold_valoris.csv",
+    "decisoes_api_smoke_valoris.csv",
     "decisoes_repositorios_valoris.csv",
     "decisoes_sqlite_valoris.csv",
     "decisoes_gateway_dados_valoris.csv",
@@ -434,6 +442,12 @@ def verificar_imports_criticos(raiz: Path) -> ResultadoChecagem:
         ],
         "api_contratos_valoris.py": [
             "renderizar_api_contratos_valoris",
+        ],
+        "api_scaffold_valoris.py": [
+            "renderizar_api_scaffold_valoris",
+        ],
+        "api_smoke_tests_valoris.py": [
+            "renderizar_api_smoke_tests_valoris",
         ],
     }
 

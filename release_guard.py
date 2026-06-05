@@ -14,7 +14,7 @@ from typing import Iterable, List, Optional
 
 # ============================================================
 # VALORIS
-# v3.8.60 — Guardião de Release com preparação PostgreSQL
+# v3.8.61 — Guardião de Release com contratos de API
 # ------------------------------------------------------------
 # Este script ajuda a proteger o projeto antes de fechar versão.
 #
@@ -35,7 +35,7 @@ from typing import Iterable, List, Optional
 # ============================================================
 
 
-VERSAO_RELEASE_GUARD = "3.8.60"
+VERSAO_RELEASE_GUARD = "3.8.61"
 
 
 ARQUIVOS_ESSENCIAIS = [
@@ -61,6 +61,7 @@ ARQUIVOS_ESSENCIAIS = [
     "piloto_sqlite_valoris.py",
     "repositorios_valoris.py",
     "postgres_supabase_valoris.py",
+    "api_contratos_valoris.py",
     "validacao_manual_valoris.py",
     "jornada_personalizada_valoris.py",
     "copiloto_valoris.py",
@@ -96,11 +97,15 @@ CSV_LOCAIS_ESPERADOS_NO_GITIGNORE = [
     "manifesto_sqlite_valoris.json",
     "manifesto_repositorios_valoris.json",
     "valoris_schema_postgres_supabase.sql",
+    "valoris_fastapi_blueprint.py",
+    "openapi_valoris_rascunho.json",
+    "manifesto_api_valoris.json",
     ".env.example.valoris",
     "manifesto_postgres_supabase_valoris.json",
     "logs_sqlite_valoris.csv",
     "logs_repositorios_valoris.csv",
     "decisoes_postgres_supabase_valoris.csv",
+    "decisoes_api_valoris.csv",
     "decisoes_repositorios_valoris.csv",
     "decisoes_sqlite_valoris.csv",
     "decisoes_gateway_dados_valoris.csv",
@@ -426,6 +431,9 @@ def verificar_imports_criticos(raiz: Path) -> ResultadoChecagem:
         ],
         "postgres_supabase_valoris.py": [
             "renderizar_postgres_supabase_valoris",
+        ],
+        "api_contratos_valoris.py": [
+            "renderizar_api_contratos_valoris",
         ],
     }
 

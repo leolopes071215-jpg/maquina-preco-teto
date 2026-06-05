@@ -7,7 +7,7 @@ import streamlit as st
 
 # ============================================================
 # VALORIS
-# v3.8.60 — Preparação PostgreSQL/Supabase
+# v3.8.61 — Blueprint FastAPI e Contratos de Endpoints
 # ------------------------------------------------------------
 # Este arquivo controla a experiência de navegação do app.
 #
@@ -155,6 +155,7 @@ ABAS_FUNDADOR = [
     "SQLite Piloto",
     "Repositórios",
     "PostgreSQL",
+    "API",
     "UX",
     "Multiativos",
     "Ações Brasil",

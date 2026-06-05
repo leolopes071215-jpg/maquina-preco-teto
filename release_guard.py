@@ -14,7 +14,7 @@ from typing import Iterable, List, Optional
 
 # ============================================================
 # VALORIS
-# v3.8.56 — Guardião de Release com camada de dados
+# v3.8.57 — Guardião de Release com gateway de dados
 # ------------------------------------------------------------
 # Este script ajuda a proteger o projeto antes de fechar versão.
 #
@@ -35,7 +35,7 @@ from typing import Iterable, List, Optional
 # ============================================================
 
 
-VERSAO_RELEASE_GUARD = "3.8.56"
+VERSAO_RELEASE_GUARD = "3.8.57"
 
 
 ARQUIVOS_ESSENCIAIS = [
@@ -57,6 +57,7 @@ ARQUIVOS_ESSENCIAIS = [
     "maturidade_produto_valoris.py",
     "arquitetura_transicao_valoris.py",
     "camada_dados_valoris.py",
+    "gateway_dados_valoris.py",
     "validacao_manual_valoris.py",
     "jornada_personalizada_valoris.py",
     "copiloto_valoris.py",
@@ -87,6 +88,8 @@ CSV_LOCAIS_ESPERADOS_NO_GITIGNORE = [
     "decisoes_maturidade_valoris.csv",
     "decisoes_arquitetura_valoris.csv",
     "decisoes_dados_valoris.csv",
+    "logs_gateway_dados_valoris.csv",
+    "decisoes_gateway_dados_valoris.csv",
     "validacoes_manuais_valoris.csv",
     "jornadas_personalizadas_valoris.csv",
     "diagnosticos_copiloto_valoris.csv",
@@ -397,6 +400,9 @@ def verificar_imports_criticos(raiz: Path) -> ResultadoChecagem:
         ],
         "camada_dados_valoris.py": [
             "renderizar_camada_dados_valoris",
+        ],
+        "gateway_dados_valoris.py": [
+            "renderizar_gateway_dados_valoris",
         ],
     }
 

@@ -7,7 +7,7 @@ import streamlit as st
 
 # ============================================================
 # VALORIS
-# v3.8.56 — Camada de Dados e Preparação para Banco
+# v3.8.57 — Gateway de Dados e Contratos de Tabelas
 # ------------------------------------------------------------
 # Este arquivo controla a experiência de navegação do app.
 #
@@ -151,6 +151,7 @@ ABAS_FUNDADOR = [
     "Maturidade",
     "Arquitetura",
     "Camada Dados",
+    "Gateway Dados",
     "UX",
     "Multiativos",
     "Ações Brasil",

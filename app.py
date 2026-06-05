@@ -30,6 +30,7 @@ from central_fundadores_valoris import renderizar_central_fundadores_valoris
 from maturidade_produto_valoris import renderizar_maturidade_produto_valoris
 from arquitetura_transicao_valoris import renderizar_arquitetura_transicao_valoris
 from camada_dados_valoris import renderizar_camada_dados_valoris
+from gateway_dados_valoris import renderizar_gateway_dados_valoris
 from lancamento_beta import renderizar_lancamento_beta
 from convite_beta_publico import renderizar_convite_beta_publico
 from release_candidate import renderizar_release_candidate_fase1
@@ -1296,6 +1297,9 @@ try:
 
             elif nome_aba == "Camada Dados":
                 renderizar_camada_dados_valoris()
+
+            elif nome_aba == "Gateway Dados":
+                renderizar_gateway_dados_valoris()
 
             elif nome_aba == "UX":
                 renderizar_auditoria_ux()

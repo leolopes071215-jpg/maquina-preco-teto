@@ -7,7 +7,7 @@ import streamlit as st
 
 # ============================================================
 # VALORIS
-# v3.8.55 — Blueprint de Arquitetura e Transição Técnica
+# v3.8.56 — Camada de Dados e Preparação para Banco
 # ------------------------------------------------------------
 # Este arquivo controla a experiência de navegação do app.
 #
@@ -150,6 +150,7 @@ ABAS_FUNDADOR = [
     "Fundadores",
     "Maturidade",
     "Arquitetura",
+    "Camada Dados",
     "UX",
     "Multiativos",
     "Ações Brasil",

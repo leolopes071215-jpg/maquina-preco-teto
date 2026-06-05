@@ -32,6 +32,7 @@ from arquitetura_transicao_valoris import renderizar_arquitetura_transicao_valor
 from camada_dados_valoris import renderizar_camada_dados_valoris
 from gateway_dados_valoris import renderizar_gateway_dados_valoris
 from piloto_sqlite_valoris import renderizar_piloto_sqlite_valoris
+from repositorios_valoris import renderizar_repositorios_valoris
 from lancamento_beta import renderizar_lancamento_beta
 from convite_beta_publico import renderizar_convite_beta_publico
 from release_candidate import renderizar_release_candidate_fase1
@@ -1304,6 +1305,9 @@ try:
 
             elif nome_aba == "SQLite Piloto":
                 renderizar_piloto_sqlite_valoris()
+
+            elif nome_aba == "Repositórios":
+                renderizar_repositorios_valoris()
 
             elif nome_aba == "UX":
                 renderizar_auditoria_ux()

@@ -7,7 +7,7 @@ import streamlit as st
 
 # ============================================================
 # VALORIS
-# v3.8.58 — Piloto SQLite e Repositório Local
+# v3.8.59 — Repositórios de Dados e Adapter Strategy
 # ------------------------------------------------------------
 # Este arquivo controla a experiência de navegação do app.
 #
@@ -153,6 +153,7 @@ ABAS_FUNDADOR = [
     "Camada Dados",
     "Gateway Dados",
     "SQLite Piloto",
+    "Repositórios",
     "UX",
     "Multiativos",
     "Ações Brasil",

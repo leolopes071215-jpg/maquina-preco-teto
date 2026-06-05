@@ -14,7 +14,7 @@ from typing import Iterable, List, Optional
 
 # ============================================================
 # VALORIS
-# v3.8.58 — Guardião de Release com piloto SQLite
+# v3.8.59 — Guardião de Release com repositórios de dados
 # ------------------------------------------------------------
 # Este script ajuda a proteger o projeto antes de fechar versão.
 #
@@ -35,7 +35,7 @@ from typing import Iterable, List, Optional
 # ============================================================
 
 
-VERSAO_RELEASE_GUARD = "3.8.58"
+VERSAO_RELEASE_GUARD = "3.8.59"
 
 
 ARQUIVOS_ESSENCIAIS = [
@@ -59,6 +59,7 @@ ARQUIVOS_ESSENCIAIS = [
     "camada_dados_valoris.py",
     "gateway_dados_valoris.py",
     "piloto_sqlite_valoris.py",
+    "repositorios_valoris.py",
     "validacao_manual_valoris.py",
     "jornada_personalizada_valoris.py",
     "copiloto_valoris.py",
@@ -92,7 +93,10 @@ CSV_LOCAIS_ESPERADOS_NO_GITIGNORE = [
     "logs_gateway_dados_valoris.csv",
     "valoris_local_piloto.db",
     "manifesto_sqlite_valoris.json",
+    "manifesto_repositorios_valoris.json",
     "logs_sqlite_valoris.csv",
+    "logs_repositorios_valoris.csv",
+    "decisoes_repositorios_valoris.csv",
     "decisoes_sqlite_valoris.csv",
     "decisoes_gateway_dados_valoris.csv",
     "validacoes_manuais_valoris.csv",
@@ -411,6 +415,9 @@ def verificar_imports_criticos(raiz: Path) -> ResultadoChecagem:
         ],
         "piloto_sqlite_valoris.py": [
             "renderizar_piloto_sqlite_valoris",
+        ],
+        "repositorios_valoris.py": [
+            "renderizar_repositorios_valoris",
         ],
     }
 

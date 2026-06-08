@@ -7,7 +7,7 @@ import streamlit as st
 
 # ============================================================
 # VALORIS
-# v3.8.64.1 — Correção de exibição das abas técnicas
+# v3.8.65 — Testes Automatizados da API
 # ------------------------------------------------------------
 # Este arquivo controla a experiência de navegação do app.
 #
@@ -159,6 +159,7 @@ ABAS_FUNDADOR = [
     "API Scaffold",
     "API Smoke",
     "API Bridge",
+    "API Tests",
     "UX",
     "Multiativos",
     "Ações Brasil",

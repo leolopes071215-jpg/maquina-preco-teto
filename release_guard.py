@@ -15,7 +15,7 @@ from typing import Iterable, List, Optional
 
 # ============================================================
 # VALORIS
-# v3.8.64.1 — Guardião com validação de abas renderizáveis
+# v3.8.65 — Guardião com testes automatizados da API
 # ------------------------------------------------------------
 # Este script ajuda a proteger o projeto antes de fechar versão.
 #
@@ -36,7 +36,7 @@ from typing import Iterable, List, Optional
 # ============================================================
 
 
-VERSAO_RELEASE_GUARD = "3.8.64.1"
+VERSAO_RELEASE_GUARD = "3.8.65"
 
 
 ARQUIVOS_ESSENCIAIS = [
@@ -66,6 +66,7 @@ ARQUIVOS_ESSENCIAIS = [
     "api_scaffold_valoris.py",
     "api_smoke_tests_valoris.py",
     "api_repository_bridge_valoris.py",
+    "api_endpoint_tests_valoris.py",
     "validacao_manual_valoris.py",
     "jornada_personalizada_valoris.py",
     "copiloto_valoris.py",
@@ -105,6 +106,8 @@ CSV_LOCAIS_ESPERADOS_NO_GITIGNORE = [
     "api_valoris/",
     "scripts_api_valoris/",
     "manifesto_api_bridge_valoris.json",
+    "relatorio_api_tests_valoris.json",
+    "manifesto_api_tests_valoris.json",
     "manifesto_api_smoke_valoris.json",
     "manifesto_api_scaffold_valoris.json",
     "openapi_valoris_rascunho.json",
@@ -118,6 +121,7 @@ CSV_LOCAIS_ESPERADOS_NO_GITIGNORE = [
     "decisoes_api_scaffold_valoris.csv",
     "decisoes_api_smoke_valoris.csv",
     "decisoes_api_bridge_valoris.csv",
+    "decisoes_api_tests_valoris.csv",
     "decisoes_repositorios_valoris.csv",
     "decisoes_sqlite_valoris.csv",
     "decisoes_gateway_dados_valoris.csv",
@@ -516,6 +520,9 @@ def verificar_imports_criticos(raiz: Path) -> ResultadoChecagem:
         ],
         "api_repository_bridge_valoris.py": [
             "renderizar_api_repository_bridge_valoris",
+        ],
+        "api_endpoint_tests_valoris.py": [
+            "renderizar_api_endpoint_tests_valoris",
         ],
     }
 

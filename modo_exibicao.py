@@ -7,7 +7,7 @@ import streamlit as st
 
 # ============================================================
 # VALORIS
-# v3.8.66 — Bridge API para SQLite Local
+# v3.8.67 — Adapter Selecionável CSV/SQLite
 # ------------------------------------------------------------
 # Este arquivo controla a experiência de navegação do app.
 #
@@ -161,6 +161,7 @@ ABAS_FUNDADOR = [
     "API Bridge",
     "API Tests",
     "API SQLite",
+    "API Adapter",
     "UX",
     "Multiativos",
     "Ações Brasil",

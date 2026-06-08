@@ -7,7 +7,7 @@ import streamlit as st
 
 # ============================================================
 # VALORIS
-# v3.8.68 — Proteção Local com API Key
+# v3.8.69 — Painel de Segurança da API
 # ------------------------------------------------------------
 # Este arquivo controla a experiência de navegação do app.
 #
@@ -163,6 +163,7 @@ ABAS_FUNDADOR = [
     "API SQLite",
     "API Adapter",
     "API Security",
+    "API Security Panel",
     "UX",
     "Multiativos",
     "Ações Brasil",

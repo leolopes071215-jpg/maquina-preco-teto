@@ -7,7 +7,7 @@ import streamlit as st
 
 # ============================================================
 # VALORIS
-# v3.8.65 — Testes Automatizados da API
+# v3.8.66 — Bridge API para SQLite Local
 # ------------------------------------------------------------
 # Este arquivo controla a experiência de navegação do app.
 #
@@ -160,6 +160,7 @@ ABAS_FUNDADOR = [
     "API Smoke",
     "API Bridge",
     "API Tests",
+    "API SQLite",
     "UX",
     "Multiativos",
     "Ações Brasil",

@@ -1,4 +1,4 @@
-# api_endpoint_tests_valoris.py
+﻿# api_endpoint_tests_valoris.py
 
 from __future__ import annotations
 
@@ -22,19 +22,19 @@ from api_smoke_tests_valoris import (
 
 # ============================================================
 # VALORIS
-# v3.8.65 — Testes Automatizados da API e Qualidade dos Endpoints
+# v3.8.65 â€” Testes Automatizados da API e Qualidade dos Endpoints
 # ------------------------------------------------------------
-# Esta etapa transforma a API local em algo testável.
+# Esta etapa transforma a API local em algo testÃ¡vel.
 #
 # Objetivo:
 # - testar GET /health;
 # - testar POST /leads;
 # - testar GET /leads;
 # - testar POST /events;
-# - testar payload inválido em /leads;
-# - confirmar gravação em CSV real;
+# - testar payload invÃ¡lido em /leads;
+# - confirmar gravaÃ§Ã£o em CSV real;
 # - gerar scripts locais de teste;
-# - salvar manifesto e decisão de qualidade.
+# - salvar manifesto e decisÃ£o de qualidade.
 # ============================================================
 
 
@@ -64,8 +64,8 @@ CAMPOS_DECISAO_API_TESTS = [
     "observacoes",
 ]
 
-SCRIPT_ENDPOINTS_PY = 'from __future__ import annotations\n\nimport json\nimport sys\nimport urllib.error\nimport urllib.request\nfrom datetime import datetime\nfrom pathlib import Path\nfrom uuid import uuid4\n\n\nAPI_URL = "http://127.0.0.1:8000"\nLEADS_CSV = Path("../lista_espera_beta.csv").resolve()\nEVENTS_CSV = Path("../eventos_publicos_valoris.csv").resolve()\n\n\ndef request_json(method: str, path: str, payload: dict | None = None, timeout: float = 4.0) -> dict:\n    url = API_URL + path\n    data = None\n    headers = {"Content-Type": "application/json"}\n\n    if payload is not None:\n        data = json.dumps(payload).encode("utf-8")\n\n    req = urllib.request.Request(url, data=data, headers=headers, method=method)\n\n    try:\n        with urllib.request.urlopen(req, timeout=timeout) as res:\n            body = res.read().decode("utf-8", errors="ignore")\n            return {\n                "ok": 200 <= res.status < 300,\n                "status_code": res.status,\n                "data": json.loads(body) if body else {},\n                "error": "",\n            }\n    except urllib.error.HTTPError as err:\n        body = err.read().decode("utf-8", errors="ignore")\n        try:\n            parsed = json.loads(body) if body else {}\n        except Exception:\n            parsed = {"raw": body}\n\n        return {\n            "ok": False,\n            "status_code": err.code,\n            "data": parsed,\n            "error": str(err),\n        }\n    except Exception as err:\n        return {\n            "ok": False,\n            "status_code": None,\n            "data": {},\n            "error": str(err),\n        }\n\n\ndef file_contains(path: Path, text: str) -> bool:\n    if not path.exists():\n        return False\n    return text in path.read_text(encoding="utf-8", errors="ignore")\n\n\ndef main() -> int:\n    unique = str(uuid4())[:8]\n    contato = f"qa+{unique}@valoris.local"\n    evento_nome = f"api_endpoint_test_{unique}"\n\n    tests = []\n\n    health = request_json("GET", "/health")\n    tests.append({\n        "teste": "GET /health",\n        "ok": health["ok"] and health["data"].get("status") == "ok",\n        "status_code": health["status_code"],\n        "detalhe": health,\n    })\n\n    lead_payload = {\n        "nome": f"Lead QA {unique}",\n        "contato": contato,\n        "perfil": "qa",\n        "principal_dor": "validar endpoint",\n        "plano_interesse": "beta",\n        "preco_aceitavel": "teste",\n        "pagaria_agora": "nao",\n        "comentario": "teste automatizado v3.8.65",\n    }\n\n    post_lead = request_json("POST", "/leads", lead_payload)\n    tests.append({\n        "teste": "POST /leads",\n        "ok": post_lead["ok"] and post_lead["data"].get("ok") is True,\n        "status_code": post_lead["status_code"],\n        "detalhe": post_lead,\n    })\n\n    get_leads = request_json("GET", "/leads")\n    leads_payload = json.dumps(get_leads["data"], ensure_ascii=False)\n    tests.append({\n        "teste": "GET /leads encontra lead criado",\n        "ok": get_leads["ok"] and contato in leads_payload,\n        "status_code": get_leads["status_code"],\n        "detalhe": {"contato": contato},\n    })\n\n    tests.append({\n        "teste": "CSV lista_espera_beta contém lead",\n        "ok": file_contains(LEADS_CSV, contato),\n        "status_code": None,\n        "detalhe": {"arquivo": str(LEADS_CSV), "contato": contato},\n    })\n\n    event_payload = {\n        "sessao_id": unique,\n        "evento": evento_nome,\n        "origem": "api-tests",\n        "contexto": "v3.8.65",\n        "perfil": "qa",\n        "valor": "1",\n        "detalhe": "teste automatizado de evento",\n    }\n\n    post_event = request_json("POST", "/events", event_payload)\n    tests.append({\n        "teste": "POST /events",\n        "ok": post_event["ok"] and post_event["data"].get("ok") is True,\n        "status_code": post_event["status_code"],\n        "detalhe": post_event,\n    })\n\n    tests.append({\n        "teste": "CSV eventos_publicos_valoris contém evento",\n        "ok": file_contains(EVENTS_CSV, evento_nome),\n        "status_code": None,\n        "detalhe": {"arquivo": str(EVENTS_CSV), "evento": evento_nome},\n    })\n\n    invalid = request_json("POST", "/leads", {"nome": "Payload Inválido"})\n    tests.append({\n        "teste": "POST /leads inválido retorna erro 422",\n        "ok": invalid["status_code"] == 422,\n        "status_code": invalid["status_code"],\n        "detalhe": invalid,\n    })\n\n    ok_count = len([test for test in tests if test["ok"]])\n    total = len(tests)\n\n    summary = {\n        "generated_at": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),\n        "ok": ok_count == total,\n        "ok_count": ok_count,\n        "total": total,\n        "tests": tests,\n    }\n\n    print(json.dumps(summary, ensure_ascii=False, indent=2))\n    return 0 if summary["ok"] else 1\n\n\nif __name__ == "__main__":\n    sys.exit(main())'
-SCRIPT_ENDPOINTS_PS1 = '# Testes de endpoints da API Valoris\n# Pré-requisito: API rodando em outro terminal.\n# Execute na raiz do projeto:\n# .\\scripts_api_valoris\\testar_endpoints_api_valoris.ps1\n\nSet-Location "$PSScriptRoot\\.."\n\nif (!(Test-Path ".\\scripts_api_valoris\\testar_endpoints_api_valoris.py")) {\n    Write-Host "Script Python de testes não encontrado. Gere novamente pela aba API Tests." -ForegroundColor Red\n    exit 1\n}\n\npython .\\scripts_api_valoris\\testar_endpoints_api_valoris.py'
+SCRIPT_ENDPOINTS_PY = 'from __future__ import annotations\n\nimport json\nimport sys\nimport urllib.error\nimport urllib.request\nfrom datetime import datetime\nfrom pathlib import Path\nfrom uuid import uuid4\n\n\nAPI_URL = "http://127.0.0.1:8000"\nLEADS_CSV = Path("lista_espera_beta.csv").resolve()\nEVENTS_CSV = Path("eventos_publicos_valoris.csv").resolve()\n\n\ndef request_json(method: str, path: str, payload: dict | None = None, timeout: float = 4.0) -> dict:\n    url = API_URL + path\n    data = None\n    headers = {"Content-Type": "application/json"}\n\n    if payload is not None:\n        data = json.dumps(payload).encode("utf-8")\n\n    req = urllib.request.Request(url, data=data, headers=headers, method=method)\n\n    try:\n        with urllib.request.urlopen(req, timeout=timeout) as res:\n            body = res.read().decode("utf-8", errors="ignore")\n            return {\n                "ok": 200 <= res.status < 300,\n                "status_code": res.status,\n                "data": json.loads(body) if body else {},\n                "error": "",\n            }\n    except urllib.error.HTTPError as err:\n        body = err.read().decode("utf-8", errors="ignore")\n        try:\n            parsed = json.loads(body) if body else {}\n        except Exception:\n            parsed = {"raw": body}\n\n        return {\n            "ok": False,\n            "status_code": err.code,\n            "data": parsed,\n            "error": str(err),\n        }\n    except Exception as err:\n        return {\n            "ok": False,\n            "status_code": None,\n            "data": {},\n            "error": str(err),\n        }\n\n\ndef file_contains(path: Path, text: str) -> bool:\n    if not path.exists():\n        return False\n    return text in path.read_text(encoding="utf-8", errors="ignore")\n\n\ndef main() -> int:\n    unique = str(uuid4())[:8]\n    contato = f"qa+{unique}@valoris.local"\n    evento_nome = f"api_endpoint_test_{unique}"\n\n    tests = []\n\n    health = request_json("GET", "/health")\n    tests.append({\n        "teste": "GET /health",\n        "ok": health["ok"] and health["data"].get("status") == "ok",\n        "status_code": health["status_code"],\n        "detalhe": health,\n    })\n\n    lead_payload = {\n        "nome": f"Lead QA {unique}",\n        "contato": contato,\n        "perfil": "qa",\n        "principal_dor": "validar endpoint",\n        "plano_interesse": "beta",\n        "preco_aceitavel": "teste",\n        "pagaria_agora": "nao",\n        "comentario": "teste automatizado v3.8.65",\n    }\n\n    post_lead = request_json("POST", "/leads", lead_payload)\n    tests.append({\n        "teste": "POST /leads",\n        "ok": post_lead["ok"] and post_lead["data"].get("ok") is True,\n        "status_code": post_lead["status_code"],\n        "detalhe": post_lead,\n    })\n\n    get_leads = request_json("GET", "/leads")\n    leads_payload = json.dumps(get_leads["data"], ensure_ascii=False)\n    tests.append({\n        "teste": "GET /leads encontra lead criado",\n        "ok": get_leads["ok"] and contato in leads_payload,\n        "status_code": get_leads["status_code"],\n        "detalhe": {"contato": contato},\n    })\n\n    tests.append({\n        "teste": "CSV lista_espera_beta contÃ©m lead",\n        "ok": file_contains(LEADS_CSV, contato),\n        "status_code": None,\n        "detalhe": {"arquivo": str(LEADS_CSV), "contato": contato},\n    })\n\n    event_payload = {\n        "sessao_id": unique,\n        "evento": evento_nome,\n        "origem": "api-tests",\n        "contexto": "v3.8.65",\n        "perfil": "qa",\n        "valor": "1",\n        "detalhe": "teste automatizado de evento",\n    }\n\n    post_event = request_json("POST", "/events", event_payload)\n    tests.append({\n        "teste": "POST /events",\n        "ok": post_event["ok"] and post_event["data"].get("ok") is True,\n        "status_code": post_event["status_code"],\n        "detalhe": post_event,\n    })\n\n    tests.append({\n        "teste": "CSV eventos_publicos_valoris contÃ©m evento",\n        "ok": file_contains(EVENTS_CSV, evento_nome),\n        "status_code": None,\n        "detalhe": {"arquivo": str(EVENTS_CSV), "evento": evento_nome},\n    })\n\n    invalid = request_json("POST", "/leads", {"nome": "Payload InvÃ¡lido"})\n    tests.append({\n        "teste": "POST /leads invÃ¡lido retorna erro 422",\n        "ok": invalid["status_code"] == 422,\n        "status_code": invalid["status_code"],\n        "detalhe": invalid,\n    })\n\n    ok_count = len([test for test in tests if test["ok"]])\n    total = len(tests)\n\n    summary = {\n        "generated_at": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),\n        "ok": ok_count == total,\n        "ok_count": ok_count,\n        "total": total,\n        "tests": tests,\n    }\n\n    print(json.dumps(summary, ensure_ascii=False, indent=2))\n    return 0 if summary["ok"] else 1\n\n\nif __name__ == "__main__":\n    sys.exit(main())'
+SCRIPT_ENDPOINTS_PS1 = '# Testes de endpoints da API Valoris\n# PrÃ©-requisito: API rodando em outro terminal.\n# Execute na raiz do projeto:\n# .\\scripts_api_valoris\\testar_endpoints_api_valoris.ps1\n\nSet-Location "$PSScriptRoot\\.."\n\nif (!(Test-Path ".\\scripts_api_valoris\\testar_endpoints_api_valoris.py")) {\n    Write-Host "Script Python de testes nÃ£o encontrado. Gere novamente pela aba API Tests." -ForegroundColor Red\n    exit 1\n}\n\npython .\\scripts_api_valoris\\testar_endpoints_api_valoris.py'
 
 
 def _limpar_texto(valor: Any) -> str:
@@ -220,7 +220,7 @@ def executar_suite_endpoint_tests() -> Dict[str, Any]:
 
     testes.append(
         {
-            "teste": "CSV lista_espera_beta contém lead",
+            "teste": "CSV lista_espera_beta contÃ©m lead",
             "ok": _arquivo_contem(CAMINHO_LEADS_CSV, contato),
             "status_code": None,
             "detalhe": {"arquivo": str(CAMINHO_LEADS_CSV), "contato": contato},
@@ -249,17 +249,17 @@ def executar_suite_endpoint_tests() -> Dict[str, Any]:
 
     testes.append(
         {
-            "teste": "CSV eventos_publicos_valoris contém evento",
+            "teste": "CSV eventos_publicos_valoris contÃ©m evento",
             "ok": _arquivo_contem(CAMINHO_EVENTS_CSV, evento_nome),
             "status_code": None,
             "detalhe": {"arquivo": str(CAMINHO_EVENTS_CSV), "evento": evento_nome},
         }
     )
 
-    invalid = _request_json("POST", "/leads", {"nome": "Payload Inválido"})
+    invalid = _request_json("POST", "/leads", {"nome": "Payload InvÃ¡lido"})
     testes.append(
         {
-            "teste": "POST /leads inválido retorna erro 422",
+            "teste": "POST /leads invÃ¡lido retorna erro 422",
             "ok": invalid["status_code"] == 422,
             "status_code": invalid["status_code"],
             "detalhe": invalid,
@@ -341,15 +341,15 @@ def calcular_saude_api_endpoint_tests() -> Dict[str, Any]:
 
     if score >= 85 and ultima_suite_ok:
         decisao = "API aprovada nos testes automatizados"
-        proximo_passo = "Avançar para bridge API → SQLite sem quebrar contratos atuais."
+        proximo_passo = "AvanÃ§ar para bridge API â†’ SQLite sem quebrar contratos atuais."
     elif score >= 70 and health["health_ok"]:
         decisao = "API pronta para executar suite completa"
         proximo_passo = "Execute a suite de endpoints e confirme POST /events, POST /leads e GET /leads."
     elif score >= 50:
-        decisao = "API parcialmente testável"
-        proximo_passo = "Rode a API local e gere os scripts de teste antes de avançar."
+        decisao = "API parcialmente testÃ¡vel"
+        proximo_passo = "Rode a API local e gere os scripts de teste antes de avanÃ§ar."
     else:
-        decisao = "API ainda não validada"
+        decisao = "API ainda nÃ£o validada"
         proximo_passo = "Rode a API local e execute os testes automatizados."
 
     return {
@@ -381,7 +381,7 @@ def gerar_manifesto_api_tests() -> Dict[str, Any]:
             "POST /leads",
             "GET /leads",
             "POST /events",
-            "POST /leads inválido",
+            "POST /leads invÃ¡lido",
         ],
         "arquivos_de_dados": [
             str(CAMINHO_LEADS_CSV),
@@ -407,29 +407,29 @@ def _gerar_markdown_api_tests(saude: Dict[str, Any]) -> str:
 
     linhas_testes = "\n".join(
         [
-            f"- {'✅' if item.get('ok') else '❌'} {item.get('teste')} — status: {item.get('status_code')}"
+            f"- {'âœ…' if item.get('ok') else 'âŒ'} {item.get('teste')} â€” status: {item.get('status_code')}"
             for item in testes
         ]
     ) or "- Nenhuma suite executada ainda."
 
-    return f"""# Testes Automatizados da API — Valoris
+    return f"""# Testes Automatizados da API â€” Valoris
 
 Gerado em: {datetime.now().strftime("%d/%m/%Y %H:%M")}
 
-## Diagnóstico
+## DiagnÃ³stico
 
 Score Tests: {saude["score_tests"]}/100  
-Decisão: {saude["decisao"]}  
-Próximo passo: {saude["proximo_passo"]}
+DecisÃ£o: {saude["decisao"]}  
+PrÃ³ximo passo: {saude["proximo_passo"]}
 
 API rodando: {saude["api_rodando"]}  
 Health OK: {saude["health_ok"]}  
 Score Bridge: {saude["score_bridge"]}/100  
 Scripts OK: {saude["scripts_ok"]}  
-Última suite OK: {saude["ultima_suite_ok"]}  
+Ãšltima suite OK: {saude["ultima_suite_ok"]}  
 Testes OK: {saude["testes_ok"]}/{saude["testes_total"]}  
 
-## Testes da última suite
+## Testes da Ãºltima suite
 
 {linhas_testes}
 
@@ -439,7 +439,7 @@ Testes OK: {saude["testes_ok"]}/{saude["testes_total"]}
 - `POST /leads`
 - `GET /leads`
 - `POST /events`
-- `POST /leads` inválido esperando `422`
+- `POST /leads` invÃ¡lido esperando `422`
 
 ## Rodar por script
 
@@ -451,7 +451,7 @@ Com a API ligada:
 
 ## Regra
 
-Não avançar para SQLite/PostgreSQL enquanto os endpoints básicos não estiverem previsíveis.
+NÃ£o avanÃ§ar para SQLite/PostgreSQL enquanto os endpoints bÃ¡sicos nÃ£o estiverem previsÃ­veis.
 """
 
 
@@ -516,11 +516,11 @@ def _renderizar_hero() -> None:
     st.markdown(
         f"""
         <div class="tests-hero">
-            <div class="tests-eyebrow">Valoris • API Tests • v{VERSAO_API_ENDPOINT_TESTS_VALORIS}</div>
-            <div class="tests-title">Transforme a API em algo confiável.</div>
+            <div class="tests-eyebrow">Valoris â€¢ API Tests â€¢ v{VERSAO_API_ENDPOINT_TESTS_VALORIS}</div>
+            <div class="tests-title">Transforme a API em algo confiÃ¡vel.</div>
             <div class="tests-subtitle">
-                Esta etapa executa testes reais nos endpoints, confirma gravação em CSV
-                e evita avançar para banco externo com uma API instável.
+                Esta etapa executa testes reais nos endpoints, confirma gravaÃ§Ã£o em CSV
+                e evita avanÃ§ar para banco externo com uma API instÃ¡vel.
             </div>
         </div>
         """,
@@ -529,7 +529,7 @@ def _renderizar_hero() -> None:
 
 
 def _renderizar_metricas(saude: Dict[str, Any]) -> None:
-    st.markdown("### Diagnóstico dos testes")
+    st.markdown("### DiagnÃ³stico dos testes")
 
     col_1, col_2, col_3, col_4 = st.columns(4)
 
@@ -540,7 +540,7 @@ def _renderizar_metricas(saude: Dict[str, Any]) -> None:
         st.metric("Health", "OK" if saude["health_ok"] else "Offline")
 
     with col_3:
-        st.metric("Última suite", "OK" if saude["ultima_suite_ok"] else "Pendente")
+        st.metric("Ãšltima suite", "OK" if saude["ultima_suite_ok"] else "Pendente")
 
     with col_4:
         st.metric("Testes", f"{saude['testes_ok']}/{saude['testes_total']}")
@@ -548,18 +548,18 @@ def _renderizar_metricas(saude: Dict[str, Any]) -> None:
     st.progress(saude["score_tests"] / 100)
 
     if saude["score_tests"] >= 85:
-        st.success(f"**{saude['decisao']}** — {saude['proximo_passo']}")
+        st.success(f"**{saude['decisao']}** â€” {saude['proximo_passo']}")
     elif saude["score_tests"] >= 50:
-        st.warning(f"**{saude['decisao']}** — {saude['proximo_passo']}")
+        st.warning(f"**{saude['decisao']}** â€” {saude['proximo_passo']}")
     else:
-        st.info(f"**{saude['decisao']}** — {saude['proximo_passo']}")
+        st.info(f"**{saude['decisao']}** â€” {saude['proximo_passo']}")
 
 
 def _renderizar_resultado_suite(resultado: Dict[str, Any]) -> None:
     st.markdown("### Resultado da suite")
 
     if not resultado:
-        st.info("Nenhuma suite executada nesta sessão.")
+        st.info("Nenhuma suite executada nesta sessÃ£o.")
         return
 
     if resultado.get("ok"):
@@ -569,7 +569,7 @@ def _renderizar_resultado_suite(resultado: Dict[str, Any]) -> None:
 
     for item in resultado.get("testes", []):
         with st.container(border=True):
-            st.markdown(f"**{'✅' if item.get('ok') else '❌'} {item.get('teste')}**")
+            st.markdown(f"**{'âœ…' if item.get('ok') else 'âŒ'} {item.get('teste')}**")
             st.caption(f"Status code: {item.get('status_code')}")
             with st.expander("Detalhes", expanded=False):
                 st.json(item.get("detalhe", {}))
@@ -578,10 +578,10 @@ def _renderizar_resultado_suite(resultado: Dict[str, Any]) -> None:
 def _renderizar_historico() -> None:
     historico = carregar_decisoes_api_tests()
 
-    st.markdown("### Histórico de decisões API Tests")
+    st.markdown("### HistÃ³rico de decisÃµes API Tests")
 
     if not historico:
-        st.info("Ainda não há decisões salvas.")
+        st.info("Ainda nÃ£o hÃ¡ decisÃµes salvas.")
         return
 
     for item in reversed(historico[-10:]):
@@ -590,7 +590,7 @@ def _renderizar_historico() -> None:
             st.caption(item.get("data_registro", "N/D"))
             st.markdown(f"Score: {item.get('score_tests', 'N/D')}/100")
             st.markdown(f"Testes: {item.get('testes_ok', 'N/D')}/{item.get('testes_total', 'N/D')}")
-            st.markdown(f"Próximo passo: {item.get('proximo_passo', 'N/D')}")
+            st.markdown(f"PrÃ³ximo passo: {item.get('proximo_passo', 'N/D')}")
 
 
 def renderizar_api_endpoint_tests_valoris() -> None:
@@ -633,7 +633,7 @@ def renderizar_api_endpoint_tests_valoris() -> None:
             )
 
     with col_4:
-        if st.button("Salvar decisão Tests", key="salvar_decisao_api_tests"):
+        if st.button("Salvar decisÃ£o Tests", key="salvar_decisao_api_tests"):
             registro = salvar_decisao_api_tests(
                 {
                     "score_tests": saude["score_tests"],
@@ -643,14 +643,14 @@ def renderizar_api_endpoint_tests_valoris() -> None:
                     "testes_total": saude["testes_total"],
                     "decisao": saude["decisao"],
                     "proximo_passo": saude["proximo_passo"],
-                    "observacoes": "Decisão gerada pelos testes automatizados da API.",
+                    "observacoes": "DecisÃ£o gerada pelos testes automatizados da API.",
                 }
             )
-            st.success(f"Decisão salva: {registro['decisao']}")
+            st.success(f"DecisÃ£o salva: {registro['decisao']}")
             st.rerun()
 
     st.download_button(
-        "Baixar diagnóstico API Tests (.md)",
+        "Baixar diagnÃ³stico API Tests (.md)",
         data=_gerar_markdown_api_tests(saude),
         file_name="api_endpoint_tests_valoris.md",
         mime="text/markdown",
@@ -658,7 +658,7 @@ def renderizar_api_endpoint_tests_valoris() -> None:
     )
 
     st.download_button(
-        "Baixar decisões API Tests (.csv)",
+        "Baixar decisÃµes API Tests (.csv)",
         data=gerar_csv_decisoes_api_tests(),
         file_name="decisoes_api_tests_valoris.csv",
         mime="text/csv",
@@ -684,7 +684,7 @@ def renderizar_api_endpoint_tests_valoris() -> None:
 POST /leads
 GET  /leads
 POST /events
-POST /leads inválido -> espera 422""",
+POST /leads invÃ¡lido -> espera 422""",
         language="text",
     )
 
@@ -694,8 +694,8 @@ POST /leads inválido -> espera 422""",
     st.markdown(
         """
         <div class="tests-note">
-            <strong>Regra Tests:</strong> não conecte SQLite/PostgreSQL à API enquanto health,
-            leads e events não passarem em testes repetíveis.
+            <strong>Regra Tests:</strong> nÃ£o conecte SQLite/PostgreSQL Ã  API enquanto health,
+            leads e events nÃ£o passarem em testes repetÃ­veis.
         </div>
         """,
         unsafe_allow_html=True,

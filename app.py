@@ -39,6 +39,7 @@ from api_scaffold_valoris import renderizar_api_scaffold_valoris
 from api_smoke_tests_valoris import renderizar_api_smoke_tests_valoris
 from api_repository_bridge_valoris import renderizar_api_repository_bridge_valoris
 from api_endpoint_tests_valoris import renderizar_api_endpoint_tests_valoris
+from api_sqlite_bridge_valoris import renderizar_api_sqlite_bridge_valoris
 from lancamento_beta import renderizar_lancamento_beta
 from convite_beta_publico import renderizar_convite_beta_publico
 from release_candidate import renderizar_release_candidate_fase1
@@ -212,6 +213,7 @@ ABAS_ORDEM_COMPLETA = [
     "API Smoke",
     "API Bridge",
     "API Tests",
+    "API SQLite",
     "UX",
     "Multiativos",
     "Ações Brasil",
@@ -1343,6 +1345,9 @@ try:
 
             elif nome_aba == "API Tests":
                 renderizar_api_endpoint_tests_valoris()
+
+            elif nome_aba == "API SQLite":
+                renderizar_api_sqlite_bridge_valoris()
 
             elif nome_aba == "UX":
                 renderizar_auditoria_ux()

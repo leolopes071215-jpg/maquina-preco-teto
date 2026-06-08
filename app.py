@@ -41,6 +41,7 @@ from api_repository_bridge_valoris import renderizar_api_repository_bridge_valor
 from api_endpoint_tests_valoris import renderizar_api_endpoint_tests_valoris
 from api_sqlite_bridge_valoris import renderizar_api_sqlite_bridge_valoris
 from api_storage_adapter_valoris import renderizar_api_storage_adapter_valoris
+from api_security_key_valoris import renderizar_api_security_key_valoris
 from lancamento_beta import renderizar_lancamento_beta
 from convite_beta_publico import renderizar_convite_beta_publico
 from release_candidate import renderizar_release_candidate_fase1
@@ -216,6 +217,7 @@ ABAS_ORDEM_COMPLETA = [
     "API Tests",
     "API SQLite",
     "API Adapter",
+    "API Security",
     "UX",
     "Multiativos",
     "Ações Brasil",
@@ -1353,6 +1355,9 @@ try:
 
             elif nome_aba == "API Adapter":
                 renderizar_api_storage_adapter_valoris()
+
+            elif nome_aba == "API Security":
+                renderizar_api_security_key_valoris()
 
             elif nome_aba == "UX":
                 renderizar_auditoria_ux()

@@ -7,7 +7,7 @@ import streamlit as st
 
 # ============================================================
 # VALORIS
-# v3.8.67 — Adapter Selecionável CSV/SQLite
+# v3.8.68 — Proteção Local com API Key
 # ------------------------------------------------------------
 # Este arquivo controla a experiência de navegação do app.
 #
@@ -162,6 +162,7 @@ ABAS_FUNDADOR = [
     "API Tests",
     "API SQLite",
     "API Adapter",
+    "API Security",
     "UX",
     "Multiativos",
     "Ações Brasil",

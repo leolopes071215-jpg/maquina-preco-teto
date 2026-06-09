@@ -44,6 +44,7 @@ from api_storage_adapter_valoris import renderizar_api_storage_adapter_valoris
 from api_security_key_valoris import renderizar_api_security_key_valoris
 from api_security_panel_valoris import renderizar_api_security_panel_valoris
 from api_database_cloud_valoris import renderizar_api_database_cloud_valoris
+from api_database_contracts_valoris import renderizar_api_database_contracts_valoris
 from lancamento_beta import renderizar_lancamento_beta
 from convite_beta_publico import renderizar_convite_beta_publico
 from release_candidate import renderizar_release_candidate_fase1
@@ -222,6 +223,7 @@ ABAS_ORDEM_COMPLETA = [
     "API Security",
     "API Security Panel",
     "API Database Cloud",
+    "API Database Contracts",
     "UX",
     "Multiativos",
     "Ações Brasil",
@@ -1368,6 +1370,9 @@ try:
 
             elif nome_aba == "API Database Cloud":
                 renderizar_api_database_cloud_valoris()
+
+            elif nome_aba == "API Database Contracts":
+                renderizar_api_database_contracts_valoris()
 
             elif nome_aba == "UX":
                 renderizar_auditoria_ux()

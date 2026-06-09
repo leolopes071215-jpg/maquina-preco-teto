@@ -7,7 +7,7 @@ import streamlit as st
 
 # ============================================================
 # VALORIS
-# v3.8.79 — Beta Insights e Priorização de Produto
+# v3.8.80 — Onboarding Premium e UX Guiada
 # ------------------------------------------------------------
 # Este arquivo controla a experiência de navegação do app.
 #
@@ -174,6 +174,7 @@ ABAS_FUNDADOR = [
     "Demo 2 Min",
     "Beta Feedback",
     "Beta Insights",
+    "Onboarding Premium",
     "UX",
     "Multiativos",
     "Ações Brasil",

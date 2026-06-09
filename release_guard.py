@@ -15,7 +15,7 @@ from typing import Iterable, List, Optional
 
 # ============================================================
 # VALORIS
-# v3.8.79 — Guardião com Beta Insights e Priorização de Produto
+# v3.8.80 — Guardião com Onboarding Premium e UX Guiada
 # ------------------------------------------------------------
 # Este script ajuda a proteger o projeto antes de fechar versão.
 #
@@ -36,7 +36,7 @@ from typing import Iterable, List, Optional
 # ============================================================
 
 
-VERSAO_RELEASE_GUARD = "3.8.79"
+VERSAO_RELEASE_GUARD = "3.8.80"
 
 
 ARQUIVOS_ESSENCIAIS = [
@@ -81,6 +81,7 @@ ARQUIVOS_ESSENCIAIS = [
     "demo_guiada_2min_valoris.py",
     "beta_feedback_valoris.py",
     "beta_insights_valoris.py",
+    "onboarding_premium_valoris.py",
     "validacao_manual_valoris.py",
     "jornada_personalizada_valoris.py",
     "copiloto_valoris.py",
@@ -136,6 +137,7 @@ CSV_LOCAIS_ESPERADOS_NO_GITIGNORE = [
     "manifesto_demo_2min_valoris.json",
     "manifesto_beta_feedback_valoris.json",
     "manifesto_beta_insights_valoris.json",
+    "manifesto_onboarding_premium_valoris.json",
     "BLUEPRINT_DATABASE_CLOUD_VALORIS.md",
     "CONTRATOS_DATABASE_VALORIS.md",
     "PROVIDERS_DATABASE_VALORIS.md",
@@ -149,6 +151,8 @@ CSV_LOCAIS_ESPERADOS_NO_GITIGNORE = [
     "PLANO_BETA_FEEDBACK_VALORIS.md",
     "INSIGHTS_BETA_VALORIS.md",
     "ROADMAP_PRIORIZADO_VALORIS.md",
+    "ROTEIRO_ONBOARDING_PREMIUM_VALORIS.md",
+    "CHECKLIST_ONBOARDING_PREMIUM_VALORIS.md",
     "matriz_prioridade_beta_valoris.csv",
     "CHECKLIST_DEMO_2MIN_VALORIS.md",
     "demo_analise_premium_valoris.json",
@@ -190,6 +194,7 @@ CSV_LOCAIS_ESPERADOS_NO_GITIGNORE = [
     "feedback_beta_valoris.csv",
     "decisoes_beta_feedback_valoris.csv",
     "decisoes_beta_insights_valoris.csv",
+    "decisoes_onboarding_premium_valoris.csv",
     "decisoes_repositorios_valoris.csv",
     "decisoes_sqlite_valoris.csv",
     "decisoes_gateway_dados_valoris.csv",
@@ -633,6 +638,9 @@ def verificar_imports_criticos(raiz: Path) -> ResultadoChecagem:
         ],
         "beta_insights_valoris.py": [
             "renderizar_beta_insights_valoris",
+        ],
+        "onboarding_premium_valoris.py": [
+            "renderizar_onboarding_premium_valoris",
         ],
     }
 

@@ -15,7 +15,7 @@ from typing import Iterable, List, Optional
 
 # ============================================================
 # VALORIS
-# v3.8.77 — Guardião com Demo Guiada 2 Minutos
+# v3.8.78 — Guardião com Fluxo Beta Tester e Feedback Real
 # ------------------------------------------------------------
 # Este script ajuda a proteger o projeto antes de fechar versão.
 #
@@ -36,7 +36,7 @@ from typing import Iterable, List, Optional
 # ============================================================
 
 
-VERSAO_RELEASE_GUARD = "3.8.77"
+VERSAO_RELEASE_GUARD = "3.8.78"
 
 
 ARQUIVOS_ESSENCIAIS = [
@@ -79,6 +79,7 @@ ARQUIVOS_ESSENCIAIS = [
     "launch_readiness_valoris.py",
     "analise_premium_valoris.py",
     "demo_guiada_2min_valoris.py",
+    "beta_feedback_valoris.py",
     "validacao_manual_valoris.py",
     "jornada_personalizada_valoris.py",
     "copiloto_valoris.py",
@@ -132,6 +133,7 @@ CSV_LOCAIS_ESPERADOS_NO_GITIGNORE = [
     "manifesto_launch_readiness_valoris.json",
     "manifesto_analise_premium_valoris.json",
     "manifesto_demo_2min_valoris.json",
+    "manifesto_beta_feedback_valoris.json",
     "BLUEPRINT_DATABASE_CLOUD_VALORIS.md",
     "CONTRATOS_DATABASE_VALORIS.md",
     "PROVIDERS_DATABASE_VALORIS.md",
@@ -140,6 +142,9 @@ CSV_LOCAIS_ESPERADOS_NO_GITIGNORE = [
     "PLANO_LANCAMENTO_VALORIS.md",
     "RELATORIO_ANALISE_PREMIUM_VALORIS.md",
     "ROTEIRO_DEMO_2MIN_VALORIS.md",
+    "ROTEIRO_BETA_TESTER_VALORIS.md",
+    "FORMULARIO_FEEDBACK_BETA_VALORIS.md",
+    "PLANO_BETA_FEEDBACK_VALORIS.md",
     "CHECKLIST_DEMO_2MIN_VALORIS.md",
     "demo_analise_premium_valoris.json",
     "CHECKLIST_LANCAMENTO_VALORIS.md",
@@ -177,6 +182,8 @@ CSV_LOCAIS_ESPERADOS_NO_GITIGNORE = [
     "decisoes_launch_readiness_valoris.csv",
     "decisoes_analise_premium_valoris.csv",
     "decisoes_demo_2min_valoris.csv",
+    "feedback_beta_valoris.csv",
+    "decisoes_beta_feedback_valoris.csv",
     "decisoes_repositorios_valoris.csv",
     "decisoes_sqlite_valoris.csv",
     "decisoes_gateway_dados_valoris.csv",
@@ -614,6 +621,9 @@ def verificar_imports_criticos(raiz: Path) -> ResultadoChecagem:
         ],
         "demo_guiada_2min_valoris.py": [
             "renderizar_demo_guiada_2min_valoris",
+        ],
+        "beta_feedback_valoris.py": [
+            "renderizar_beta_feedback_valoris",
         ],
     }
 

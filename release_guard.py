@@ -15,7 +15,7 @@ from typing import Iterable, List, Optional
 
 # ============================================================
 # VALORIS
-# v3.8.76 — Guardião com Experiência Premium de Análise
+# v3.8.77 — Guardião com Demo Guiada 2 Minutos
 # ------------------------------------------------------------
 # Este script ajuda a proteger o projeto antes de fechar versão.
 #
@@ -36,7 +36,7 @@ from typing import Iterable, List, Optional
 # ============================================================
 
 
-VERSAO_RELEASE_GUARD = "3.8.76"
+VERSAO_RELEASE_GUARD = "3.8.77"
 
 
 ARQUIVOS_ESSENCIAIS = [
@@ -78,6 +78,7 @@ ARQUIVOS_ESSENCIAIS = [
     "api_provider_backend_valoris.py",
     "launch_readiness_valoris.py",
     "analise_premium_valoris.py",
+    "demo_guiada_2min_valoris.py",
     "validacao_manual_valoris.py",
     "jornada_personalizada_valoris.py",
     "copiloto_valoris.py",
@@ -130,6 +131,7 @@ CSV_LOCAIS_ESPERADOS_NO_GITIGNORE = [
     "manifesto_api_provider_backend_valoris.json",
     "manifesto_launch_readiness_valoris.json",
     "manifesto_analise_premium_valoris.json",
+    "manifesto_demo_2min_valoris.json",
     "BLUEPRINT_DATABASE_CLOUD_VALORIS.md",
     "CONTRATOS_DATABASE_VALORIS.md",
     "PROVIDERS_DATABASE_VALORIS.md",
@@ -137,6 +139,8 @@ CSV_LOCAIS_ESPERADOS_NO_GITIGNORE = [
     "PROVIDER_BACKEND_VALORIS.md",
     "PLANO_LANCAMENTO_VALORIS.md",
     "RELATORIO_ANALISE_PREMIUM_VALORIS.md",
+    "ROTEIRO_DEMO_2MIN_VALORIS.md",
+    "CHECKLIST_DEMO_2MIN_VALORIS.md",
     "demo_analise_premium_valoris.json",
     "CHECKLIST_LANCAMENTO_VALORIS.md",
     "relatorio_provider_runtime_valoris.json",
@@ -172,6 +176,7 @@ CSV_LOCAIS_ESPERADOS_NO_GITIGNORE = [
     "decisoes_api_provider_backend_valoris.csv",
     "decisoes_launch_readiness_valoris.csv",
     "decisoes_analise_premium_valoris.csv",
+    "decisoes_demo_2min_valoris.csv",
     "decisoes_repositorios_valoris.csv",
     "decisoes_sqlite_valoris.csv",
     "decisoes_gateway_dados_valoris.csv",
@@ -606,6 +611,9 @@ def verificar_imports_criticos(raiz: Path) -> ResultadoChecagem:
         ],
         "analise_premium_valoris.py": [
             "renderizar_analise_premium_valoris",
+        ],
+        "demo_guiada_2min_valoris.py": [
+            "renderizar_demo_guiada_2min_valoris",
         ],
     }
 

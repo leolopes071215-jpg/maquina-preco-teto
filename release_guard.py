@@ -15,7 +15,7 @@ from typing import Iterable, List, Optional
 
 # ============================================================
 # VALORIS
-# v3.8.80 — Guardião com Onboarding Premium e UX Guiada
+# v3.8.81 — Guardião com Beta Público e Conversão
 # ------------------------------------------------------------
 # Este script ajuda a proteger o projeto antes de fechar versão.
 #
@@ -36,7 +36,7 @@ from typing import Iterable, List, Optional
 # ============================================================
 
 
-VERSAO_RELEASE_GUARD = "3.8.80"
+VERSAO_RELEASE_GUARD = "3.8.81"
 
 
 ARQUIVOS_ESSENCIAIS = [
@@ -82,6 +82,7 @@ ARQUIVOS_ESSENCIAIS = [
     "beta_feedback_valoris.py",
     "beta_insights_valoris.py",
     "onboarding_premium_valoris.py",
+    "beta_publico_valoris.py",
     "validacao_manual_valoris.py",
     "jornada_personalizada_valoris.py",
     "copiloto_valoris.py",
@@ -138,6 +139,7 @@ CSV_LOCAIS_ESPERADOS_NO_GITIGNORE = [
     "manifesto_beta_feedback_valoris.json",
     "manifesto_beta_insights_valoris.json",
     "manifesto_onboarding_premium_valoris.json",
+    "manifesto_beta_publico_valoris.json",
     "BLUEPRINT_DATABASE_CLOUD_VALORIS.md",
     "CONTRATOS_DATABASE_VALORIS.md",
     "PROVIDERS_DATABASE_VALORIS.md",
@@ -152,6 +154,9 @@ CSV_LOCAIS_ESPERADOS_NO_GITIGNORE = [
     "INSIGHTS_BETA_VALORIS.md",
     "ROADMAP_PRIORIZADO_VALORIS.md",
     "ROTEIRO_ONBOARDING_PREMIUM_VALORIS.md",
+    "COPY_BETA_PUBLICO_VALORIS.md",
+    "PAGINA_BETA_PUBLICO_VALORIS.md",
+    "CHECKLIST_BETA_PUBLICO_VALORIS.md",
     "CHECKLIST_ONBOARDING_PREMIUM_VALORIS.md",
     "matriz_prioridade_beta_valoris.csv",
     "CHECKLIST_DEMO_2MIN_VALORIS.md",
@@ -195,6 +200,8 @@ CSV_LOCAIS_ESPERADOS_NO_GITIGNORE = [
     "decisoes_beta_feedback_valoris.csv",
     "decisoes_beta_insights_valoris.csv",
     "decisoes_onboarding_premium_valoris.csv",
+    "leads_beta_publico_valoris.csv",
+    "decisoes_beta_publico_valoris.csv",
     "decisoes_repositorios_valoris.csv",
     "decisoes_sqlite_valoris.csv",
     "decisoes_gateway_dados_valoris.csv",
@@ -641,6 +648,9 @@ def verificar_imports_criticos(raiz: Path) -> ResultadoChecagem:
         ],
         "onboarding_premium_valoris.py": [
             "renderizar_onboarding_premium_valoris",
+        ],
+        "beta_publico_valoris.py": [
+            "renderizar_beta_publico_valoris",
         ],
     }
 

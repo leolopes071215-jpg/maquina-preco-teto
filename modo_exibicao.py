@@ -7,7 +7,7 @@ import streamlit as st
 
 # ============================================================
 # VALORIS
-# v3.8.71 — Contratos Local/Supabase/Postgres
+# v3.8.72 — Camada abstrata de providers
 # ------------------------------------------------------------
 # Este arquivo controla a experiência de navegação do app.
 #
@@ -166,6 +166,7 @@ ABAS_FUNDADOR = [
     "API Security Panel",
     "API Database Cloud",
     "API Database Contracts",
+    "API Database Providers",
     "UX",
     "Multiativos",
     "Ações Brasil",

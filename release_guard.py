@@ -15,7 +15,7 @@ from typing import Iterable, List, Optional
 
 # ============================================================
 # VALORIS
-# v3.8.81 — Guardião com Beta Público e Conversão
+# v3.8.82 — Guardião com Oferta Beta Fundador e Precificação
 # ------------------------------------------------------------
 # Este script ajuda a proteger o projeto antes de fechar versão.
 #
@@ -36,7 +36,7 @@ from typing import Iterable, List, Optional
 # ============================================================
 
 
-VERSAO_RELEASE_GUARD = "3.8.81"
+VERSAO_RELEASE_GUARD = "3.8.82"
 
 
 ARQUIVOS_ESSENCIAIS = [
@@ -83,6 +83,7 @@ ARQUIVOS_ESSENCIAIS = [
     "beta_insights_valoris.py",
     "onboarding_premium_valoris.py",
     "beta_publico_valoris.py",
+    "oferta_beta_fundador_valoris.py",
     "validacao_manual_valoris.py",
     "jornada_personalizada_valoris.py",
     "copiloto_valoris.py",
@@ -140,6 +141,7 @@ CSV_LOCAIS_ESPERADOS_NO_GITIGNORE = [
     "manifesto_beta_insights_valoris.json",
     "manifesto_onboarding_premium_valoris.json",
     "manifesto_beta_publico_valoris.json",
+    "manifesto_oferta_beta_fundador_valoris.json",
     "BLUEPRINT_DATABASE_CLOUD_VALORIS.md",
     "CONTRATOS_DATABASE_VALORIS.md",
     "PROVIDERS_DATABASE_VALORIS.md",
@@ -155,8 +157,12 @@ CSV_LOCAIS_ESPERADOS_NO_GITIGNORE = [
     "ROADMAP_PRIORIZADO_VALORIS.md",
     "ROTEIRO_ONBOARDING_PREMIUM_VALORIS.md",
     "COPY_BETA_PUBLICO_VALORIS.md",
+    "COPY_OFERTA_BETA_FUNDADOR_VALORIS.md",
     "PAGINA_BETA_PUBLICO_VALORIS.md",
+    "PAGINA_OFERTA_BETA_FUNDADOR_VALORIS.md",
     "CHECKLIST_BETA_PUBLICO_VALORIS.md",
+    "CHECKLIST_OFERTA_BETA_FUNDADOR_VALORIS.md",
+    "EXPERIMENTO_PRECO_BETA_FUNDADOR_VALORIS.md",
     "CHECKLIST_ONBOARDING_PREMIUM_VALORIS.md",
     "matriz_prioridade_beta_valoris.csv",
     "CHECKLIST_DEMO_2MIN_VALORIS.md",
@@ -201,7 +207,9 @@ CSV_LOCAIS_ESPERADOS_NO_GITIGNORE = [
     "decisoes_beta_insights_valoris.csv",
     "decisoes_onboarding_premium_valoris.csv",
     "leads_beta_publico_valoris.csv",
+    "interesses_oferta_beta_fundador_valoris.csv",
     "decisoes_beta_publico_valoris.csv",
+    "decisoes_oferta_beta_fundador_valoris.csv",
     "decisoes_repositorios_valoris.csv",
     "decisoes_sqlite_valoris.csv",
     "decisoes_gateway_dados_valoris.csv",
@@ -651,6 +659,9 @@ def verificar_imports_criticos(raiz: Path) -> ResultadoChecagem:
         ],
         "beta_publico_valoris.py": [
             "renderizar_beta_publico_valoris",
+        ],
+        "oferta_beta_fundador_valoris.py": [
+            "renderizar_oferta_beta_fundador_valoris",
         ],
     }
 

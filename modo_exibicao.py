@@ -7,7 +7,7 @@ import streamlit as st
 
 # ============================================================
 # VALORIS
-# v3.8.81 — Beta Público e Conversão
+# v3.8.82 — Oferta Beta Fundador e Precificação
 # ------------------------------------------------------------
 # Este arquivo controla a experiência de navegação do app.
 #

@@ -47,6 +47,7 @@ from api_database_cloud_valoris import renderizar_api_database_cloud_valoris
 from api_database_contracts_valoris import renderizar_api_database_contracts_valoris
 from api_database_providers_valoris import renderizar_api_database_providers_valoris
 from api_provider_runtime_valoris import renderizar_api_provider_runtime_valoris
+from api_provider_backend_valoris import renderizar_api_provider_backend_valoris
 from lancamento_beta import renderizar_lancamento_beta
 from convite_beta_publico import renderizar_convite_beta_publico
 from release_candidate import renderizar_release_candidate_fase1
@@ -228,6 +229,7 @@ ABAS_ORDEM_COMPLETA = [
     "API Database Contracts",
     "API Database Providers",
     "API Provider Runtime",
+    "API Provider Backend",
     "UX",
     "Multiativos",
     "Ações Brasil",
@@ -1383,6 +1385,9 @@ try:
 
             elif nome_aba == "API Provider Runtime":
                 renderizar_api_provider_runtime_valoris()
+
+            elif nome_aba == "API Provider Backend":
+                renderizar_api_provider_backend_valoris()
 
             elif nome_aba == "UX":
                 renderizar_auditoria_ux()

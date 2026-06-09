@@ -7,7 +7,7 @@ import streamlit as st
 
 # ============================================================
 # VALORIS
-# v3.8.73 — Provider Runtime controlado
+# v3.8.74 — ProviderFactory integrada ao backend local
 # ------------------------------------------------------------
 # Este arquivo controla a experiência de navegação do app.
 #
@@ -168,6 +168,7 @@ ABAS_FUNDADOR = [
     "API Database Contracts",
     "API Database Providers",
     "API Provider Runtime",
+    "API Provider Backend",
     "UX",
     "Multiativos",
     "Ações Brasil",

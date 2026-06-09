@@ -15,7 +15,7 @@ from typing import Iterable, List, Optional
 
 # ============================================================
 # VALORIS
-# v3.8.73 — Guardião com provider runtime controlado
+# v3.8.74 — Guardião com ProviderFactory integrada ao backend local
 # ------------------------------------------------------------
 # Este script ajuda a proteger o projeto antes de fechar versão.
 #
@@ -36,7 +36,7 @@ from typing import Iterable, List, Optional
 # ============================================================
 
 
-VERSAO_RELEASE_GUARD = "3.8.73"
+VERSAO_RELEASE_GUARD = "3.8.74"
 
 
 ARQUIVOS_ESSENCIAIS = [
@@ -75,6 +75,7 @@ ARQUIVOS_ESSENCIAIS = [
     "api_database_contracts_valoris.py",
     "api_database_providers_valoris.py",
     "api_provider_runtime_valoris.py",
+    "api_provider_backend_valoris.py",
     "validacao_manual_valoris.py",
     "jornada_personalizada_valoris.py",
     "copiloto_valoris.py",
@@ -124,14 +125,19 @@ CSV_LOCAIS_ESPERADOS_NO_GITIGNORE = [
     "manifesto_api_database_contracts_valoris.json",
     "manifesto_api_database_providers_valoris.json",
     "manifesto_api_provider_runtime_valoris.json",
+    "manifesto_api_provider_backend_valoris.json",
     "BLUEPRINT_DATABASE_CLOUD_VALORIS.md",
     "CONTRATOS_DATABASE_VALORIS.md",
     "PROVIDERS_DATABASE_VALORIS.md",
     "PROVIDER_RUNTIME_VALORIS.md",
+    "PROVIDER_BACKEND_VALORIS.md",
     "relatorio_provider_runtime_valoris.json",
+    "relatorio_provider_backend_valoris.json",
     "scripts_api_valoris/testar_provider_runtime_valoris.py",
+    "scripts_api_valoris/testar_provider_backend_valoris.py",
     "api_valoris/app/services/database_providers.py",
     "api_valoris/app/services/provider_factory.py",
+    "api_valoris/app/services/provider_runtime_bridge.py",
     "manifesto_api_tests_valoris.json",
     "manifesto_api_smoke_valoris.json",
     "manifesto_api_scaffold_valoris.json",
@@ -155,6 +161,7 @@ CSV_LOCAIS_ESPERADOS_NO_GITIGNORE = [
     "decisoes_api_database_contracts_valoris.csv",
     "decisoes_api_database_providers_valoris.csv",
     "decisoes_api_provider_runtime_valoris.csv",
+    "decisoes_api_provider_backend_valoris.csv",
     "decisoes_repositorios_valoris.csv",
     "decisoes_sqlite_valoris.csv",
     "decisoes_gateway_dados_valoris.csv",
@@ -580,6 +587,9 @@ def verificar_imports_criticos(raiz: Path) -> ResultadoChecagem:
         ],
         "api_provider_runtime_valoris.py": [
             "renderizar_api_provider_runtime_valoris",
+        ],
+        "api_provider_backend_valoris.py": [
+            "renderizar_api_provider_backend_valoris",
         ],
     }
 

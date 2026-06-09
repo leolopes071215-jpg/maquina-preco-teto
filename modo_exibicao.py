@@ -7,7 +7,7 @@ import streamlit as st
 
 # ============================================================
 # VALORIS
-# v3.8.78 — Fluxo Beta Tester e Feedback Real
+# v3.8.77 — Demo Guiada 2 Minutos
 # ------------------------------------------------------------
 # Este arquivo controla a experiência de navegação do app.
 #
@@ -172,7 +172,6 @@ ABAS_FUNDADOR = [
     "Launch Readiness",
     "Análise Premium",
     "Demo 2 Min",
-    "Beta Feedback",
     "UX",
     "Multiativos",
     "Ações Brasil",

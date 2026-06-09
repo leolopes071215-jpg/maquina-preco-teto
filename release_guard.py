@@ -15,7 +15,7 @@ from typing import Iterable, List, Optional
 
 # ============================================================
 # VALORIS
-# v3.8.74 — Guardião com ProviderFactory integrada ao backend local
+# v3.8.75 — Guardião com Launch Readiness
 # ------------------------------------------------------------
 # Este script ajuda a proteger o projeto antes de fechar versão.
 #
@@ -36,7 +36,7 @@ from typing import Iterable, List, Optional
 # ============================================================
 
 
-VERSAO_RELEASE_GUARD = "3.8.74"
+VERSAO_RELEASE_GUARD = "3.8.75"
 
 
 ARQUIVOS_ESSENCIAIS = [
@@ -76,6 +76,7 @@ ARQUIVOS_ESSENCIAIS = [
     "api_database_providers_valoris.py",
     "api_provider_runtime_valoris.py",
     "api_provider_backend_valoris.py",
+    "launch_readiness_valoris.py",
     "validacao_manual_valoris.py",
     "jornada_personalizada_valoris.py",
     "copiloto_valoris.py",
@@ -126,11 +127,14 @@ CSV_LOCAIS_ESPERADOS_NO_GITIGNORE = [
     "manifesto_api_database_providers_valoris.json",
     "manifesto_api_provider_runtime_valoris.json",
     "manifesto_api_provider_backend_valoris.json",
+    "manifesto_launch_readiness_valoris.json",
     "BLUEPRINT_DATABASE_CLOUD_VALORIS.md",
     "CONTRATOS_DATABASE_VALORIS.md",
     "PROVIDERS_DATABASE_VALORIS.md",
     "PROVIDER_RUNTIME_VALORIS.md",
     "PROVIDER_BACKEND_VALORIS.md",
+    "PLANO_LANCAMENTO_VALORIS.md",
+    "CHECKLIST_LANCAMENTO_VALORIS.md",
     "relatorio_provider_runtime_valoris.json",
     "relatorio_provider_backend_valoris.json",
     "scripts_api_valoris/testar_provider_runtime_valoris.py",
@@ -162,6 +166,7 @@ CSV_LOCAIS_ESPERADOS_NO_GITIGNORE = [
     "decisoes_api_database_providers_valoris.csv",
     "decisoes_api_provider_runtime_valoris.csv",
     "decisoes_api_provider_backend_valoris.csv",
+    "decisoes_launch_readiness_valoris.csv",
     "decisoes_repositorios_valoris.csv",
     "decisoes_sqlite_valoris.csv",
     "decisoes_gateway_dados_valoris.csv",
@@ -590,6 +595,9 @@ def verificar_imports_criticos(raiz: Path) -> ResultadoChecagem:
         ],
         "api_provider_backend_valoris.py": [
             "renderizar_api_provider_backend_valoris",
+        ],
+        "launch_readiness_valoris.py": [
+            "renderizar_launch_readiness_valoris",
         ],
     }
 

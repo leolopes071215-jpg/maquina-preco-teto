@@ -15,7 +15,7 @@ from typing import Iterable, List, Optional
 
 # ============================================================
 # VALORIS
-# v3.8.72 — Guardião com camada abstrata de providers
+# v3.8.73 — Guardião com provider runtime controlado
 # ------------------------------------------------------------
 # Este script ajuda a proteger o projeto antes de fechar versão.
 #
@@ -36,7 +36,7 @@ from typing import Iterable, List, Optional
 # ============================================================
 
 
-VERSAO_RELEASE_GUARD = "3.8.72"
+VERSAO_RELEASE_GUARD = "3.8.73"
 
 
 ARQUIVOS_ESSENCIAIS = [
@@ -74,6 +74,7 @@ ARQUIVOS_ESSENCIAIS = [
     "api_database_cloud_valoris.py",
     "api_database_contracts_valoris.py",
     "api_database_providers_valoris.py",
+    "api_provider_runtime_valoris.py",
     "validacao_manual_valoris.py",
     "jornada_personalizada_valoris.py",
     "copiloto_valoris.py",
@@ -122,9 +123,13 @@ CSV_LOCAIS_ESPERADOS_NO_GITIGNORE = [
     "manifesto_api_database_cloud_valoris.json",
     "manifesto_api_database_contracts_valoris.json",
     "manifesto_api_database_providers_valoris.json",
+    "manifesto_api_provider_runtime_valoris.json",
     "BLUEPRINT_DATABASE_CLOUD_VALORIS.md",
     "CONTRATOS_DATABASE_VALORIS.md",
     "PROVIDERS_DATABASE_VALORIS.md",
+    "PROVIDER_RUNTIME_VALORIS.md",
+    "relatorio_provider_runtime_valoris.json",
+    "scripts_api_valoris/testar_provider_runtime_valoris.py",
     "api_valoris/app/services/database_providers.py",
     "api_valoris/app/services/provider_factory.py",
     "manifesto_api_tests_valoris.json",
@@ -149,6 +154,7 @@ CSV_LOCAIS_ESPERADOS_NO_GITIGNORE = [
     "decisoes_api_database_cloud_valoris.csv",
     "decisoes_api_database_contracts_valoris.csv",
     "decisoes_api_database_providers_valoris.csv",
+    "decisoes_api_provider_runtime_valoris.csv",
     "decisoes_repositorios_valoris.csv",
     "decisoes_sqlite_valoris.csv",
     "decisoes_gateway_dados_valoris.csv",
@@ -571,6 +577,9 @@ def verificar_imports_criticos(raiz: Path) -> ResultadoChecagem:
         ],
         "api_database_providers_valoris.py": [
             "renderizar_api_database_providers_valoris",
+        ],
+        "api_provider_runtime_valoris.py": [
+            "renderizar_api_provider_runtime_valoris",
         ],
     }
 

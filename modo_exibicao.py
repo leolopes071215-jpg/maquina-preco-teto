@@ -7,7 +7,7 @@ import streamlit as st
 
 # ============================================================
 # VALORIS
-# v3.8.72 — Camada abstrata de providers
+# v3.8.73 — Provider Runtime controlado
 # ------------------------------------------------------------
 # Este arquivo controla a experiência de navegação do app.
 #
@@ -167,6 +167,7 @@ ABAS_FUNDADOR = [
     "API Database Cloud",
     "API Database Contracts",
     "API Database Providers",
+    "API Provider Runtime",
     "UX",
     "Multiativos",
     "Ações Brasil",

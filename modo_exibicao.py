@@ -7,7 +7,7 @@ import streamlit as st
 
 # ============================================================
 # VALORIS
-# v3.8.75 — Launch Readiness
+# v3.8.76 — Experiência Premium de Análise
 # ------------------------------------------------------------
 # Este arquivo controla a experiência de navegação do app.
 #
@@ -170,6 +170,7 @@ ABAS_FUNDADOR = [
     "API Provider Runtime",
     "API Provider Backend",
     "Launch Readiness",
+    "Análise Premium",
     "UX",
     "Multiativos",
     "Ações Brasil",

@@ -15,7 +15,7 @@ from typing import Iterable, List, Optional
 
 # ============================================================
 # VALORIS
-# v3.8.75 — Guardião com Launch Readiness
+# v3.8.76 — Guardião com Experiência Premium de Análise
 # ------------------------------------------------------------
 # Este script ajuda a proteger o projeto antes de fechar versão.
 #
@@ -36,7 +36,7 @@ from typing import Iterable, List, Optional
 # ============================================================
 
 
-VERSAO_RELEASE_GUARD = "3.8.75"
+VERSAO_RELEASE_GUARD = "3.8.76"
 
 
 ARQUIVOS_ESSENCIAIS = [
@@ -77,6 +77,7 @@ ARQUIVOS_ESSENCIAIS = [
     "api_provider_runtime_valoris.py",
     "api_provider_backend_valoris.py",
     "launch_readiness_valoris.py",
+    "analise_premium_valoris.py",
     "validacao_manual_valoris.py",
     "jornada_personalizada_valoris.py",
     "copiloto_valoris.py",
@@ -128,12 +129,15 @@ CSV_LOCAIS_ESPERADOS_NO_GITIGNORE = [
     "manifesto_api_provider_runtime_valoris.json",
     "manifesto_api_provider_backend_valoris.json",
     "manifesto_launch_readiness_valoris.json",
+    "manifesto_analise_premium_valoris.json",
     "BLUEPRINT_DATABASE_CLOUD_VALORIS.md",
     "CONTRATOS_DATABASE_VALORIS.md",
     "PROVIDERS_DATABASE_VALORIS.md",
     "PROVIDER_RUNTIME_VALORIS.md",
     "PROVIDER_BACKEND_VALORIS.md",
     "PLANO_LANCAMENTO_VALORIS.md",
+    "RELATORIO_ANALISE_PREMIUM_VALORIS.md",
+    "demo_analise_premium_valoris.json",
     "CHECKLIST_LANCAMENTO_VALORIS.md",
     "relatorio_provider_runtime_valoris.json",
     "relatorio_provider_backend_valoris.json",
@@ -167,6 +171,7 @@ CSV_LOCAIS_ESPERADOS_NO_GITIGNORE = [
     "decisoes_api_provider_runtime_valoris.csv",
     "decisoes_api_provider_backend_valoris.csv",
     "decisoes_launch_readiness_valoris.csv",
+    "decisoes_analise_premium_valoris.csv",
     "decisoes_repositorios_valoris.csv",
     "decisoes_sqlite_valoris.csv",
     "decisoes_gateway_dados_valoris.csv",
@@ -598,6 +603,9 @@ def verificar_imports_criticos(raiz: Path) -> ResultadoChecagem:
         ],
         "launch_readiness_valoris.py": [
             "renderizar_launch_readiness_valoris",
+        ],
+        "analise_premium_valoris.py": [
+            "renderizar_analise_premium_valoris",
         ],
     }
 

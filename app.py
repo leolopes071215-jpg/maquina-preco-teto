@@ -49,6 +49,7 @@ from api_database_providers_valoris import renderizar_api_database_providers_val
 from api_provider_runtime_valoris import renderizar_api_provider_runtime_valoris
 from api_provider_backend_valoris import renderizar_api_provider_backend_valoris
 from launch_readiness_valoris import renderizar_launch_readiness_valoris
+from analise_premium_valoris import renderizar_analise_premium_valoris
 from lancamento_beta import renderizar_lancamento_beta
 from convite_beta_publico import renderizar_convite_beta_publico
 from release_candidate import renderizar_release_candidate_fase1
@@ -232,6 +233,7 @@ ABAS_ORDEM_COMPLETA = [
     "API Provider Runtime",
     "API Provider Backend",
     "Launch Readiness",
+    "Análise Premium",
     "UX",
     "Multiativos",
     "Ações Brasil",
@@ -1393,6 +1395,9 @@ try:
 
             elif nome_aba == "Launch Readiness":
                 renderizar_launch_readiness_valoris()
+
+            elif nome_aba == "Análise Premium":
+                renderizar_analise_premium_valoris()
 
             elif nome_aba == "UX":
                 renderizar_auditoria_ux()

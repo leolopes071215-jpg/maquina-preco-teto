@@ -52,6 +52,7 @@ from launch_readiness_valoris import renderizar_launch_readiness_valoris
 from analise_premium_valoris import renderizar_analise_premium_valoris
 from demo_guiada_2min_valoris import renderizar_demo_guiada_2min_valoris
 from beta_feedback_valoris import renderizar_beta_feedback_valoris
+from beta_insights_valoris import renderizar_beta_insights_valoris
 from lancamento_beta import renderizar_lancamento_beta
 from convite_beta_publico import renderizar_convite_beta_publico
 from release_candidate import renderizar_release_candidate_fase1
@@ -238,6 +239,7 @@ ABAS_ORDEM_COMPLETA = [
     "Análise Premium",
     "Demo 2 Min",
     "Beta Feedback",
+    "Beta Insights",
     "UX",
     "Multiativos",
     "Ações Brasil",
@@ -1408,6 +1410,9 @@ try:
 
             elif nome_aba == "Beta Feedback":
                 renderizar_beta_feedback_valoris()
+
+            elif nome_aba == "Beta Insights":
+                renderizar_beta_insights_valoris()
 
             elif nome_aba == "UX":
                 renderizar_auditoria_ux()

@@ -7,7 +7,7 @@ import streamlit as st
 
 # ============================================================
 # VALORIS
-# v3.8.82 — Oferta Beta Fundador e Precificação
+# v3.8.83 — Checkout Manual e Controle de Fundadores
 # ------------------------------------------------------------
 # Este arquivo controla a experiência de navegação do app.
 #

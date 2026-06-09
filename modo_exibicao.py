@@ -7,7 +7,7 @@ import streamlit as st
 
 # ============================================================
 # VALORIS
-# v3.8.69 — Painel de Segurança da API
+# v3.8.70 — Preparação Supabase/PostgreSQL
 # ------------------------------------------------------------
 # Este arquivo controla a experiência de navegação do app.
 #
@@ -164,6 +164,7 @@ ABAS_FUNDADOR = [
     "API Adapter",
     "API Security",
     "API Security Panel",
+    "API Database Cloud",
     "UX",
     "Multiativos",
     "Ações Brasil",

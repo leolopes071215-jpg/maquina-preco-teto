@@ -15,7 +15,7 @@ from typing import Iterable, List, Optional
 
 # ============================================================
 # VALORIS
-# v3.8.69 — Guardião com painel de segurança da API
+# v3.8.70 — Guardião com preparação Supabase/PostgreSQL
 # ------------------------------------------------------------
 # Este script ajuda a proteger o projeto antes de fechar versão.
 #
@@ -36,7 +36,7 @@ from typing import Iterable, List, Optional
 # ============================================================
 
 
-VERSAO_RELEASE_GUARD = "3.8.69"
+VERSAO_RELEASE_GUARD = "3.8.70"
 
 
 ARQUIVOS_ESSENCIAIS = [
@@ -71,6 +71,7 @@ ARQUIVOS_ESSENCIAIS = [
     "api_storage_adapter_valoris.py",
     "api_security_key_valoris.py",
     "api_security_panel_valoris.py",
+    "api_database_cloud_valoris.py",
     "validacao_manual_valoris.py",
     "jornada_personalizada_valoris.py",
     "copiloto_valoris.py",
@@ -116,6 +117,8 @@ CSV_LOCAIS_ESPERADOS_NO_GITIGNORE = [
     "manifesto_api_adapter_valoris.json",
     "manifesto_api_security_valoris.json",
     "manifesto_api_security_panel_valoris.json",
+    "manifesto_api_database_cloud_valoris.json",
+    "BLUEPRINT_DATABASE_CLOUD_VALORIS.md",
     "manifesto_api_tests_valoris.json",
     "manifesto_api_smoke_valoris.json",
     "manifesto_api_scaffold_valoris.json",
@@ -135,6 +138,7 @@ CSV_LOCAIS_ESPERADOS_NO_GITIGNORE = [
     "decisoes_api_adapter_valoris.csv",
     "decisoes_api_security_valoris.csv",
     "decisoes_api_security_panel_valoris.csv",
+    "decisoes_api_database_cloud_valoris.csv",
     "decisoes_repositorios_valoris.csv",
     "decisoes_sqlite_valoris.csv",
     "decisoes_gateway_dados_valoris.csv",
@@ -548,6 +552,9 @@ def verificar_imports_criticos(raiz: Path) -> ResultadoChecagem:
         ],
         "api_security_panel_valoris.py": [
             "renderizar_api_security_panel_valoris",
+        ],
+        "api_database_cloud_valoris.py": [
+            "renderizar_api_database_cloud_valoris",
         ],
     }
 

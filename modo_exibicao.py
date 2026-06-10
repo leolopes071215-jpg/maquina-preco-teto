@@ -7,7 +7,7 @@ import streamlit as st
 
 # ============================================================
 # VALORIS
-# v3.8.83 — Checkout Manual e Controle de Fundadores
+# v3.8.84 — Retenção de Fundadores e Ativação Pós-Pagamento
 # ------------------------------------------------------------
 # Este arquivo controla a experiência de navegação do app.
 #

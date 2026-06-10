@@ -15,7 +15,7 @@ from typing import Iterable, List, Optional
 
 # ============================================================
 # VALORIS
-# v3.8.83 — Guardião com Checkout Manual e Controle de Fundadores
+# v3.8.84 — Guardião com Retenção de Fundadores e Ativação Pós-Pagamento
 # ------------------------------------------------------------
 # Este script ajuda a proteger o projeto antes de fechar versão.
 #
@@ -36,7 +36,7 @@ from typing import Iterable, List, Optional
 # ============================================================
 
 
-VERSAO_RELEASE_GUARD = "3.8.83"
+VERSAO_RELEASE_GUARD = "3.8.84"
 
 
 ARQUIVOS_ESSENCIAIS = [
@@ -85,6 +85,7 @@ ARQUIVOS_ESSENCIAIS = [
     "beta_publico_valoris.py",
     "oferta_beta_fundador_valoris.py",
     "checkout_fundadores_valoris.py",
+    "retencao_fundadores_valoris.py",
     "validacao_manual_valoris.py",
     "jornada_personalizada_valoris.py",
     "copiloto_valoris.py",
@@ -144,6 +145,7 @@ CSV_LOCAIS_ESPERADOS_NO_GITIGNORE = [
     "manifesto_beta_publico_valoris.json",
     "manifesto_oferta_beta_fundador_valoris.json",
     "manifesto_checkout_fundadores_valoris.json",
+    "manifesto_retencao_fundadores_valoris.json",
     "BLUEPRINT_DATABASE_CLOUD_VALORIS.md",
     "CONTRATOS_DATABASE_VALORIS.md",
     "PROVIDERS_DATABASE_VALORIS.md",
@@ -166,6 +168,9 @@ CSV_LOCAIS_ESPERADOS_NO_GITIGNORE = [
     "CHECKLIST_OFERTA_BETA_FUNDADOR_VALORIS.md",
     "EXPERIMENTO_PRECO_BETA_FUNDADOR_VALORIS.md",
     "ROTEIRO_CHECKOUT_MANUAL_FUNDADORES_VALORIS.md",
+    "PLAYBOOK_RETENCAO_FUNDADORES_VALORIS.md",
+    "CHECKLIST_RETENCAO_FUNDADORES_VALORIS.md",
+    "RELATORIO_RETENCAO_FUNDADORES_VALORIS.md",
     "CHECKLIST_CHECKOUT_FUNDADORES_VALORIS.md",
     "TERMO_BETA_FUNDADOR_VALORIS.md",
     "pipeline_fundadores_valoris.json",
@@ -215,9 +220,12 @@ CSV_LOCAIS_ESPERADOS_NO_GITIGNORE = [
     "leads_beta_publico_valoris.csv",
     "interesses_oferta_beta_fundador_valoris.csv",
     "fundadores_beta_valoris.csv",
+    "ativacoes_fundadores_valoris.csv",
+    "feedbacks_pos_pagamento_valoris.csv",
     "decisoes_beta_publico_valoris.csv",
     "decisoes_oferta_beta_fundador_valoris.csv",
     "decisoes_checkout_fundadores_valoris.csv",
+    "decisoes_retencao_fundadores_valoris.csv",
     "decisoes_repositorios_valoris.csv",
     "decisoes_sqlite_valoris.csv",
     "decisoes_gateway_dados_valoris.csv",
@@ -673,6 +681,9 @@ def verificar_imports_criticos(raiz: Path) -> ResultadoChecagem:
         ],
         "checkout_fundadores_valoris.py": [
             "renderizar_checkout_fundadores_valoris",
+        ],
+        "retencao_fundadores_valoris.py": [
+            "renderizar_retencao_fundadores_valoris",
         ],
     }
 

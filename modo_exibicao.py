@@ -7,7 +7,7 @@ import streamlit as st
 
 # ============================================================
 # VALORIS
-# v3.8.84 — Retenção de Fundadores e Ativação Pós-Pagamento
+# v3.8.85 — Watchlist de Fundadores e Acompanhamento de Tese
 # ------------------------------------------------------------
 # Este arquivo controla a experiência de navegação do app.
 #

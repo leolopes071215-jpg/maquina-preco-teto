@@ -7,7 +7,7 @@ import streamlit as st
 
 # ============================================================
 # VALORIS
-# v3.8.85 — Watchlist de Fundadores e Acompanhamento de Tese
+# v3.8.86 — Comparador Setorial e Ranking de Oportunidades
 # ------------------------------------------------------------
 # Este arquivo controla a experiência de navegação do app.
 #

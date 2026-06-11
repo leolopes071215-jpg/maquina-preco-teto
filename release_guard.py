@@ -15,7 +15,7 @@ from typing import Iterable, List, Optional
 
 # ============================================================
 # VALORIS
-# v3.8.85 — Guardião com Watchlist de Fundadores e Acompanhamento de Tese
+# v3.8.86 — Guardião com Comparador Setorial e Ranking de Oportunidades
 # ------------------------------------------------------------
 # Este script ajuda a proteger o projeto antes de fechar versão.
 #
@@ -36,7 +36,7 @@ from typing import Iterable, List, Optional
 # ============================================================
 
 
-VERSAO_RELEASE_GUARD = "3.8.85"
+VERSAO_RELEASE_GUARD = "3.8.86"
 
 
 ARQUIVOS_ESSENCIAIS = [
@@ -87,6 +87,7 @@ ARQUIVOS_ESSENCIAIS = [
     "checkout_fundadores_valoris.py",
     "retencao_fundadores_valoris.py",
     "watchlist_fundadores_valoris.py",
+    "comparador_setorial_valoris.py",
     "validacao_manual_valoris.py",
     "jornada_personalizada_valoris.py",
     "copiloto_valoris.py",
@@ -148,6 +149,7 @@ CSV_LOCAIS_ESPERADOS_NO_GITIGNORE = [
     "manifesto_checkout_fundadores_valoris.json",
     "manifesto_retencao_fundadores_valoris.json",
     "manifesto_watchlist_fundadores_valoris.json",
+    "manifesto_comparador_setorial_valoris.json",
     "BLUEPRINT_DATABASE_CLOUD_VALORIS.md",
     "CONTRATOS_DATABASE_VALORIS.md",
     "PROVIDERS_DATABASE_VALORIS.md",
@@ -174,8 +176,11 @@ CSV_LOCAIS_ESPERADOS_NO_GITIGNORE = [
     "CHECKLIST_RETENCAO_FUNDADORES_VALORIS.md",
     "RELATORIO_RETENCAO_FUNDADORES_VALORIS.md",
     "RELATORIO_WATCHLIST_FUNDADORES_VALORIS.md",
+    "RELATORIO_COMPARADOR_SETORIAL_VALORIS.md",
     "PLAYBOOK_WATCHLIST_FUNDADORES_VALORIS.md",
+    "PLAYBOOK_COMPARADOR_SETORIAL_VALORIS.md",
     "CHECKLIST_WATCHLIST_FUNDADORES_VALORIS.md",
+    "CHECKLIST_COMPARADOR_SETORIAL_VALORIS.md",
     "CHECKLIST_CHECKOUT_FUNDADORES_VALORIS.md",
     "TERMO_BETA_FUNDADOR_VALORIS.md",
     "pipeline_fundadores_valoris.json",
@@ -227,6 +232,7 @@ CSV_LOCAIS_ESPERADOS_NO_GITIGNORE = [
     "fundadores_beta_valoris.csv",
     "ativacoes_fundadores_valoris.csv",
     "watchlist_fundadores_valoris.csv",
+    "ranking_comparador_setorial_valoris.csv",
     "alertas_watchlist_fundadores_valoris.csv",
     "feedbacks_pos_pagamento_valoris.csv",
     "decisoes_beta_publico_valoris.csv",
@@ -234,6 +240,7 @@ CSV_LOCAIS_ESPERADOS_NO_GITIGNORE = [
     "decisoes_checkout_fundadores_valoris.csv",
     "decisoes_retencao_fundadores_valoris.csv",
     "decisoes_watchlist_fundadores_valoris.csv",
+    "decisoes_comparador_setorial_valoris.csv",
     "decisoes_repositorios_valoris.csv",
     "decisoes_sqlite_valoris.csv",
     "decisoes_gateway_dados_valoris.csv",
@@ -695,6 +702,9 @@ def verificar_imports_criticos(raiz: Path) -> ResultadoChecagem:
         ],
         "watchlist_fundadores_valoris.py": [
             "renderizar_watchlist_fundadores_valoris",
+        ],
+        "comparador_setorial_valoris.py": [
+            "renderizar_comparador_setorial_valoris",
         ],
     }
 

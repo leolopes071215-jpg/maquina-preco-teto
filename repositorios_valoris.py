@@ -174,18 +174,46 @@ def registrar_log_repositorio(
         return
 
 
-def carregar_logs_repositorios() -> List[Dict[str, str]]:
+def carregar_logs_repositorios(max_registros: int = 300) -> List[Dict[str, str]]:
+    """
+    Carrega apenas os ?ltimos logs para evitar MemoryError no Streamlit.
+
+    Antes, esta fun??o fazia list(leitor), carregando o CSV inteiro.
+    Em arquivos de log grandes, isso estourava mem?ria.
+    """
+    from collections import deque
+
     _garantir_csv(CAMINHO_LOGS_REPOSITORIOS, CAMPOS_LOG_REPOSITORIOS)
 
-    with CAMINHO_LOGS_REPOSITORIOS.open("r", newline="", encoding="utf-8") as arquivo:
-        leitor = csv.DictReader(arquivo)
-        return list(leitor)
+    try:
+        with CAMINHO_LOGS_REPOSITORIOS.open("r", newline="", encoding="utf-8") as arquivo:
+            leitor = csv.DictReader(arquivo)
+            ultimos = deque(leitor, maxlen=max_registros)
+            return list(ultimos)
+    except MemoryError:
+        return []
+    except Exception:
+        return []
 
 
-def gerar_csv_logs_repositorios() -> str:
+def gerar_csv_logs_repositorios(max_registros: int = 500) -> str:
+    """
+    Gera download apenas dos ?ltimos registros, evitando ler arquivo gigante inteiro.
+    """
+    import io
+
     _garantir_csv(CAMINHO_LOGS_REPOSITORIOS, CAMPOS_LOG_REPOSITORIOS)
 
-    return CAMINHO_LOGS_REPOSITORIOS.read_text(encoding="utf-8")
+    logs = carregar_logs_repositorios(max_registros=max_registros)
+
+    saida = io.StringIO()
+    escritor = csv.DictWriter(saida, fieldnames=CAMPOS_LOG_REPOSITORIOS)
+    escritor.writeheader()
+
+    for item in logs:
+        escritor.writerow({campo: item.get(campo, "") for campo in CAMPOS_LOG_REPOSITORIOS})
+
+    return saida.getvalue()
 
 
 def carregar_decisoes_repositorios() -> List[Dict[str, str]]:

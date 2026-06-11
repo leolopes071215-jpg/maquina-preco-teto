@@ -110,3 +110,85 @@ def salvar_lead_lista_espera(dados):
         "registro": registro,
     }
 
+# ============================================================
+# Compatibilidade v3.8.86 ? renderizador da lista de espera
+# ------------------------------------------------------------
+# Aceita chamadas antigas e novas:
+# renderizar_lista_espera_valoris()
+# renderizar_lista_espera_valoris(modo_admin=False, chave_contexto="...")
+# ============================================================
+
+def renderizar_lista_espera_valoris(*args, **kwargs):
+    candidatos = [
+        "renderizar_painel_lista_espera_valoris",
+        "renderizar_lista_espera_beta",
+        "renderizar_lista_espera",
+    ]
+
+    for nome in candidatos:
+        funcao = globals().get(nome)
+
+        if callable(funcao):
+            try:
+                return funcao(*args, **kwargs)
+            except TypeError:
+                try:
+                    return funcao()
+                except TypeError:
+                    continue
+
+    import streamlit as st
+
+    modo_admin = bool(kwargs.get("modo_admin", False))
+    chave_contexto = str(kwargs.get("chave_contexto", "lista_espera"))
+
+    st.markdown("### Entrar na lista de espera")
+
+    with st.form(f"form_lista_espera_{chave_contexto}"):
+        nome = st.text_input("Nome", key=f"{chave_contexto}_nome")
+        contato = st.text_input("E-mail ou WhatsApp", key=f"{chave_contexto}_contato")
+        perfil = st.selectbox(
+            "Perfil",
+            ["Investidor iniciante", "Investidor intermedi?rio", "Investidor avan?ado", "Analista", "Outro"],
+            key=f"{chave_contexto}_perfil",
+        )
+        principal_dor = st.text_area(
+            "Qual sua maior dificuldade ao analisar uma empresa?",
+            key=f"{chave_contexto}_dor",
+        )
+        comentario = st.text_area(
+            "Coment?rio adicional",
+            key=f"{chave_contexto}_comentario",
+        )
+
+        enviado = st.form_submit_button("Entrar na lista")
+
+        if enviado:
+            if "salvar_lead_lista_espera" in globals():
+                registro = salvar_lead_lista_espera(
+                    {
+                        "nome": nome,
+                        "contato": contato,
+                        "perfil": perfil,
+                        "principal_dor": principal_dor,
+                        "comentario": comentario,
+                    }
+                )
+                st.success("Entrada registrada com sucesso.")
+                return registro
+
+            st.warning("Lista de espera dispon?vel, mas a fun??o de salvamento n?o foi encontrada.")
+
+    if modo_admin:
+        st.markdown("#### Leads registrados")
+
+        if "carregar_leads_lista_espera" in globals():
+            leads = carregar_leads_lista_espera()
+
+            if leads:
+                st.dataframe(leads, use_container_width=True)
+            else:
+                st.info("Nenhum lead registrado ainda.")
+        else:
+            st.warning("Fun??o carregar_leads_lista_espera n?o encontrada.")
+

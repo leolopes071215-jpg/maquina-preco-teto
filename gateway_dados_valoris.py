@@ -164,10 +164,85 @@ def registrar_log_gateway(operacao: str, tabela_logica: str, arquivo: str, statu
         return
 
 
-def carregar_logs_gateway() -> List[Dict[str, str]]:
-    _garantir_csv(CAMINHO_LOG_GATEWAY, CAMPOS_LOG_GATEWAY)
-    with CAMINHO_LOG_GATEWAY.open("r", newline="", encoding="utf-8") as f:
-        return list(csv.DictReader(f))
+def carregar_logs_gateway(max_registros=300):
+    """
+    Carrega apenas os ?ltimos logs do gateway para evitar MemoryError no Streamlit.
+
+    Antes, esta fun??o fazia list(csv.DictReader(f)), carregando o CSV inteiro.
+    Com logs grandes, isso estourava mem?ria.
+    """
+    from collections import deque
+
+    caminho = globals().get("CAMINHO_LOGS_GATEWAY") or globals().get("CAMINHO_LOG_GATEWAY")
+    campos = globals().get("CAMPOS_LOG_GATEWAY") or globals().get("CAMPOS_LOGS_GATEWAY")
+
+    if caminho is None:
+        caminho = Path("logs_gateway_dados_valoris.csv")
+
+    if campos is None:
+        campos = [
+            "id",
+            "data_registro",
+            "evento",
+            "status",
+            "detalhe",
+            "observacoes",
+        ]
+
+    try:
+        _garantir_csv(caminho, campos)
+    except Exception:
+        try:
+            if not caminho.exists():
+                with caminho.open("w", newline="", encoding="utf-8") as arquivo:
+                    escritor = csv.DictWriter(arquivo, fieldnames=campos)
+                    escritor.writeheader()
+        except Exception:
+            return []
+
+    try:
+        with caminho.open("r", newline="", encoding="utf-8") as arquivo:
+            leitor = csv.DictReader(arquivo)
+            ultimos = deque(leitor, maxlen=max_registros)
+            return list(ultimos)
+    except MemoryError:
+        return []
+    except Exception:
+        return []
+
+
+def gerar_csv_logs_gateway(max_registros=500):
+    """
+    Gera CSV apenas dos ?ltimos logs, evitando download/leitura de arquivo gigante.
+    """
+    import io
+
+    caminho = globals().get("CAMINHO_LOGS_GATEWAY") or globals().get("CAMINHO_LOG_GATEWAY")
+    campos = globals().get("CAMPOS_LOG_GATEWAY") or globals().get("CAMPOS_LOGS_GATEWAY")
+
+    if caminho is None:
+        caminho = Path("logs_gateway_dados_valoris.csv")
+
+    if campos is None:
+        campos = [
+            "id",
+            "data_registro",
+            "evento",
+            "status",
+            "detalhe",
+            "observacoes",
+        ]
+
+    logs = carregar_logs_gateway(max_registros=max_registros)
+
+    saida = io.StringIO()
+    escritor = csv.DictWriter(saida, fieldnames=campos)
+    escritor.writeheader()
+
+    for item in logs:
+        escritor.writerow({campo: item.get(campo, "") for campo in campos})
+
+    return saida.getvalue()
 
 
 def carregar_decisoes_gateway() -> List[Dict[str, str]]:

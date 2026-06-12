@@ -7,7 +7,7 @@ import streamlit as st
 
 # ============================================================
 # VALORIS
-# v3.8.88 — Pacote Premium e Entrega Empacotada
+# v3.8.89 — Feedback do Pacote Premium e Loop de Melhoria
 # ------------------------------------------------------------
 # Este arquivo controla a experiência de navegação do app.
 #

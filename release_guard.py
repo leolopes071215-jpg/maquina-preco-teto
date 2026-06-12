@@ -15,7 +15,7 @@ from typing import Iterable, List, Optional
 
 # ============================================================
 # VALORIS
-# v3.8.88 — Guardião com Pacote Premium e Entrega Empacotada
+# v3.8.89 — Guardião com Feedback do Pacote Premium e Loop de Melhoria
 # ------------------------------------------------------------
 # Este script ajuda a proteger o projeto antes de fechar versão.
 #
@@ -36,7 +36,7 @@ from typing import Iterable, List, Optional
 # ============================================================
 
 
-VERSAO_RELEASE_GUARD = "3.8.88"
+VERSAO_RELEASE_GUARD = "3.8.89"
 
 
 ARQUIVOS_ESSENCIAIS = [
@@ -90,6 +90,7 @@ ARQUIVOS_ESSENCIAIS = [
     "comparador_setorial_valoris.py",
     "relatorio_premium_v2_valoris.py",
     "pacote_premium_valoris.py",
+    "feedback_pacote_premium_valoris.py",
     "validacao_manual_valoris.py",
     "jornada_personalizada_valoris.py",
     "copiloto_valoris.py",
@@ -154,6 +155,7 @@ CSV_LOCAIS_ESPERADOS_NO_GITIGNORE = [
     "manifesto_comparador_setorial_valoris.json",
     "manifesto_relatorio_premium_v2_valoris.json",
     "manifesto_pacote_premium_valoris.json",
+    "manifesto_feedback_pacote_premium_valoris.json",
     "BLUEPRINT_DATABASE_CLOUD_VALORIS.md",
     "CONTRATOS_DATABASE_VALORIS.md",
     "PROVIDERS_DATABASE_VALORIS.md",
@@ -183,6 +185,9 @@ CSV_LOCAIS_ESPERADOS_NO_GITIGNORE = [
     "RELATORIO_COMPARADOR_SETORIAL_VALORIS.md",
     "DOSSIE_PREMIUM_V2_VALORIS.md",
     "PACOTE_PREMIUM_VALORIS.md",
+    "MATRIZ_MELHORIAS_PACOTE_PREMIUM_VALORIS.md",
+    "ROTEIRO_FEEDBACK_PACOTE_PREMIUM_VALORIS.md",
+    "CHECKLIST_FEEDBACK_PACOTE_PREMIUM_VALORIS.md",
     "SUMARIO_EXECUTIVO_PACOTE_PREMIUM_VALORIS.md",
     "PLAYBOOK_WATCHLIST_FUNDADORES_VALORIS.md",
     "PLAYBOOK_COMPARADOR_SETORIAL_VALORIS.md",
@@ -255,6 +260,8 @@ CSV_LOCAIS_ESPERADOS_NO_GITIGNORE = [
     "decisoes_comparador_setorial_valoris.csv",
     "decisoes_relatorio_premium_v2_valoris.csv",
     "decisoes_pacote_premium_valoris.csv",
+    "feedbacks_pacote_premium_valoris.csv",
+    "decisoes_feedback_pacote_premium_valoris.csv",
     "decisoes_repositorios_valoris.csv",
     "decisoes_sqlite_valoris.csv",
     "decisoes_gateway_dados_valoris.csv",
@@ -725,6 +732,9 @@ def verificar_imports_criticos(raiz: Path) -> ResultadoChecagem:
         ],
         "pacote_premium_valoris.py": [
             "renderizar_pacote_premium_valoris",
+        ],
+        "feedback_pacote_premium_valoris.py": [
+            "renderizar_feedback_pacote_premium_valoris",
         ],
     }
 

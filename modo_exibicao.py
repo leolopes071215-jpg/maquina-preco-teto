@@ -7,7 +7,7 @@ import streamlit as st
 
 # ============================================================
 # VALORIS
-# v3.8.87 — Relatório Premium v2 e Dossiê de Tese
+# v3.8.88 — Pacote Premium e Entrega Empacotada
 # ------------------------------------------------------------
 # Este arquivo controla a experiência de navegação do app.
 #

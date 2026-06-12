@@ -7,7 +7,7 @@ import streamlit as st
 
 # ============================================================
 # VALORIS
-# v3.8.86 — Comparador Setorial e Ranking de Oportunidades
+# v3.8.87 — Relatório Premium v2 e Dossiê de Tese
 # ------------------------------------------------------------
 # Este arquivo controla a experiência de navegação do app.
 #

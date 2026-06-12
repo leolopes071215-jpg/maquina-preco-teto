@@ -7,7 +7,7 @@ import streamlit as st
 
 # ============================================================
 # VALORIS
-# v3.8.89 — Feedback do Pacote Premium e Loop de Melhoria
+# v3.8.90 — Roadmap Premium e Priorização de Sprint
 # ------------------------------------------------------------
 # Este arquivo controla a experiência de navegação do app.
 #

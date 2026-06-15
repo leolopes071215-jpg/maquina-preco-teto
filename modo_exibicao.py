@@ -7,7 +7,7 @@ import streamlit as st
 
 # ============================================================
 # VALORIS
-# v3.8.90 — Roadmap Premium e Priorização de Sprint
+# v3.8.91 — Estabilidade de Execução e Validação Leve
 # ------------------------------------------------------------
 # Este arquivo controla a experiência de navegação do app.
 #
@@ -467,3 +467,24 @@ def obter_rotulo_metrica_modo(modo: str) -> str:
         return "Fundador"
 
     return "Beta"
+
+ABAS_MODO_FUNDADOR = [
+    "Estabilidade",
+    "Roadmap Premium",
+    "Feedback Pacote",
+    "Pacote Premium",
+    "Relat?rio Premium v2",
+    "Comparador Setorial",
+    "Watchlist Fundadores",
+    "Reten??o Fundadores",
+    "Checkout Fundadores",
+    "Oferta Beta",
+    "Beta P?blico",
+    "Onboarding Premium",
+    "Beta Insights",
+    "Beta Feedback",
+    "Lista de Espera",
+    "Gateway Dados",
+    "Reposit?rios",
+]
+

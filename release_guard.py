@@ -15,7 +15,7 @@ from typing import Iterable, List, Optional
 
 # ============================================================
 # VALORIS
-# v3.8.90 — Guardião com Roadmap Premium e Priorização de Sprint
+# v3.8.91 — Guardião com Estabilidade de Execução e Validação Leve
 # ------------------------------------------------------------
 # Este script ajuda a proteger o projeto antes de fechar versão.
 #
@@ -36,7 +36,7 @@ from typing import Iterable, List, Optional
 # ============================================================
 
 
-VERSAO_RELEASE_GUARD = "3.8.90"
+VERSAO_RELEASE_GUARD = "3.8.92"
 
 
 ARQUIVOS_ESSENCIAIS = [
@@ -92,6 +92,7 @@ ARQUIVOS_ESSENCIAIS = [
     "pacote_premium_valoris.py",
     "feedback_pacote_premium_valoris.py",
     "roadmap_premium_valoris.py",
+    "estabilidade_execucao_valoris.py",
     "validacao_manual_valoris.py",
     "jornada_personalizada_valoris.py",
     "copiloto_valoris.py",
@@ -158,6 +159,9 @@ CSV_LOCAIS_ESPERADOS_NO_GITIGNORE = [
     "manifesto_pacote_premium_valoris.json",
     "manifesto_feedback_pacote_premium_valoris.json",
     "manifesto_roadmap_premium_valoris.json",
+    "manifesto_estabilidade_execucao_valoris.json",
+    "validacao_leve_valoris.json",
+    "logs_*_backup_*.csv",
     "BLUEPRINT_DATABASE_CLOUD_VALORIS.md",
     "CONTRATOS_DATABASE_VALORIS.md",
     "PROVIDERS_DATABASE_VALORIS.md",
@@ -189,10 +193,12 @@ CSV_LOCAIS_ESPERADOS_NO_GITIGNORE = [
     "PACOTE_PREMIUM_VALORIS.md",
     "MATRIZ_MELHORIAS_PACOTE_PREMIUM_VALORIS.md",
     "ROADMAP_PREMIUM_VALORIS.md",
+    "RELATORIO_ESTABILIDADE_EXECUCAO_VALORIS.md",
     "SPRINT_PLANNING_PREMIUM_VALORIS.md",
     "ROTEIRO_FEEDBACK_PACOTE_PREMIUM_VALORIS.md",
     "CHECKLIST_FEEDBACK_PACOTE_PREMIUM_VALORIS.md",
     "CHECKLIST_ROADMAP_PREMIUM_VALORIS.md",
+    "CHECKLIST_ESTABILIDADE_EXECUCAO_VALORIS.md",
     "SUMARIO_EXECUTIVO_PACOTE_PREMIUM_VALORIS.md",
     "PLAYBOOK_WATCHLIST_FUNDADORES_VALORIS.md",
     "PLAYBOOK_COMPARADOR_SETORIAL_VALORIS.md",
@@ -269,6 +275,7 @@ CSV_LOCAIS_ESPERADOS_NO_GITIGNORE = [
     "backlog_roadmap_premium_valoris.csv",
     "decisoes_feedback_pacote_premium_valoris.csv",
     "decisoes_roadmap_premium_valoris.csv",
+    "decisoes_estabilidade_execucao_valoris.csv",
     "decisoes_repositorios_valoris.csv",
     "decisoes_sqlite_valoris.csv",
     "decisoes_gateway_dados_valoris.csv",
@@ -561,6 +568,33 @@ def _extrair_lista_literal_python(caminho: Path, nome_variavel: str) -> List[str
     return []
 
 
+
+
+def _extrair_chaves_dict_literal_python(caminho: Path, nome_variavel: str) -> List[str]:
+    try:
+        arvore = ast.parse(caminho.read_text(encoding="utf-8"))
+    except Exception:
+        return []
+
+    for node in ast.walk(arvore):
+        if isinstance(node, ast.Assign):
+            nomes = [
+                alvo.id
+                for alvo in node.targets
+                if isinstance(alvo, ast.Name)
+            ]
+
+            if nome_variavel in nomes and isinstance(node.value, ast.Dict):
+                chaves = []
+
+                for chave in node.value.keys:
+                    if isinstance(chave, ast.Constant) and isinstance(chave.value, str):
+                        chaves.append(chave.value)
+
+                return chaves
+
+    return []
+
 def verificar_abas_fundador_renderizaveis(raiz: Path) -> ResultadoChecagem:
     caminho_app = raiz / "app.py"
     caminho_modo = raiz / "modo_exibicao.py"
@@ -568,7 +602,15 @@ def verificar_abas_fundador_renderizaveis(raiz: Path) -> ResultadoChecagem:
     detalhes: List[str] = []
 
     abas_ordem = _extrair_lista_literal_python(caminho_app, "ABAS_ORDEM_COMPLETA")
-    abas_fundador = _extrair_lista_literal_python(caminho_modo, "ABAS_FUNDADOR")
+    paginas_app = _extrair_chaves_dict_literal_python(caminho_app, "PAGINAS")
+
+    if paginas_app:
+        abas_ordem = list(dict.fromkeys([*paginas_app, *(abas_ordem or [])]))
+
+    abas_fundador = _extrair_lista_literal_python(caminho_modo, "ABAS_MODO_FUNDADOR")
+
+    if not abas_fundador:
+        abas_fundador = _extrair_lista_literal_python(caminho_modo, "ABAS_FUNDADOR")
 
     if not abas_ordem:
         return ResultadoChecagem(
@@ -745,6 +787,9 @@ def verificar_imports_criticos(raiz: Path) -> ResultadoChecagem:
         ],
         "roadmap_premium_valoris.py": [
             "renderizar_roadmap_premium_valoris",
+        ],
+        "estabilidade_execucao_valoris.py": [
+            "renderizar_estabilidade_execucao_valoris",
         ],
     }
 

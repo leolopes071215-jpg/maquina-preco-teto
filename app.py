@@ -11,6 +11,12 @@ st.sidebar.title("Valoris")
 st.sidebar.caption("Modo Seguro ? carrega apenas uma tela por vez")
 
 PAGINAS = {
+    "Recuperação Páginas": (
+        "recuperacao_paginas_valoris",
+        "renderizar_recuperacao_paginas_valoris",
+        "Prioriza páginas antigas para recuperação controlada.",
+    ),
+
     "Navegação Segura": (
         "navegacao_segura_valoris",
         "renderizar_navegacao_segura_valoris",

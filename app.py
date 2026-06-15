@@ -11,6 +11,12 @@ st.sidebar.title("Valoris")
 st.sidebar.caption("Modo Seguro ? carrega apenas uma tela por vez")
 
 PAGINAS = {
+    "Navegação Segura": (
+        "navegacao_segura_valoris",
+        "renderizar_navegacao_segura_valoris",
+        "Catálogo de módulos e recuperação segura de páginas.",
+    ),
+
     "Estabilidade": ("estabilidade_execucao_valoris", "renderizar_estabilidade_execucao_valoris"),
     "Roadmap Premium": ("roadmap_premium_valoris", "renderizar_roadmap_premium_valoris"),
     "Feedback Pacote": ("feedback_pacote_premium_valoris", "renderizar_feedback_pacote_premium_valoris"),
@@ -36,7 +42,14 @@ pagina = st.sidebar.radio(
     index=0,
 )
 
-modulo_nome, funcao_nome = PAGINAS[pagina]
+dados_pagina = PAGINAS[pagina]
+
+if len(dados_pagina) == 2:
+    modulo_nome, funcao_nome = dados_pagina
+    descricao_pagina = ""
+else:
+    modulo_nome, funcao_nome, descricao_pagina = dados_pagina[0], dados_pagina[1], dados_pagina[2]
+
 
 st.title(f"Valoris ? {pagina}")
 st.caption("Modo Seguro: esta vers?o importa e renderiza somente a p?gina selecionada.")

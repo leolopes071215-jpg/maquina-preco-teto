@@ -2,13 +2,13 @@
 import streamlit as st
 
 st.set_page_config(
-    page_title="Valoris ? Modo Seguro",
+    page_title="Valoris — Modo Seguro",
     layout="wide",
     initial_sidebar_state="expanded",
 )
 
 st.sidebar.title("Valoris")
-st.sidebar.caption("Modo Seguro ? carrega apenas uma tela por vez")
+st.sidebar.caption("Modo Seguro — carrega apenas uma tela por vez")
 
 PAGINAS = {
     "Motor Análise Ativos": (
@@ -33,23 +33,23 @@ PAGINAS = {
     "Roadmap Premium": ("roadmap_premium_valoris", "renderizar_roadmap_premium_valoris"),
     "Feedback Pacote": ("feedback_pacote_premium_valoris", "renderizar_feedback_pacote_premium_valoris"),
     "Pacote Premium": ("pacote_premium_valoris", "renderizar_pacote_premium_valoris"),
-    "Relat?rio Premium v2": ("relatorio_premium_v2_valoris", "renderizar_relatorio_premium_v2_valoris"),
+    "Relatório Premium v2": ("relatorio_premium_v2_valoris", "renderizar_relatorio_premium_v2_valoris"),
     "Comparador Setorial": ("comparador_setorial_valoris", "renderizar_comparador_setorial_valoris"),
     "Watchlist Fundadores": ("watchlist_fundadores_valoris", "renderizar_watchlist_fundadores_valoris"),
-    "Reten??o Fundadores": ("retencao_fundadores_valoris", "renderizar_retencao_fundadores_valoris"),
+    "Retenção Fundadores": ("retencao_fundadores_valoris", "renderizar_retencao_fundadores_valoris"),
     "Checkout Fundadores": ("checkout_fundadores_valoris", "renderizar_checkout_fundadores_valoris"),
     "Oferta Beta": ("oferta_beta_fundador_valoris", "renderizar_oferta_beta_fundador_valoris"),
-    "Beta P?blico": ("beta_publico_valoris", "renderizar_beta_publico_valoris"),
+    "Beta Público": ("beta_publico_valoris", "renderizar_beta_publico_valoris"),
     "Onboarding Premium": ("onboarding_premium_valoris", "renderizar_onboarding_premium_valoris"),
     "Beta Insights": ("beta_insights_valoris", "renderizar_beta_insights_valoris"),
     "Beta Feedback": ("beta_feedback_valoris", "renderizar_beta_feedback_valoris"),
     "Lista de Espera": ("lista_espera_beta", "renderizar_lista_espera_valoris"),
     "Gateway Dados": ("gateway_dados_valoris", "renderizar_gateway_dados_valoris"),
-    "Reposit?rios": ("repositorios_valoris", "renderizar_repositorios_valoris"),
+    "Repositórios": ("repositorios_valoris", "renderizar_repositorios_valoris"),
 }
 
 pagina = st.sidebar.radio(
-    "Escolha uma ?rea",
+    "Escolha uma área",
     list(PAGINAS.keys()),
     index=0,
 )
@@ -63,15 +63,15 @@ else:
     modulo_nome, funcao_nome, descricao_pagina = dados_pagina[0], dados_pagina[1], dados_pagina[2]
 
 
-st.title(f"Valoris ? {pagina}")
-st.caption("Modo Seguro: esta vers?o importa e renderiza somente a p?gina selecionada.")
+st.title(f"Valoris — {pagina}")
+st.caption("Modo Seguro: esta versão importa e renderiza somente a página selecionada.")
 
 try:
     modulo = __import__(modulo_nome, fromlist=[funcao_nome])
     funcao = getattr(modulo, funcao_nome)
     funcao()
 except MemoryError:
-    st.error("MemoryError: esta p?gina tentou carregar dados demais.")
+    st.error("MemoryError: esta página tentou carregar dados demais.")
     st.info("Volte para a aba Estabilidade, limpe logs/backups e tente novamente.")
 except Exception as erro:
     st.error(f"Erro ao carregar {pagina}")
@@ -86,35 +86,35 @@ except Exception as erro:
 ABAS_ORDEM_COMPLETA = [
     "Estabilidade",
     "Produto",
-    "Navega??o",
+    "Navegação",
     "Onboarding",
     "Landing Page",
-    "Ativa??o",
+    "Ativação",
     "Copiloto",
     "Jornada",
-    "Demonstra??o",
+    "Demonstração",
     "Trilha Valoris",
-    "In?cio",
+    "Início",
     "Painel Executivo",
     "Valuation",
     "Simulador",
-    "Tese & Convic??o",
+    "Tese & Convicção",
     "Checklist",
     "Watchlist",
-    "Relat?rios",
+    "Relatórios",
     "Feedback Beta",
     "Beta Fechado",
     "Neg?cio",
     "Marketing",
     "Conte?do",
-    "Lan?amento",
+    "Lançamento",
     "Convite Beta",
     "Release",
     "Aprendizado Beta",
     "Rodadas Beta",
     "Prioridades Beta",
     "Sprints Beta",
-    "Pr?-venda Beta",
+    "Pré-venda Beta",
     "Oferta Paga",
     "CRM Beta",
     "Painel Beta",
@@ -123,8 +123,8 @@ ABAS_ORDEM_COMPLETA = [
     "Suporte Beta",
     "Reten??o Beta",
     "Painel Fase 3",
-    "M?tricas Fase 3",
-    "Decis?o Fase 3",
+    "Métricas Fase 3",
+    "Decisão Fase 3",
     "Plano Fase 4",
     "Arquitetura Fase 4",
     "Core Engine",
@@ -134,26 +134,26 @@ ABAS_ORDEM_COMPLETA = [
     "Auditoria Motor Principal",
     "Fallback Motor",
     "Logs Motor",
-    "Sa?de Motor",
+    "Saúde Motor",
     "Decis?o Core",
-    "Promo??o Core",
+    "Promoção Core",
     "Estrat?gia Produto",
-    "Deploy P?blico",
+    "Deploy Público",
     "Dados",
-    "Analytics P?blico",
+    "Analytics Público",
     "Painel Trilha",
     "Painel Copiloto",
     "Painel Jornada",
-    "Painel Ativa??o",
-    "Painel Convers?o",
+    "Painel Ativação",
+    "Painel Conversão",
     "Growth",
-    "Valida??o Manual",
+    "Validação Manual",
     "Fundadores",
     "Maturidade",
     "Arquitetura",
     "Camada Dados",
     "SQLite Piloto",
-    "Reposit?rios",
+    "Repositórios",
     "PostgreSQL",
     "API",
     "API Scaffold",
@@ -170,27 +170,27 @@ ABAS_ORDEM_COMPLETA = [
     "API Provider Runtime",
     "API Provider Backend",
     "Launch Readiness",
-    "An?lise Premium",
+    "Análise Premium",
     "Demo 2 Min",
-    "Beta P?blico",
+    "Beta Público",
     "UX",
     "Multiativos",
-    "A??es Brasil",
+    "Ações Brasil",
     "FIIs",
     "Renda Fixa",
-    "Resumo da Decis?o",
+    "Resumo da Decisão",
     "Comparativo",
     "Tese qualitativa",
     "Premissas",
-    "Hist?rico",
-    "Educa??o",
+    "Histórico",
+    "Educação",
     "Roadmap Premium",
     "Feedback Pacote",
     "Pacote Premium",
-    "Relat?rio Premium v2",
+    "Relatório Premium v2",
     "Comparador Setorial",
     "Watchlist Fundadores",
-    "Reten??o Fundadores",
+    "Retenção Fundadores",
     "Checkout Fundadores",
     "Oferta Beta",
     "Onboarding Premium",

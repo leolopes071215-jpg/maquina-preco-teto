@@ -256,9 +256,28 @@ def gerar_csv_decisoes_gateway() -> str:
     return CAMINHO_DECISOES_GATEWAY.read_text(encoding="utf-8")
 
 
-def gerar_csv_logs_gateway() -> str:
+def gerar_csv_logs_gateway(max_registros: int = 500) -> str:
+    # Gera CSV apenas dos últimos logs, evitando leitura completa de arquivo grande.
+    import io
+    from collections import deque
+
     _garantir_csv(CAMINHO_LOG_GATEWAY, CAMPOS_LOG_GATEWAY)
-    return CAMINHO_LOG_GATEWAY.read_text(encoding="utf-8")
+
+    try:
+        with CAMINHO_LOG_GATEWAY.open("r", newline="", encoding="utf-8") as arquivo:
+            leitor = csv.DictReader(arquivo)
+            logs = list(deque(leitor, maxlen=max_registros))
+    except Exception:
+        logs = []
+
+    saida = io.StringIO()
+    escritor = csv.DictWriter(saida, fieldnames=CAMPOS_LOG_GATEWAY)
+    escritor.writeheader()
+
+    for item in logs:
+        escritor.writerow({campo: item.get(campo, "") for campo in CAMPOS_LOG_GATEWAY})
+
+    return saida.getvalue()
 
 
 def validar_contrato_tabela(tabela_logica: str) -> Dict[str, Any]:

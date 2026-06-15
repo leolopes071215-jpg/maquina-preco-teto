@@ -8,6 +8,12 @@ import os
 import py_compile
 import subprocess
 import sys
+
+try:
+    sys.stdout.reconfigure(encoding="utf-8", errors="replace")
+    sys.stderr.reconfigure(encoding="utf-8", errors="replace")
+except Exception:
+    pass
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Iterable, List, Optional
@@ -36,7 +42,7 @@ from typing import Iterable, List, Optional
 # ============================================================
 
 
-VERSAO_RELEASE_GUARD = "3.9.0"
+VERSAO_RELEASE_GUARD = "3.9.1"
 
 
 ARQUIVOS_ESSENCIAIS = [
@@ -827,7 +833,7 @@ def verificar_imports_criticos(raiz: Path) -> ResultadoChecagem:
 
 
 def imprimir_resultado(resultado: ResultadoChecagem) -> None:
-    marcador = "✅" if resultado.ok else "❌"
+    marcador = "[OK]" if resultado.ok else "[FALHA]"
 
     print(f"\n{marcador} {resultado.nome}: {resultado.status_texto()}")
 
@@ -858,7 +864,7 @@ def executar_guardiao_release(strict: bool = False) -> int:
     falhas = [checagem for checagem in checagens if not checagem.ok]
 
     if falhas:
-        print("\n❌ Release Guard encontrou problemas que merecem revisão.")
+        print("\n[FALHA] Release Guard encontrou problemas que merecem revisão.")
 
         if strict:
             return 1
@@ -866,7 +872,7 @@ def executar_guardiao_release(strict: bool = False) -> int:
         print("Modo normal: problemas foram reportados, mas o script não bloqueou a execução.")
         return 0
 
-    print("\n✅ Release Guard concluído sem falhas críticas.")
+    print("\n[OK] Release Guard concluído sem falhas críticas.")
     return 0
 
 

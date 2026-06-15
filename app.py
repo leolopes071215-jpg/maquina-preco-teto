@@ -11,6 +11,12 @@ st.sidebar.title("Valoris")
 st.sidebar.caption("Modo Seguro ? carrega apenas uma tela por vez")
 
 PAGINAS = {
+    "Motor Análise Ativos": (
+        "motor_analise_ativos_valoris",
+        "renderizar_motor_analise_ativos_valoris",
+        "Motor central: ativo, dados, preço teto, risco e decisão.",
+    ),
+
     "Recuperação Páginas": (
         "recuperacao_paginas_valoris",
         "renderizar_recuperacao_paginas_valoris",

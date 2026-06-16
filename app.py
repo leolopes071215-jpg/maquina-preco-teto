@@ -35,6 +35,12 @@ PAGINAS = {
         "Central de decisão que une motor, histórico, watchlist e relatório.",
     ),
 
+    "Pipeline Decisão": (
+        "pipeline_decisao_valoris",
+        "renderizar_pipeline_decisao_valoris",
+        "Esteira operacional que transforma análise inteligente em próximas ações.",
+    ),
+
     "Motor Análise Ativos": (
         "motor_analise_ativos_valoris",
         "renderizar_motor_analise_ativos_valoris",

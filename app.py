@@ -53,6 +53,12 @@ PAGINAS = {
         "Mapa de CSVs, contratos, campos e prontidão para banco.",
     ),
 
+    "Repository Único": (
+        "repositorio_unico_valoris",
+        "renderizar_repositorio_unico_valoris",
+        "Camada central de dados: CSV hoje, banco amanhã.",
+    ),
+
     "Motor Análise Ativos": (
         "motor_analise_ativos_valoris",
         "renderizar_motor_analise_ativos_valoris",

@@ -23,6 +23,12 @@ PAGINAS = {
         "Banco SQLite local em modo laboratório.",
     ),
 
+    "Repository Backend": (
+        "repository_backend_sqlite_valoris",
+        "renderizar_repository_backend_sqlite_valoris",
+        "Configura CSV ou SQLite como backend flexível do Repository.",
+    ),
+
     "Histórico Análises": (
         "historico_analises_valoris",
         "renderizar_historico_analises_valoris",

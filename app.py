@@ -17,6 +17,12 @@ PAGINAS = {
         "Simula migra??o CSV para SQLite/PostgreSQL antes de criar o banco.",
     ),
 
+    "SQLite Local": (
+        "sqlite_local_valoris",
+        "renderizar_sqlite_local_valoris",
+        "Banco SQLite local em modo laboratório.",
+    ),
+
     "Histórico Análises": (
         "historico_analises_valoris",
         "renderizar_historico_analises_valoris",

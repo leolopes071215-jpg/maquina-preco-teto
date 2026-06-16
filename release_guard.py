@@ -42,7 +42,7 @@ from typing import Iterable, List, Optional
 # ============================================================
 
 
-VERSAO_RELEASE_GUARD = "3.10.2"
+VERSAO_RELEASE_GUARD = "3.10.3"
 
 
 ARQUIVOS_ESSENCIAIS = [
@@ -113,6 +113,7 @@ ARQUIVOS_ESSENCIAIS = [
     "simulador_migracao_banco_valoris.py",
     "sqlite_local_valoris.py",
     "repository_backend_sqlite_valoris.py",
+    "healthcheck_banco_repository_valoris.py",
     "validacao_manual_valoris.py",
     "jornada_personalizada_valoris.py",
     "copiloto_valoris.py",

@@ -29,6 +29,12 @@ PAGINAS = {
         "Configura CSV ou SQLite como backend flexível do Repository.",
     ),
 
+    "Health Check": (
+        "healthcheck_banco_repository_valoris",
+        "renderizar_healthcheck_banco_repository_valoris",
+        "Central de saúde técnica do banco, CSV e Repository.",
+    ),
+
     "Histórico Análises": (
         "historico_analises_valoris",
         "renderizar_historico_analises_valoris",

@@ -29,6 +29,12 @@ PAGINAS = {
         "Transforma análise do motor em dossiê premium estruturado.",
     ),
 
+    "Análise Inteligente": (
+        "analise_inteligente_valoris",
+        "renderizar_analise_inteligente_valoris",
+        "Central de decisão que une motor, histórico, watchlist e relatório.",
+    ),
+
     "Motor Análise Ativos": (
         "motor_analise_ativos_valoris",
         "renderizar_motor_analise_ativos_valoris",

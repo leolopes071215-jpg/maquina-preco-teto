@@ -23,6 +23,12 @@ PAGINAS = {
         "Ponte entre o motor de análise e a watchlist de acompanhamento.",
     ),
 
+    "Motor + Relatório": (
+        "integracao_motor_relatorio_valoris",
+        "renderizar_integracao_motor_relatorio_valoris",
+        "Transforma análise do motor em dossiê premium estruturado.",
+    ),
+
     "Motor Análise Ativos": (
         "motor_analise_ativos_valoris",
         "renderizar_motor_analise_ativos_valoris",

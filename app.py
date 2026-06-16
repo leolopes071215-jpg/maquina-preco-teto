@@ -47,6 +47,12 @@ PAGINAS = {
         "Radar de prazos, revisões, alertas e ações pendentes.",
     ),
 
+    "Mapa Dados": (
+        "mapa_dados_contratos_valoris",
+        "renderizar_mapa_dados_contratos_valoris",
+        "Mapa de CSVs, contratos, campos e prontidão para banco.",
+    ),
+
     "Motor Análise Ativos": (
         "motor_analise_ativos_valoris",
         "renderizar_motor_analise_ativos_valoris",

@@ -11,6 +11,12 @@ st.sidebar.title("Valoris")
 st.sidebar.caption("Modo Seguro — carrega apenas uma tela por vez")
 
 PAGINAS = {
+    "Histórico Análises": (
+        "historico_analises_valoris",
+        "renderizar_historico_analises_valoris",
+        "Hist?rico do motor: an?lises salvas, filtros, scores e decis?es.",
+    ),
+
     "Motor Análise Ativos": (
         "motor_analise_ativos_valoris",
         "renderizar_motor_analise_ativos_valoris",

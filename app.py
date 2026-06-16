@@ -41,6 +41,12 @@ PAGINAS = {
         "Esteira operacional que transforma análise inteligente em próximas ações.",
     ),
 
+    "Radar Revisões": (
+        "radar_revisoes_valoris",
+        "renderizar_radar_revisoes_valoris",
+        "Radar de prazos, revisões, alertas e ações pendentes.",
+    ),
+
     "Motor Análise Ativos": (
         "motor_analise_ativos_valoris",
         "renderizar_motor_analise_ativos_valoris",

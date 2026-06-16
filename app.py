@@ -11,6 +11,12 @@ st.sidebar.title("Valoris")
 st.sidebar.caption("Modo Seguro — carrega apenas uma tela por vez")
 
 PAGINAS = {
+    "Simulador Migração": (
+        "simulador_migracao_banco_valoris",
+        "renderizar_simulador_migracao_banco_valoris",
+        "Simula migra??o CSV para SQLite/PostgreSQL antes de criar o banco.",
+    ),
+
     "Histórico Análises": (
         "historico_analises_valoris",
         "renderizar_historico_analises_valoris",

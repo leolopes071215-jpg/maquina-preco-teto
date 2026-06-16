@@ -17,6 +17,12 @@ PAGINAS = {
         "Hist?rico do motor: an?lises salvas, filtros, scores e decis?es.",
     ),
 
+    "Motor + Watchlist": (
+        "integracao_motor_watchlist_valoris",
+        "renderizar_integracao_motor_watchlist_valoris",
+        "Ponte entre o motor de análise e a watchlist de acompanhamento.",
+    ),
+
     "Motor Análise Ativos": (
         "motor_analise_ativos_valoris",
         "renderizar_motor_analise_ativos_valoris",

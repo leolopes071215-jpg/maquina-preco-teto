@@ -23,6 +23,12 @@ PAGINAS = {
         "Análise inteligente oficial com backend flexível, ranking e rollback.",
     ),
 
+    "Pipeline Backend": (
+        "pipeline_backend_flexivel_valoris",
+        "renderizar_pipeline_backend_flexivel_valoris",
+        "Pipeline de decisão com leitura flexível e escrita controlada.",
+    ),
+
     "Análise Backend": (
         "analise_inteligente_backend_valoris",
         "renderizar_analise_inteligente_backend_valoris",

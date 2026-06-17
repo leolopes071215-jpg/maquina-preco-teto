@@ -469,6 +469,7 @@ def obter_rotulo_metrica_modo(modo: str) -> str:
     return "Beta"
 
 ABAS_MODO_FUNDADOR = [
+    "Análise Backend",
     "Histórico Principal",
     "Histórico Backend",
     "Migração Backend",

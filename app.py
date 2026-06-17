@@ -17,6 +17,12 @@ PAGINAS = {
         "Histórico oficial com backend flexível, rollback e experiência premium.",
     ),
 
+    "Análise Backend": (
+        "analise_inteligente_backend_valoris",
+        "renderizar_analise_inteligente_backend_valoris",
+        "Análise inteligente lendo via backend flexível com ranking executivo.",
+    ),
+
     "Simulador Migração": (
         "simulador_migracao_banco_valoris",
         "renderizar_simulador_migracao_banco_valoris",

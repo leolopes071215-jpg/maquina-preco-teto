@@ -41,6 +41,12 @@ PAGINAS = {
         "Governança de migração gradual das páginas para backend flexível.",
     ),
 
+    "Histórico Backend": (
+        "historico_backend_flexivel_valoris",
+        "renderizar_historico_backend_flexivel_valoris",
+        "Histórico de análises lendo via backend flexível com rollback.",
+    ),
+
     "Histórico Análises": (
         "historico_analises_valoris",
         "renderizar_historico_analises_valoris",

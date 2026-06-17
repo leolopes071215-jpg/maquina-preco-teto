@@ -29,6 +29,12 @@ PAGINAS = {
         "Pipeline operacional oficial com backend flexível e escrita controlada.",
     ),
 
+    "Radar Principal": (
+        "radar_principal_valoris",
+        "renderizar_radar_principal_valoris",
+        "Radar executivo conectado ao Pipeline Principal.",
+    ),
+
     "Pipeline Backend": (
         "pipeline_backend_flexivel_valoris",
         "renderizar_pipeline_backend_flexivel_valoris",

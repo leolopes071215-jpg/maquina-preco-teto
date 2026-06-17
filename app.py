@@ -17,6 +17,12 @@ PAGINAS = {
         "Histórico oficial com backend flexível, rollback e experiência premium.",
     ),
 
+    "Análise Principal": (
+        "analise_principal_valoris",
+        "renderizar_analise_principal_valoris",
+        "Análise inteligente oficial com backend flexível, ranking e rollback.",
+    ),
+
     "Análise Backend": (
         "analise_inteligente_backend_valoris",
         "renderizar_analise_inteligente_backend_valoris",

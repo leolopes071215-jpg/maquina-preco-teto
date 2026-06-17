@@ -11,6 +11,12 @@ st.sidebar.title("Valoris")
 st.sidebar.caption("Modo Seguro — carrega apenas uma tela por vez")
 
 PAGINAS = {
+    "Cockpit Principal": (
+        "cockpit_principal_valoris",
+        "renderizar_cockpit_principal_valoris",
+        "Tela inicial executiva do Valoris com saúde, decisões, ações e próximos movimentos.",
+    ),
+
     "Histórico Principal": (
         "historico_principal_valoris",
         "renderizar_historico_principal_valoris",

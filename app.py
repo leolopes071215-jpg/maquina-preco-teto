@@ -35,6 +35,12 @@ PAGINAS = {
         "Central de saúde técnica do banco, CSV e Repository.",
     ),
 
+    "Migração Backend": (
+        "migracao_paginas_backend_valoris",
+        "renderizar_migracao_paginas_backend_valoris",
+        "Governança de migração gradual das páginas para backend flexível.",
+    ),
+
     "Histórico Análises": (
         "historico_analises_valoris",
         "renderizar_historico_analises_valoris",

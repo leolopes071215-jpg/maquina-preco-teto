@@ -11,6 +11,12 @@ st.sidebar.title("Valoris")
 st.sidebar.caption("Modo Seguro — carrega apenas uma tela por vez")
 
 PAGINAS = {
+    "Histórico Principal": (
+        "historico_principal_valoris",
+        "renderizar_historico_principal_valoris",
+        "Histórico oficial com backend flexível, rollback e experiência premium.",
+    ),
+
     "Simulador Migração": (
         "simulador_migracao_banco_valoris",
         "renderizar_simulador_migracao_banco_valoris",

@@ -17,6 +17,12 @@ PAGINAS = {
         "Alertas automáticos acionáveis gerados a partir do Radar Principal.",
     ),
 
+    "Rotina Semanal": (
+        "rotina_semanal_inteligente_valoris",
+        "renderizar_rotina_semanal_inteligente_valoris",
+        "Rotina semanal acionável a partir do Cockpit, Radar, Pipeline e Alertas.",
+    ),
+
     'Cockpit Principal': ('cockpit_principal_valoris', 'renderizar_cockpit_principal_valoris', 'Tela inicial executiva do Valoris com saúde, decisões, ações e próximos movimentos.'),
     'Histórico Principal': ('historico_principal_valoris', 'renderizar_historico_principal_valoris', 'Histórico oficial com backend flexível, rollback e experiência premium.'),
     'Análise Principal': ('analise_principal_valoris', 'renderizar_analise_principal_valoris', 'Análise inteligente oficial com backend flexível, ranking e rollback.'),

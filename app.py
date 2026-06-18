@@ -23,6 +23,12 @@ PAGINAS = {
         "Rotina semanal acionável a partir do Cockpit, Radar, Pipeline e Alertas.",
     ),
 
+    "Agenda Revisões": (
+        "agenda_revisoes_valoris",
+        "renderizar_agenda_revisoes_valoris",
+        "Agenda operacional de revisões, prazos e decisões por ativo.",
+    ),
+
     'Cockpit Principal': ('cockpit_principal_valoris', 'renderizar_cockpit_principal_valoris', 'Tela inicial executiva do Valoris com saúde, decisões, ações e próximos movimentos.'),
     'Histórico Principal': ('historico_principal_valoris', 'renderizar_historico_principal_valoris', 'Histórico oficial com backend flexível, rollback e experiência premium.'),
     'Análise Principal': ('analise_principal_valoris', 'renderizar_analise_principal_valoris', 'Análise inteligente oficial com backend flexível, ranking e rollback.'),

@@ -101,6 +101,12 @@ PAGINAS = {
         "Aprovação e promoção de rascunhos gerados pelo playbook.",
     ),
 
+    "Cockpit Comunicação": (
+        "cockpit_comunicacao_valoris",
+        "renderizar_cockpit_comunicacao_valoris",
+        "Cockpit executivo da esteira completa de comunicação.",
+    ),
+
     'Cockpit Principal': ('cockpit_principal_valoris', 'renderizar_cockpit_principal_valoris', 'Tela inicial executiva do Valoris com saúde, decisões, ações e próximos movimentos.'),
     'Histórico Principal': ('historico_principal_valoris', 'renderizar_historico_principal_valoris', 'Histórico oficial com backend flexível, rollback e experiência premium.'),
     'Análise Principal': ('analise_principal_valoris', 'renderizar_analise_principal_valoris', 'Análise inteligente oficial com backend flexível, ranking e rollback.'),

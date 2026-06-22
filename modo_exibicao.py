@@ -469,6 +469,7 @@ def obter_rotulo_metrica_modo(modo: str) -> str:
     return "Beta"
 
 ABAS_MODO_FUNDADOR = [
+    "Cockpit Comunicação",
     "Aprovação Playbook",
     "Rascunhos Playbook",
     "Playbook Comunicação",

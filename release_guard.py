@@ -42,7 +42,7 @@ from typing import Iterable, List, Optional
 # ============================================================
 
 
-VERSAO_RELEASE_GUARD = "3.12.0"
+VERSAO_RELEASE_GUARD = "3.12.1"
 
 
 ARQUIVOS_ESSENCIAIS = [
@@ -131,6 +131,7 @@ ARQUIVOS_ESSENCIAIS = [
     "higiene_operacional_valoris.py",
     "notificacoes_externas_valoris.py",
     "aprovacao_notificacoes_valoris.py",
+    "exportacao_notificacoes_valoris.py",
     "validacao_manual_valoris.py",
     "jornada_personalizada_valoris.py",
     "copiloto_valoris.py",

@@ -11,6 +11,12 @@ st.sidebar.title("Valoris")
 st.sidebar.caption("Modo Seguro — carrega apenas uma tela por vez")
 
 PAGINAS = {
+    "Jornada Beta": (
+        "jornada_beta_valoris",
+        "renderizar_jornada_beta_valoris",
+        "Jornada guiada para uso beta do Valoris.",
+    ),
+
     "Alertas Radar": (
         "alertas_automaticos_radar_valoris",
         "renderizar_alertas_automaticos_radar_valoris",

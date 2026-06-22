@@ -59,6 +59,12 @@ PAGINAS = {
         "Exportação segura de rascunhos aprovados para envio manual.",
     ),
 
+    "Envio Manual": (
+        "envio_manual_notificacoes_valoris",
+        "renderizar_envio_manual_notificacoes_valoris",
+        "Execução manual assistida após exportação segura.",
+    ),
+
     'Cockpit Principal': ('cockpit_principal_valoris', 'renderizar_cockpit_principal_valoris', 'Tela inicial executiva do Valoris com saúde, decisões, ações e próximos movimentos.'),
     'Histórico Principal': ('historico_principal_valoris', 'renderizar_historico_principal_valoris', 'Histórico oficial com backend flexível, rollback e experiência premium.'),
     'Análise Principal': ('analise_principal_valoris', 'renderizar_analise_principal_valoris', 'Análise inteligente oficial com backend flexível, ranking e rollback.'),

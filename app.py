@@ -23,6 +23,12 @@ PAGINAS = {
         "Menu inteligente por modo de uso.",
     ),
 
+    "Demo Premium": (
+        "demo_premium_valoris",
+        "renderizar_demo_premium_valoris",
+        "Demonstração premium com dados exemplo isolados.",
+    ),
+
     "Alertas Radar": (
         "alertas_automaticos_radar_valoris",
         "renderizar_alertas_automaticos_radar_valoris",

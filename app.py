@@ -17,6 +17,12 @@ PAGINAS = {
         "Jornada guiada para uso beta do Valoris.",
     ),
 
+    "Modos de Uso": (
+        "modos_uso_valoris",
+        "renderizar_modos_uso_valoris",
+        "Menu inteligente por modo de uso.",
+    ),
+
     "Alertas Radar": (
         "alertas_automaticos_radar_valoris",
         "renderizar_alertas_automaticos_radar_valoris",

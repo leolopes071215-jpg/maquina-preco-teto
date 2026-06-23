@@ -29,6 +29,12 @@ PAGINAS = {
         "Demonstração premium com dados exemplo isolados.",
     ),
 
+    "Checklist Produto": (
+        "checklist_produto_vendavel_valoris",
+        "renderizar_checklist_produto_vendavel_valoris",
+        "Checklist de prontidão comercial e validação beta.",
+    ),
+
     "Alertas Radar": (
         "alertas_automaticos_radar_valoris",
         "renderizar_alertas_automaticos_radar_valoris",

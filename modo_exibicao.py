@@ -469,6 +469,7 @@ def obter_rotulo_metrica_modo(modo: str) -> str:
     return "Beta"
 
 ABAS_MODO_FUNDADOR = [
+    "Valor Comercial",
     "Checklist Produto",
     "Demo Premium",
     "Modos de Uso",

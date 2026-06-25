@@ -35,6 +35,12 @@ PAGINAS = {
         "Checklist de prontidão comercial e validação beta.",
     ),
 
+    "Valor Comercial": (
+        "valor_comercial_valoris",
+        "renderizar_valor_comercial_valoris",
+        "Página de valor comercial, pitch e objeções.",
+    ),
+
     "Alertas Radar": (
         "alertas_automaticos_radar_valoris",
         "renderizar_alertas_automaticos_radar_valoris",

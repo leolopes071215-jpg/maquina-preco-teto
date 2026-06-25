@@ -41,6 +41,12 @@ PAGINAS = {
         "Página de valor comercial, pitch e objeções.",
     ),
 
+    "Beta Usuários": (
+        "beta_primeiros_usuarios_valoris",
+        "renderizar_beta_primeiros_usuarios_valoris",
+        "Validação beta com primeiros usuários reais.",
+    ),
+
     "Alertas Radar": (
         "alertas_automaticos_radar_valoris",
         "renderizar_alertas_automaticos_radar_valoris",
